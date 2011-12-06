@@ -1,0 +1,22 @@
+v. 1.3.7 05 October 2011 import of headword_L2 and definition_L2
+v. 1.3.6 22 September 2011 resolved problem with emphasized text
+v. 1.3.5 21 September 2011 removed xhomographnumber from search link, convert to links replaces span-tag with link-tag
+v. 1.3.4 20 September 2011 import synonyms
+v. 1.3.3 19 September 2011 fixed the crash error during import
+v. 1.3.2 16 September 2011 import transforms items into a link
+v. 1.3.1 15 September 2011 click on an item in search result submits form
+v. 1.3.0 07 September 2011 plugin now works with poedit files for localization
+v. 1.2.9 02 September 2011 added a JOIN on wp_term_taxonomy to fix taxonomy search issues
+v. 1.2.8 01 September 2011 removed command to delete all term relationships
+v. 1.2.7 31 August 2011 fixed taxonomy bugs, import converts semantic domains to a link
+v. 1.2.6 22 August 2011 Some design changes, renamed to SIL FLEX XHTML importer
+v. 1.2.5 18 August 2011	Added complex forms to search results
+v. 1.2.4 16 August 2011 Added variant forms to search results
+v. 1.2.3 15 August 2011 Added custom fields to search results
+v. 1.2.2 15 August 2011 Added example sentences to search results
+v. 1.2.1 12 August 2011 copy imported-with-xhtml.css to theme folder
+v. 1.2.0 10 August 2011 Added function convert_fieldworks_images_to_wordpress in xhtml-importer.php
+v.1.1.9 08 August 2011	Imports webstrings.txt into taxonomies if they don't exist
+v.1.1.8 04 August 2011 	Partial Search for queries that are longer than 3 characters or where query partialsearch = 1 is passed
+v.1.1.7 27 July 2011	Added semantic domains to search results.
+v.1.1.6	26 July 2011	Fixed import of definitions without an xitem span.
