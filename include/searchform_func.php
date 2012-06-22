@@ -12,8 +12,9 @@ function searchform_init() {
 
 function webonary_searchform() {
 ?>
-		 <form name="searchform" id="searchform" method="get" action="<?php bloginfo('url'); ?>">
+		 <form name="searchform" id="searchform" method="get" action="<?php bloginfo('url'); ?>">		 
 			<div class="normalSearch">
+				<!-- Search Bar Popups --> <?php !dynamic_sidebar( 'topsearchbar' ); ?><!-- end Search Bar Popups -->
 				<!-- search text box -->
 				<input type="text" name="s" id="s" value="<?php the_search_query(); ?>" size=40>
 	
