@@ -1,3 +1,4 @@
+v. 1.3.8 22 June 2012 Added "Search Bar Popups" sidebar for including widgets above search form
 v. 1.3.7a 21 June 2012 Custom fields import changed from sense level to entry level (Modification made by Martin Diprose)
 v. 1.3.7 05 October 2011 import of headword_L2 and definition_L2
 v. 1.3.6 22 September 2011 resolved problem with emphasized text
