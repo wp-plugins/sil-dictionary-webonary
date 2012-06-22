@@ -305,7 +305,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 
 		// Some of these variables could eventually become user options.
-		$xhtml_file = realpath($xhtml_file);		
+
+		$xhtml_file = realpath($xhtml_file);
 		$this->dom = new DOMDocument('1.0', 'utf-8');
 		$ret_val = $this->dom->load($xhtml_file);
 		$this->dom_xpath = new DOMXPath($this->dom);
@@ -480,7 +481,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "translation"]', $this->example_sentences_relevance);
 					//custom fields
 					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexEntry-")]', $this->custom_field_relevance);
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexSense-") and not(contains(@class, "LexSense-publishRoot-DefinitionPub_L2"))]', $this->custom_field_relevance);					
+					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]', $this->custom_field_relevance);					
 					//variant forms
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form"]', $this->variant_form_relevance);
 					//synonyms (sense-crossref)
