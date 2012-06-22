@@ -305,8 +305,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 
 		// Some of these variables could eventually become user options.
-
-		$xhtml_file = realpath($xhtml_file);
+		$xhtml_file = realpath($xhtml_file);		
 		$this->dom = new DOMDocument('1.0', 'utf-8');
 		$ret_val = $this->dom->load($xhtml_file);
 		$this->dom_xpath = new DOMXPath($this->dom);
