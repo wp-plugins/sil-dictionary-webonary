@@ -484,6 +484,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]', $this->custom_field_relevance);					
 					//variant forms
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form"]', $this->variant_form_relevance);
+					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form-sub"]', $this->variant_form_relevance);
 					//synonyms (sense-crossref)
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref"]', $this->sense_crossref_relevance);				
 					
