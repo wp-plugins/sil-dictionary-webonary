@@ -712,11 +712,18 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $search_string = string we want to search for in the post
 	 * @param <int> $relevance = weighted importance of this particular string for search results
 	 */
-	function import_xhtml_search_string( $post_id, $field, $relevance) {
+	function import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string = null) {
 		global $wpdb;
 			
 		$language_code = $field->getAttribute("lang");
-		$search_string = $field->textContent;
+		if(isset($mySearch_string))
+		{
+			$search_string = $mySearch_string;
+		}
+		else
+		{
+			$search_string = $field->textContent;
+		}
 						
 		// We're using a generic $wpdb->query instead of a $wpdb->insert
 		// to make use of the ON DUPLICATE KEY feature of MySQL.
@@ -730,6 +737,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$post_id, $language_code, $search_string, $relevance, $search_string );
 			
 			$wpdb->query( $sql );
+			
+		//this replaces the special apostroph with the standard apostroph
+		//the first time round the special apostroph is inserted, so that both searches are valid
+		if(strstr($search_string,"ʼ"))
+		{
+			$mySearch_string = str_replace("ʼ", "'", $search_string);
+			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string);
+		}
 	}
 
 	//-----------------------------------------------------------------------------//
