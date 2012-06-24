@@ -55,9 +55,7 @@ function sil_dictionary_custom_join($join) {
 		{
 			$partialsearch = 1;
 		} 
-		
-		$search = str_replace("'", "ʼ", $search);
-		
+				
 		$subquery_where = "";
 		if( strlen( trim( $key ) ) > 0)
 			$subquery_where .= " WHERE sil_multilingual_search.language_code = '$key' ";
