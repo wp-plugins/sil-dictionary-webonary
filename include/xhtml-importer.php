@@ -530,8 +530,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach ( $images as $image ) {
 
 			$src = $image->getAttribute( "src" );
-			$replaced_src = str_replace("pic/", "wp-content/uploads/images/thumbnail/", $src);
-			$pic = str_replace("pic/", "", $src);
+			$replaced_src = str_replace("pictures/", "wp-content/uploads/images/thumbnail/", $src);
+			$pic = str_replace("pictures/", "", $src);
 
 			$newimage = $this->dom->createElement('img');
 			$newimage->setAttribute("src", $replaced_src);
