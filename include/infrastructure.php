@@ -133,7 +133,7 @@ function install_sil_dictionary_infrastructure() {
 function create_search_tables () {
 	global $wpdb;
 	
-	$table = "sil_multilingual_search";
+	$table = SEARCHTABLE;
 	$sql = "CREATE TABLE IF NOT EXISTS " . $table . " (
 		`post_id` bigint(20) NOT NULL,
 		`language_code` varchar(20) NOT NULL,
@@ -351,7 +351,7 @@ function remove_entries () {
 function unregister_custom_taxonomies () {
 	global $wpdb;
 	
-	$sql = "UPDATE wp_term_taxonomy SET count = 1 WHERE count = 0";
+	$sql = "UPDATE $wpdb->term_taxonomy SET count = 1 WHERE count = 0";
 	$wpdb->query( $sql);
 
 	unregister_custom_taxonomy ( 'sil_semantic_domains' );
@@ -360,7 +360,7 @@ function unregister_custom_taxonomies () {
 	unregister_custom_taxonomy ( 'sil_webstrings' );
 	
 	//delete all relationships
-	$del = "DELETE FROM wp_term_relationships WHERE term_taxonomy_id = 1 ";
+	$del = "DELETE FROM $wpdb->term_relationships WHERE term_taxonomy_id = 1 ";
 	$wpdb->query( $del);	
 }
 
@@ -396,7 +396,7 @@ function unregister_custom_taxonomy ( $taxonomy ) {
  */
 
 function uninstall_custom_tables () {
-	uninstall_custom_table( 'sil_multilingual_search' );
+	uninstall_custom_table( SEARCHTABLE );
 }
 
 //-----------------------------------------------------------------------------//

@@ -30,7 +30,8 @@ function sil_dictionary_select_distinct() {
 
 function sil_dictionary_custom_join($join) {
 	global $wp_query, $wpdb;
-
+	$search_table_name = SEARCHTABLE;
+	
 	/*
 	 * The query I'm going for will hopefully end up looking something like this
 	 * example:
@@ -58,27 +59,28 @@ function sil_dictionary_custom_join($join) {
 				
 		$subquery_where = "";
 		if( strlen( trim( $key ) ) > 0)
-			$subquery_where .= " WHERE sil_multilingual_search.language_code = '$key' ";
+			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
 		if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
-			$subquery_where .= " sil_multilingual_search.search_strings LIKE '%" .
+			$subquery_where .= $search_table_name . ".search_strings LIKE '%" .
 				addslashes( $search ) . "%'";
 		else
-            $subquery_where .= " sil_multilingual_search.search_strings REGEXP '[[:<:]]" .
+            $subquery_where .= $search_table_name . ".search_strings REGEXP '[[:<:]]" .
 				addslashes( $search ) . "[[:>:]]'";
 
 		$subquery =
 			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings " .
-			"FROM sil_multilingual_search " .
+			"FROM " . $search_table_name .
 			$subquery_where .
 			"GROUP BY post_id, language_code " .
 			"ORDER BY relevance DESC) ";
-		$join = " JOIN " . $subquery . " sil_multilingual_search ON $wpdb->posts.ID = sil_multilingual_search.post_id ";
+		$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
 	}
 	if( $_GET['tax'] > 1) {
-		$join .= " LEFT JOIN wp_term_relationships ON wp_posts.ID = wp_term_relationships.object_id ";
-		$join .= " INNER JOIN wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id ";
+		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
+		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
 	}
+	
 	return $join;
 }
 
@@ -107,7 +109,7 @@ function sil_dictionary_custom_where($where) {
 	if($_GET['tax'] > 1)
 	{
 	$wp_query->is_search = true;
-	$where .= " AND wp_term_taxonomy.term_id = " . $_GET['tax'];
+	$where .= " AND $wpdb->term_taxonomy.term_id = " . $_GET['tax'];
 	}
 
 	return $where;
@@ -117,13 +119,14 @@ function sil_dictionary_custom_where($where) {
 
 function sil_dictionary_custom_order_by($orderby) {
 	global $wp_query, $wp_version, $wpdb;
-
+	$search_table_name = SEARCHTABLE;
+	
 	$orderby = "";
 	if(  !empty($wp_query->query_vars['s'])) {
-		$orderby = "sil_multilingual_search.relevance DESC, CHAR_LENGTH(sil_multilingual_search.search_strings) ASC, ";
+		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
 
-	$orderby .= " wp_posts.post_title ASC";
+	$orderby .= " $wpdb->posts.post_title ASC";
 
 	return $orderby;
 }

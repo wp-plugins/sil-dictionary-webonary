@@ -46,7 +46,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * Table and taxonomy attributes
 	 */
 
-	public $search_table_name = "sil_multilingual_search";
+	public $search_table_name = SEARCHTABLE;
 	public $pos_taxonomy = 'sil_parts_of_speech';
 	public $semantic_domains_taxonomy = 'sil_semantic_domains';
 	public $writing_system_taxonomy = "sil_writing_systems";
@@ -382,7 +382,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// field needs a count of at least 1. I'm filling the number with something bigger
 		// so that it looks more obviously like a dummy number.
 
-		$sql = $wpdb->prepare("UPDATE `wp_term_taxonomy` SET COUNT = 999999 WHERE taxonomy = '%s'", $this->writing_system_taxonomy );
+		$sql = $wpdb->prepare("UPDATE $wpdb->term_taxonomy SET COUNT = 999999 WHERE taxonomy = '%s'", $this->writing_system_taxonomy );
 		$wpdb->query( $sql );
 	}
 
