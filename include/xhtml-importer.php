@@ -530,7 +530,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach ( $images as $image ) {
 
 			$src = $image->getAttribute( "src" );
-			$replaced_src = str_replace("pictures/", "wp-content/uploads/images/thumbnail/", $src);
+			$upload_dir = wp_upload_dir();
+			$replaced_src = str_replace("pictures/", $upload_dir['baseurl'] . "/images/thumbnail/", $src);
 			$pic = str_replace("pictures/", "", $src);
 
 			$newimage = $this->dom->createElement('img');
@@ -538,7 +539,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($newimage);				
-			$newelement->setAttribute("href", "javascript:openImage(\'" . $pic . "\')");
+			$newelement->setAttribute("href", "javascript:openImage(\'" . $upload_dir['baseurl'] . "/images/original/" . $pic . "\')");
 			$parent = $image->parentNode;			
 			$parent->replaceChild($newelement, $image);
 						

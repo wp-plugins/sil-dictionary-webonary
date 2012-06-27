@@ -65,7 +65,6 @@ function user_input() {
 				<h3><?php _e( 'Edit Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('Each dictionary entry is stored in a "post." Individual entries can be added, edited, and deleted by going to the Posts menu and selecting the Posts menu item.', 'sil_dictionary'); ?></p>
 				<p><?php _e('You can edit also lists. For example, to edit your list of languages, go to Posts and select Language.', 'sil_dictionary'); ?></p>
-
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('(Deleting this plugin will also remove all the data of the dictionary.)', 'sil_dictionary'); ?></p>
 				<p><?php _e('Lists and pages will be kept unless you check the following:'); ?></p>
