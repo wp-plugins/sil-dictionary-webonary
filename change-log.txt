@@ -1,3 +1,4 @@
+v. 1.4.4 09 July 2012 if user searches just for a single character, nothing is returned except that he clicks on partial search
 v. 1.4.3 27 June 2012 made path for images dynamic
 v. 1.4.2 26 June 2012 made the plugin to work on multisite Wordpress installations (changed table names)  
 v. 1.4.1 25 June 2012 Changed picture folder from "pic" to "pictures"
