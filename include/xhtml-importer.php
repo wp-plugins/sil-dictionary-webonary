@@ -621,7 +621,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($this->dom->createTextNode(addslashes($field->textContent)));			
-			$newelement->setAttribute("href", "?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
+			$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
 			$newelement->setAttribute("class", $field->getAttribute("class"));
 			//$field->nodeValue = "";
 			//$field->appendChild($newelement);
