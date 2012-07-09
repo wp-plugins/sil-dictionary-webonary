@@ -56,18 +56,25 @@ function sil_dictionary_custom_join($join) {
 		{
 			$partialsearch = 1;
 		} 
-				
+								
 		$subquery_where = "";
 		if( strlen( trim( $key ) ) > 0)
 			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
 		if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
+		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '%" .
 				addslashes( $search ) . "%'";
+		}
 		else
-            $subquery_where .= $search_table_name . ".search_strings REGEXP '[[:<:]]" .
-				addslashes( $search ) . "[[:>:]]'";
-
+		{
+			if(mb_strlen($search) > 1)
+			{
+            	$subquery_where .= $search_table_name . ".search_strings REGEXP '[[:<:]]" .
+					addslashes( $search ) . "[[:>:]]'";
+			}
+		}
+		
 		$subquery =
 			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings " .
 			"FROM " . $search_table_name .
@@ -80,7 +87,7 @@ function sil_dictionary_custom_join($join) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
 	}
-	
+
 	return $join;
 }
 
