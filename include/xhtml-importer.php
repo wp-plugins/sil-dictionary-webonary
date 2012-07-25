@@ -767,7 +767,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			SELECT id
 			FROM $wpdb->posts
 			WHERE post_title = '%s'	AND post_status = 'publish'",
-			$headword ) );
+			$headword ) );		
 	}
 
 	//-----------------------------------------------------------------------------//
@@ -890,10 +890,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$reversal_language = $reversals->item(0)->getAttribute( "lang" );
 			$reversal_text = $reversals->item(0)->textContent;
 
-			$headwords = $this->dom_xpath->query(
-				'./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]', $entry );
+			//$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]', $entry );
+			$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]|./xhtml:span[@class = "senses"]/xhtml:span[starts-with(@class, "headref")]', $entry );
+			
 			foreach ( $headwords as $headword ) {
-				$headword_text = $headword->textContent;
+				$headword_text = trim($headword->textContent);
 
 				$post_id = $this->get_post_id( $headword_text );
 				if ( $post_id != NULL ) {
