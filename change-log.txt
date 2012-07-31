@@ -1,3 +1,4 @@
+v. 1.4.9 31 July 2012 Changed to show no matches for empty searches
 v. 1.4.8 31 July 2012 For reversal import: removed Sense-Reference-Number from headword search
 v. 1.4.7 25 July 2012 added import of headref_L2 for the reversal importing
 v. 1.4.6 09 July 2012 import sense-crossref-sub
