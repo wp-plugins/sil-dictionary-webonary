@@ -889,13 +889,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$reversals = $this->dom_xpath->query( './xhtml:span[contains(@class, "reversal-form")]', $entry );					
 			$reversal_language = $reversals->item(0)->getAttribute( "lang" );
 			$reversal_text = $reversals->item(0)->textContent;
-
+			
 			//$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]', $entry );
 			$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]|./xhtml:span[@class = "senses"]/xhtml:span[starts-with(@class, "headref")]', $entry );
-			
+						
 			foreach ( $headwords as $headword ) {
-				$headword_text = trim($headword->textContent);
-
+				
+				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
+				$sensereferences = $this->dom_xpath->query('//xhtml:span[@class="Sense-Reference-Number"]', $headword);			
+				foreach($sensereferences as $sensereference)
+				{
+					$sensereference->parentNode->removeChild($sensereference);
+				}
+												
+				$headword_text = trim($headword->textContent);				
+				
 				$post_id = $this->get_post_id( $headword_text );
 				if ( $post_id != NULL ) {
 					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance );
