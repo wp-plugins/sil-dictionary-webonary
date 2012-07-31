@@ -94,7 +94,7 @@ function sil_dictionary_custom_join($join) {
 function sil_dictionary_custom_message()
 {		
 	mb_internal_encoding("UTF-8");
-	if(!is_CJK($_GET['s']) && mb_strlen($_GET['s']) <= 3 && $_GET['partialsearch'] != 1)
+	if(!is_CJK($_GET['s']) && mb_strlen($_GET['s']) > 0 && mb_strlen($_GET['s']) <= 3 && $_GET['partialsearch'] != 1)
 	{
 		//echo getstring("partial-search-omitted");
 		_e('Because of the brevity of your search term, partial search was omitted.', 'sil_dictionary');
