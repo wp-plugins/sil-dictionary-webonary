@@ -1,3 +1,4 @@
+v. 1.5.0 01 August 2012 search strings used to be merged into one field. They now get seperated. Removed " ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s') " from INSERT. Removed primary keys. 
 v. 1.4.9 31 July 2012 Changed to show no matches for empty searches
 v. 1.4.8 31 July 2012 For reversal import: removed Sense-Reference-Number from headword search
 v. 1.4.7 25 July 2012 added import of headref_L2 for the reversal importing
