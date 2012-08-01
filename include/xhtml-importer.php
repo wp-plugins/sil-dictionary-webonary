@@ -734,10 +734,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// and that's why I concatenated the table name.			
 		$sql = $wpdb->prepare(		
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance)
-			VALUES (%d, '%s', '%s', %d)
-			ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",
+			VALUES (%d, '%s', '%s', %d)",
 			$post_id, $language_code, $search_string, $relevance, $search_string );
-			
+			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
+						
 			$wpdb->query( $sql );
 			
 		//this replaces the special apostroph with the standard apostroph

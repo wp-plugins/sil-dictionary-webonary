@@ -137,9 +137,9 @@ function create_search_tables () {
 		`post_id` bigint(20) NOT NULL,
 		`language_code` varchar(20) NOT NULL,
 		`relevance` tinyint,
-		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
-		PRIMARY KEY (`post_id`, `language_code`, `relevance`),
-		INDEX (relevance)
+		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, ";
+		//PRIMARY KEY (`post_id`, `language_code`, `relevance`),
+		$sql .= " INDEX (relevance)
 		);";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
