@@ -267,7 +267,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			//$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wordpress/wp-content/uploads/" . date("Y") . "/" . date("m") . "/" . $filename;
 			//$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);
 			$upload_dir = wp_upload_dir();
-			$from_path = $upload_dir['baseurl'] . "/" . $filename;			
+			$from_path = $upload_dir['path'] . "/" . $filename;			
 			
 			if(file_exists($target_path))
 			{				
