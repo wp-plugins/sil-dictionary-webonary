@@ -164,9 +164,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			<script type="text/javascript">
 			function toggleConfigured() {
 				document.getElementById("uploadCSS").style.visibility = 'visible';
+				document.getElementById("convertToLinks").style.visibility = 'visible';
 			}
 			function toggleReversal() {			    
 			    document.getElementById("uploadCSS").style.visibility = 'hidden';		   
+			    document.getElementById("convertToLinks").style.visibility = 'hidden';
 			}			
 			</script>
 			<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr(
@@ -191,7 +193,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/><?php esc_attr_e('Configured Dictionary'); ?><BR>
 				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /><?php esc_attr_e('Reversal Index'); ?><BR>				
 			</p>
-			<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
+			<div id="convertToLinks">
+				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
+			</div>
 			<p class="submit">
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
 			</p>
@@ -261,7 +265,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$target_path = $target_path . "/imported-with-xhtml.css";
 			
 			//$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wordpress/wp-content/uploads/" . date("Y") . "/" . date("m") . "/" . $filename;
-			$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);			
+			//$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);
+			$upload_dir = wp_upload_dir();
+			$from_path = $upload_dir['baseurl'] . "/" . $filename;			
 			
 			if(file_exists($target_path))
 			{				
