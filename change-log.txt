@@ -1,4 +1,4 @@
-v. 1.5.6 07 August 2012 changed function for getting upload path
+v. 1.5.7 07 August 2012 reversed last change
 v. 1.5.3 07 August 2012 imported-with-xhtml.css now gets saved into the upload directory
 v. 1.5.2 04 August 2012 changed upload path again
 v. 1.5.1 04 August 2012 changed css upload path to work with multisite wordpress installation
