@@ -262,12 +262,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if($extension == "css")
 		{
 			$upload_dir = wp_upload_dir();
-			$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], '/' . get_blog_option($blog_id,'upload_path'));
+			//$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], get_bloginfo('template_directory'));
+			$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $upload_dir['baseurl']);
 			$target_path = $target_path . "/imported-with-xhtml.css";
 			
 			//$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wordpress/wp-content/uploads/" . date("Y") . "/" . date("m") . "/" . $filename;
 			//$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);
-			$upload_dir = wp_upload_dir();
+			
 			$from_path = $upload_dir['path'] . "/" . $filename;			
 			
 			if(file_exists($target_path))
