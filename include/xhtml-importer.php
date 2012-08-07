@@ -197,10 +197,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
 			</div>
 			<p class="submit">
-				<?php 
-				$upload_dir = wp_upload_dir();								
-				?>
-				<input type="hidden" name="uploadpath" value="<?php echo $upload_dir['baseurl']; ?>">
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
 			</p>
 			</form>
@@ -266,9 +262,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if($extension == "css")
 		{
 			$upload_dir = wp_upload_dir();
-			$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], get_bloginfo('template_directory'));
+			//$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], get_bloginfo('template_directory'));
+			$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $upload_dir['baseurl']);
 			$target_path = $target_path . "/imported-with-xhtml.css";
-			
 			//$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wordpress/wp-content/uploads/" . date("Y") . "/" . date("m") . "/" . $filename;
 			//$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);
 			
