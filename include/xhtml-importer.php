@@ -197,6 +197,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
 			</div>
 			<p class="submit">
+				<?php 
+				$upload_dir = wp_upload_dir();								
+				?>
+				<input type="hidden" name="uploadpath" value="<?php echo $upload_dir['baseurl']; ?>">
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
 			</p>
 			</form>
