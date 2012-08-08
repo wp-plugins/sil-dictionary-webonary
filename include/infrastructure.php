@@ -44,6 +44,7 @@ function sil_dictionary_main() {
  */
 function user_input() {
 
+	global $blog_id;
 	// enctype="multipart/form-data"
 	?>
 	<div class="wrap">
@@ -58,7 +59,13 @@ function user_input() {
 			if ( empty( $_POST['delete_data'] ) ) {
 				?>
 				<p><?php _e('SIL Dictionary provides the admininstration tools and framework for using WordPress for dictionaries.', 'sil_dictionary'); ?></p>
-				
+				<h3><?php 
+				if ( is_multisite() )
+				{
+					echo "is multisite ";
+				}
+				echo $blog_id; 
+				?></h3>
 				<h3><?php _e( 'Import Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('You can find the <a href="admin.php?import=pathway-xhtml">SIL FLEX XHTML importer</a> by clicking on Import under the Tools menu.', 'sil_dictionary'); ?></p>
 
@@ -434,15 +441,17 @@ function upload_stylesheet()
 	$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wp-content/themes/webonary-zeedisplay/style.css";
 	$target_path = $upload_dir['path'] . "/style.css";
 	
-	error_reporting(E_ALL);
-	if(copy($from_path, $target_path)) {
-		//_e('The css file has been uploaded into your upload folder');
-	} else{
-		_e('There was an error uploading the file style.css, please try again!');
-		echo "<br>";
-		echo "From Path: " . $from_path . "<br>";
-		echo "Target Path: " . $target_path;
-	}
-	
+	if(!file_exists($target_path))	
+	{
+		error_reporting(E_ALL);
+		if(copy($from_path, $target_path)) {
+			//_e('The css file has been uploaded into your upload folder');
+		} else{
+			_e('There was an error uploading the file style.css, please try again!');
+			echo "<br>";
+			echo "From Path: " . $from_path . "<br>";
+			echo "Target Path: " . $target_path;
+		}
+	}	
 }
 ?>
