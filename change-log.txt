@@ -1,3 +1,4 @@
+v. 1.7.0 08 August 2012 picture path fix
 v. 1.6.9 08 August 2012 changed path for pictures
 v. 1.6.7 08 August 2012 fixed another SQL error in function set_options
 v. 1.6.6 08 August 2012 corrected some SQL error in function set_options
