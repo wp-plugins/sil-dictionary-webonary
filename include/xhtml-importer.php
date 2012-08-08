@@ -548,7 +548,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($newimage);
-			$newelement->setAttribute("href", "javascript:openImage(\'/files/images/original/" . $pic . "\')");
+			$newelement->setAttribute("href", "javascript\:openImage(\'/files/images/original/" . $pic . "\')");
 			$parent = $image->parentNode;			
 			$parent->replaceChild($newelement, $image);
 						
