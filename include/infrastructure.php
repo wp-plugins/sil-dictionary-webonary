@@ -348,7 +348,7 @@ function set_options () {
 	global $wpdb;
 	global $blog_id;
 
-	$sql = "UPDATE " . $wpdb->prefix . "_options " . 
+	$sql = "UPDATE " . $wpdb->prefix . "options " . 
 		 " SET option_value = 0 " .
 		 " WHERE option_name = 'uploads_use_yearmonth_folders'";
 	
@@ -357,7 +357,7 @@ function set_options () {
 	
 	if ( is_multisite() )
 	{
-		$sql = "UPDATE " . $wpdb->prefix . "_options " .
+		$sql = "UPDATE " . $wpdb->prefix . "options " .
 				" SET option_value = 'wp-content/blogs.dir/" . $blog_id . "/files' " .
 				" WHERE option_name = 'upload_path'";
 				
