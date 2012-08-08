@@ -1,5 +1,4 @@
-v. 1.5.8 07 August 2012 uploadpath experiment
-v. 1.5.7 07 August 2012 reversed last change
+v. 1.5.9 08 August 2012 uploading imported-with-xhtml.css into upload folder should work, but not as admin
 v. 1.5.3 07 August 2012 imported-with-xhtml.css now gets saved into the upload directory
 v. 1.5.2 04 August 2012 changed upload path again
 v. 1.5.1 04 August 2012 changed css upload path to work with multisite wordpress installation
