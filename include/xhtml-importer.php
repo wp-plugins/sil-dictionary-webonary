@@ -274,22 +274,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$from_path = $upload_dir['path'] . "/" . $filename;			
 			
+			/*
 			if(file_exists($target_path))
 			{				
-				_e('The file imported-with-xhtml.css already exists in your theme folder. If you want to replace it, you have to delete it manually before you import a new file.');									
+				_e('The file imported-with-xhtml.css already exists in your upload folder. If you want to replace it, you have to delete it manually before you import a new file.');									
 			}
-			else
-			{
-				error_reporting(E_ALL);				
-				if(copy($from_path, $target_path)) {				
-				    _e('The css file has been uploaded into your theme folder and renamed to imported-with-xhtml.css');			
-				} else{
-				    _e('There was an error uploading the file, please try again!');	
-				    echo "<br>";
-				    echo "From Path: " . $from_path . "<br>";
-				    echo "Target Path: " . $target_path;			    				    
-				}				
-			}
+			*/
+			error_reporting(E_ALL);				
+			if(copy($from_path, $target_path)) {				
+			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css');			
+			} else{
+			    _e('There was an error uploading the file, please try again!');	
+			    echo "<br>";
+			    echo "From Path: " . $from_path . "<br>";
+			    echo "Target Path: " . $target_path;			    				    
+			}				
 		}
 
 		// Construct the object array
