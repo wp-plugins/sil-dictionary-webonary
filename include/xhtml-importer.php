@@ -548,7 +548,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($newimage);
-			$newelement->setAttribute("href", "gugus:openImage(\'/files/images/original/" . $pic . "\')");
+			//$newelement->setAttribute("href", "openImage(\'/files/images/original/" . $pic . "\')");
+			$newelement->setAttribute("href", "#");
+			$newelement->setAttribute("onclick", "openImage(\'/files/images/original/" . $pic . "\')");
 			$parent = $image->parentNode;			
 			$parent->replaceChild($newelement, $image);
 						
