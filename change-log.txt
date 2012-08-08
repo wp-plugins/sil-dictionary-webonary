@@ -1,3 +1,4 @@
+v. 1.6.2 08 August 2012 added upload_stylesheet function
 v. 1.6.1 08 August 2012 target path for css is now same as from path
 v. 1.6.0 08 August 2012 set uploadpath in hidden fields
 v. 1.5.9 08 August 2012 uploading imported-with-xhtml.css into upload folder should work, but not as admin
