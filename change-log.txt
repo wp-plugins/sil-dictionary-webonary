@@ -1,3 +1,4 @@
+v. 1.6.5 08 August 2012 now ignores case for replace picture path
 v. 1.6.4 08 August 2012 created function set_options for changing the default upload options 
 v. 1.6.3 08 August 2012 testing blog id
 v. 1.6.2 08 August 2012 added upload_stylesheet function
