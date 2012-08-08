@@ -348,14 +348,21 @@ function set_options () {
 	global $wpdb;
 	global $blog_id;
 
-	$sql = "UPDATE " . $wpdb->prefix . "options " . 
-		 " SET uploads_use_yearmonth_folders = 0 ";
-	if ( is_multisite() )
-	{
-		$sql .= ", upload_path = 'wp-content/blogs.dir/" . $blog_id . "/files' ";
-	}
+	$sql = "UPDATE " . $wpdb->prefix . "_options " . 
+		 " SET option_value = 0 " .
+		 " WHERE option_name = 'uploads_use_yearmonth_folders'";
+	
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
+	
+	if ( is_multisite() )
+	{
+		$sql = "UPDATE " . $wpdb->prefix . "_options " .
+				" SET option_value = 'wp-content/blogs.dir/" . $blog_id . "/files' " .
+				" WHERE option_name = 'upload_path'";
+				
+		dbDelta( $sql );
+	}	
 }
 
 
