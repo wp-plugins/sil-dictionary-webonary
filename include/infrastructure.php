@@ -43,8 +43,7 @@ function sil_dictionary_main() {
  * User input for the plugin.
  */
 function user_input() {
-
-	global $blog_id;
+	
 	// enctype="multipart/form-data"
 	?>
 	<div class="wrap">
@@ -59,13 +58,6 @@ function user_input() {
 			if ( empty( $_POST['delete_data'] ) ) {
 				?>
 				<p><?php _e('SIL Dictionary provides the admininstration tools and framework for using WordPress for dictionaries.', 'sil_dictionary'); ?></p>
-				<h3><?php 
-				if ( is_multisite() )
-				{
-					echo "is multisite ";
-				}
-				echo $blog_id; 
-				?></h3>
 				<h3><?php _e( 'Import Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('You can find the <a href="admin.php?import=pathway-xhtml">SIL FLEX XHTML importer</a> by clicking on Import under the Tools menu.', 'sil_dictionary'); ?></p>
 
@@ -128,6 +120,7 @@ function run_user_action() {
  */
 function install_sil_dictionary_infrastructure() {
 	create_search_tables();
+	set_options();
 	upload_stylesheet();
 	register_semantic_domains_taxonomy();
 	register_part_of_speech_taxonomy();
@@ -350,6 +343,21 @@ function remove_entries () {
 }
 
 //-----------------------------------------------------------------------------//
+
+function set_options () {
+	global $wpdb;
+	global $blog_id;
+
+	$sql = "UPDATE " . $wpdb->prefix . "options " . 
+		 " SET uploads_use_yearmonth_folders = 0 ";
+	if ( is_multisite() )
+	{
+		$sql .= ", upload_path = 'wp-content/blogs.dir/" . $blog_id . "/files' ";
+	}
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
+
 
 /**
  * Uninstall custom taxonomies set up here by the plugin.
