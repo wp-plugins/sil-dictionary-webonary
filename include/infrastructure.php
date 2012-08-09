@@ -452,20 +452,23 @@ function uninstall_sil_dictionary_infrastructure () {
 
 function upload_stylesheet()
 {
-	$upload_dir = wp_upload_dir();
-	$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wp-content/themes/webonary-zeedisplay/style.css";
-	$target_path = $upload_dir['path'] . "/style.css";
-	
-	if(!file_exists($target_path))	
+	if ( is_multisite() )
 	{
-		error_reporting(E_ALL);
-		if(copy($from_path, $target_path)) {
-			//_e('The css file has been uploaded into your upload folder');
-		} else{
-			_e('There was an error uploading the file style.css, please try again!');
-			echo "<br>";
-			echo "From Path: " . $from_path . "<br>";
-			echo "Target Path: " . $target_path;
+		$upload_dir = wp_upload_dir();
+		$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wp-content/themes/webonary-zeedisplay/style.css";
+		$target_path = $upload_dir['path'] . "/style.css";
+		
+		if(!file_exists($target_path))	
+		{
+			error_reporting(E_ALL);
+			if(copy($from_path, $target_path)) {
+				//_e('The css file has been uploaded into your upload folder');
+			} else{
+				_e('There was an error uploading the file style.css, please try again!');
+				echo "<br>";
+				echo "From Path: " . $from_path . "<br>";
+				echo "Target Path: " . $target_path;
+			}
 		}
 	}	
 }
