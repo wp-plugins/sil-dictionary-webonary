@@ -64,11 +64,15 @@ function webonary_searchform() {
 				/*
 				 * Set up the Parts of Speech
 				 */
-				wp_dropdown_categories("show_option_none=" .
-					__('All Parts of Speech','sil_dictionary') .
-					"&show_count=1&selected=" . $_GET['tax'] .
-					"&orderby=name&echo=1&name=tax&taxonomy=sil_parts_of_speech");
-						
+				$parts_of_speech = get_terms('sil_parts_of_speech');
+				
+				if($parts_of_speech)
+				{				
+					wp_dropdown_categories("show_option_none=" .
+						__('All Parts of Speech','sil_dictionary') .
+						"&show_count=1&selected=" . $_GET['tax'] .
+						"&orderby=name&echo=1&name=tax&taxonomy=sil_parts_of_speech");
+				}						
 				?>
 			</div>
 		</form>
