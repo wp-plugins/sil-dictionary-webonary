@@ -114,7 +114,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<?php
 				$result = $this->import_xhtml($xhtml_file);
 
-				$this->goodbye();
+				$this->goodbye($xhtml_file, $css_file);
 				break;
 
 			}
@@ -137,8 +137,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	/**
 	 * Finish up.
 	 */
-	function goodbye(){
+	function goodbye($xhtml_file, $css_file){		
+		
+		if(isset($xhtml_file))
+		{
+			unlink($xhtml_file);
+		}
+		if(isset($css_file))
+		{
+			unlink($css_file);
+		}
+		
 		echo '<div class="narrow">';
+		
 		echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
 	}
 	//-----------------------------------------------------------------------------//
