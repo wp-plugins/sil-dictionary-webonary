@@ -1,3 +1,4 @@
+v. 1.7.4 09 August 2012 change to make plugin work better on both multisite and single Wordpress installation
 v. 1.7.3 09 Agust 2012 importing javascript doesn't always work, so changed to open image without popup
 v. 1.7.2 08 August 2012 using onCLick instead of href javascript to open image
 v. 1.7.1 08 August 2012 testing
