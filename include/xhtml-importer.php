@@ -433,9 +433,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
-									
-				$entry_xml = $this->dom->saveXML( $entry );
-								
+													
+				$entry_xml = $this->dom->saveXML( $entry );												
 
 				/*
 				 * Insert the new entry into wp_posts
@@ -455,7 +454,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'post_status' => 'publish'
 				);
 				$post_id = wp_insert_post( $post );
-
+								
 				/*
 				 * Show progresss to the user.
 				 */
@@ -542,16 +541,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$upload_dir = wp_upload_dir();			
 			$replaced_src = str_ireplace("pictures/", $upload_dir['baseurl'] . "/images/thumbnail/", $src);
 			$pic = str_ireplace("pictures/", "", $src);
-
+			
 			$newimage = $this->dom->createElement('img');
 			$newimage->setAttribute("src", $replaced_src);
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($newimage);
-			//$newelement->setAttribute("href", "openImage(\'/files/images/original/" . $pic . "\')");
-			$newelement->setAttribute("href", "#");
-			$newelement->setAttribute("onclick", "openImage(\'/files/images/original/" . $pic . "\')");
-			$parent = $image->parentNode;			
+			$newelement->setAttribute("href",  $upload_dir['baseurl'] . "/images/original/" . $pic);
+			$parent = $image->parentNode;	
 			$parent->replaceChild($newelement, $image);
 						
 			//error_log("IMAGE: " . $replaced_src);
