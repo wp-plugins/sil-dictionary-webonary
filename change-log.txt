@@ -1,3 +1,4 @@
+v. 1.7.7 09 August 2012 upload size now displaying for multisite
 v. 1.7.6 09 August 2012 Cleanup: Deleting xhtml und css files after upload
 v. 1.7.5 09 August 2012 Language and Part of Speech dropdowns now only appear if entries exist
 v. 1.7.4 09 August 2012 change to make plugin work better on both multisite and single Wordpress installation
