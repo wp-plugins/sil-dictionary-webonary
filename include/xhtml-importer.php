@@ -164,7 +164,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_user_input() {
 
 		$bytes = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
-		$size = wp_convert_bytes_to_hr( $bytes );
+		//multisite cannot handle wp_max_upload_size
+		if ( is_multisite() )
+		{
+			$size = "50MB";
+		}
+		else
+		{
+			$size = wp_convert_bytes_to_hr( $bytes );
+		}
 
 		$upload_dir = wp_upload_dir();
 		if ( ! empty( $upload_dir['error'] ) ) :
