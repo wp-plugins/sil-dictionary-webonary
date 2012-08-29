@@ -48,11 +48,11 @@ Installation Instructions:
 	max_execution_time
 	
 == Frequently Asked Questions ==
-For FAQ's please see http://pathway.sil.org/webonary/
+For FAQ's please see http://software.webonary.org
 
 == Screenshots ==
 
 == Support ==
 
 Language Software Development, SIL International
-http://pathway.sil.org/webonary/
+http://software.webonary.org
