@@ -452,7 +452,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
-													
+																	
 				$entry_xml = $this->dom->saveXML( $entry );												
 
 				/*
@@ -788,11 +788,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
-
+			
 		return $wpdb->get_var( $wpdb->prepare( "
 			SELECT id
 			FROM $wpdb->posts
-			WHERE post_title = '%s'	AND post_status = 'publish'",
+			WHERE post_title = '%s'	collate utf8_bin AND post_status = 'publish'",
 			$headword ) );		
 	}
 
