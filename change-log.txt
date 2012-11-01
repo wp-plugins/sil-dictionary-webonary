@@ -1,3 +1,4 @@
+v. 1.8.1 01 November 2012 search entries get normalized to NFC
 v. 1.8.0 30 October 2012 added "collate utf8_bin" to sql statement in get_post_id function so that headwords with accents get distinguished
 v. 1.7.9 14 September 2012 changed link conversion for semantic domains so that page numbers are not added
 v. 1.7.8 29 August 2012 changed Webonary URL to http://software.webonary.org
