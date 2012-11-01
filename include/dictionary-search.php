@@ -48,7 +48,8 @@ function sil_dictionary_custom_join($join) {
 	 */
 	mb_internal_encoding("UTF-8");
 	if( !empty($wp_query->query_vars['s'])) {
-		$search = trim($wp_query->query_vars['s']);
+		//search string gets trimmed and normalized to NFC 
+		$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
 		$key = $_GET['key'];
 		$partialsearch = $_GET['partialsearch'];  
 		
