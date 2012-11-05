@@ -65,7 +65,6 @@ function user_input() {
 				<p><?php _e('Each dictionary entry is stored in a "post." Individual entries can be added, edited, and deleted by going to the Posts menu and selecting the Posts menu item.', 'sil_dictionary'); ?></p>
 				<p><?php _e('You can edit also lists. For example, to edit your list of languages, go to Posts and select Language.', 'sil_dictionary'); ?></p>
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
-				<p><?php _e('(Deleting this plugin will also remove all the data of the dictionary.)', 'sil_dictionary'); ?></p>
 				<p><?php _e('Lists and pages will be kept unless you check the following:'); ?></p>
 				<p>
 					<label for="delete_taxonomies">
@@ -80,6 +79,13 @@ function user_input() {
 					</label><br />					 
 					<?php _e('Are you sure you want to delete the dictionary data?', 'sil_dictionary'); ?>
 					<input type="submit" name="delete_data" value="<?php _e('Delete', 'sil_dictionary'); ?>">
+				</p>
+				<h3><?php _e('Settings');?></h3>
+				<input name="include_partial_words" type="checkbox" value="1"
+							<?php checked('1', get_option('include_partial_words')); ?> />
+							<?php _e('Always include searching through partial words.'); ?>
+				<p>
+				<input type="submit" name="save_settings" value="<?php _e('Save', 'sil_dictionary'); ?>">
 				</p>
 				<?php
 			}
@@ -111,6 +117,10 @@ function run_user_action() {
     if ( ! empty( $_POST['delete_data'])) {
         clean_out_dictionary_data();
     }
+    if ( ! empty( $_POST['save_settings'])) {
+    	update_option("include_partial_words", $_POST['include_partial_words']);
+    	echo "<br>" . _e('Settings saved');
+    }    
 }
 
 //---------------------------------------------------------------------------//

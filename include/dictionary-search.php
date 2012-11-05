@@ -51,7 +51,11 @@ function sil_dictionary_custom_join($join) {
 		//search string gets trimmed and normalized to NFC 
 		$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
 		$key = $_GET['key'];
-		$partialsearch = $_GET['partialsearch'];  
+		$partialsearch = $_GET['partialsearch'];
+		if(!isset($_GET['partialsearch']))
+		{
+			$partialsearch = get_option("include_partial_words");
+		}		  
 		
 		if(strlen($search) == 0 && $_GET['tax'] > 1)
 		{
@@ -94,8 +98,14 @@ function sil_dictionary_custom_join($join) {
 
 function sil_dictionary_custom_message()
 {		
+	$partialsearch = $_GET['partialsearch'];
+	if(!isset($_GET['partialsearch']))
+	{
+		$partialsearch = get_option("include_partial_words");
+	}
+	
 	mb_internal_encoding("UTF-8");
-	if(!is_CJK($_GET['s']) && mb_strlen($_GET['s']) > 0 && mb_strlen($_GET['s']) <= 3 && $_GET['partialsearch'] != 1)
+	if(!is_CJK($_GET['s']) && mb_strlen($_GET['s']) > 0 && mb_strlen($_GET['s']) <= 3 && $partialsearch != 1)
 	{
 		//echo getstring("partial-search-omitted");
 		_e('Because of the brevity of your search term, partial search was omitted.', 'sil_dictionary');
