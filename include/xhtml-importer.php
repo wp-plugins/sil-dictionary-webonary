@@ -452,14 +452,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
-																	
+				$flexid = $entry->getAttribute("id");
+																					
 				$entry_xml = $this->dom->saveXML( $entry );												
 
 				/*
 				 * Insert the new entry into wp_posts
 				 */
 
-				$post_id = $this->get_post_id( $headword_text );
+				$post_id = $this->get_post_id( $flexid );
 				$post_id_exists = $post_id != NULL;	
 
 				// If the ID is not null, but has a value, wp_insert_post will
@@ -470,7 +471,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'ID' => $post_id,
 					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
 					'post_content' => $wpdb->prepare( $entry_xml ),
-					'post_status' => 'publish'
+					'post_status' => 'publish',						
+					'post_name' => $flexid
 				);
 				$post_id = wp_insert_post( $post );
 								
@@ -512,8 +514,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form"]', $this->variant_form_relevance);
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form-sub"]', $this->variant_form_relevance);
 					//synonyms (sense-crossref)
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref"]', $this->sense_crossref_relevance);				
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref-sub"]', $this->sense_crossref_relevance);
+					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref"]', $this->sense_crossref_relevance);				
+					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref-sub"]', $this->sense_crossref_relevance);
 					
 				}
 
@@ -600,12 +602,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// Now get the cross reference. Should only be one, but written to
 			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
+			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]', $link );
+			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
 				
 				// Get the WordPress post ID for the link.
-				$cross_ref_text = $cross_ref->textContent; // the headword for the cross reference
-				$post_id = (string) $this->get_post_id( $cross_ref_text );
+				$flexid = str_replace("#", "", $href);				
+				$post_id = (string) $this->get_post_id( $flexid );
 
 				// Now replace the link to hvo wherever it appears with a link to
 				// WordPress ID The update command should look like this:
@@ -768,9 +771,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 		//this replaces the special apostroph with the standard apostroph
 		//the first time round the special apostroph is inserted, so that both searches are valid
-		if(strstr($search_string,"ʼ"))
+		if(strstr($search_string,"Ê¼"))
 		{
-			$mySearch_string = str_replace("ʼ", "'", $search_string);
+			$mySearch_string = str_replace("Ê¼", "'", $search_string);
 			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string);
 		}
 	}
@@ -783,7 +786,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @return int = post ID
 	 */
 
-	function get_post_id( $headword ) {
+	function get_post_id( $flexid ) {
 		global $wpdb;
 
 		// @todo: If $headword_text has a double quote in it, this
@@ -792,8 +795,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		return $wpdb->get_var( $wpdb->prepare( "
 			SELECT id
 			FROM $wpdb->posts
-			WHERE post_title = '%s'	collate utf8_bin AND post_status = 'publish'",
-			$headword ) );		
+			WHERE post_name = '%s'	collate utf8_bin AND post_status = 'publish'",
+			$flexid ) );		
 	}
 
 	//-----------------------------------------------------------------------------//
