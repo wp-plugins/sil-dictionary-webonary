@@ -1,3 +1,4 @@
+v. 1.8.3 04 December 2012 importing flexid into wp_posts.post_name, changed get_post_id to find id there
 v. 1.8.2 05 November 2012 Added setting to always include searching through partial words.
 v. 1.8.1 01 November 2012 search entries get normalized to NFC
 v. 1.8.0 30 October 2012 added "collate utf8_bin" to sql statement in get_post_id function so that headwords with accents get distinguished
