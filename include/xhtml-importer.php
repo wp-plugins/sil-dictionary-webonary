@@ -452,6 +452,18 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
+
+				//for sorting purposes we have to replace the homograph from 
+				//a subscript number to a normal number in the post_title 
+				$homographs = "₁,₂,₃,₄,₅,₆,₇,₈,₉";
+				$arrHomographs = split(",", $homographs);
+				$h = 1;
+				foreach($arrHomographs as $homograph)
+				{
+					$headword_text = str_replace($homograph, $h, $headword_text);
+					$h++;
+				}
+
 				$flexid = $entry->getAttribute("id");
 																					
 				$entry_xml = $this->dom->saveXML( $entry );												
