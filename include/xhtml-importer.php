@@ -297,7 +297,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				_e('The file imported-with-xhtml.css already exists in your upload folder. If you want to replace it, you have to delete it manually before you import a new file.');									
 			}
 			*/
-			error_reporting(E_ALL);				
+			error_reporting(E_ALL);	
 			if(copy($from_path, $target_path)) {				
 			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css');			
 			} else{
@@ -456,7 +456,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//for sorting purposes we have to replace the homograph from 
 				//a subscript number to a normal number in the post_title 
 				$homographs = "₁,₂,₃,₄,₅,₆,₇,₈,₉";
-				$arrHomographs = split(",", $homographs);
+				$arrHomographs = explode(",", $homographs);
 				$h = 1;
 				foreach($arrHomographs as $homograph)
 				{
