@@ -131,7 +131,7 @@ function run_user_action() {
 function install_sil_dictionary_infrastructure() {
 	create_search_tables();
 	set_options();
-	upload_stylesheet();
+	//upload_stylesheet();
 	register_semantic_domains_taxonomy();
 	register_part_of_speech_taxonomy();
 	register_language_taxonomy();
@@ -460,6 +460,7 @@ function uninstall_sil_dictionary_infrastructure () {
 	uninstall_custom_tables();
 }
 
+/*
 function upload_stylesheet()
 {
 	if ( is_multisite() )
@@ -482,4 +483,5 @@ function upload_stylesheet()
 		}
 	}	
 }
+*/
 ?>
