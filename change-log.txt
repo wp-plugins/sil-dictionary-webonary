@@ -1,3 +1,4 @@
+v. 1.8.6 12 March 2013 Removed copying style.css to upload folder (use custom.css instead)
 v. 1.8.5 04 December 2012 changed split function (deprecated) to exclude
 v. 1.8.4 10 December 2012 for sorting purposes we have to replace the homograph from a subscript number to a normal number in the post_title
 v. 1.8.3 04 December 2012 importing flexid into wp_posts.post_name, changed get_post_id to find id there
