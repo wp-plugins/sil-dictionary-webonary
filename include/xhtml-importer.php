@@ -102,7 +102,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$result = $this->upload_files('xhtml');
 				if (is_wp_error( $result ))
 					echo $result->get_error_message();
-				$xhtml_file = $result['file'];
+				$xhtml_file = $result['file'];			
 
 				// Get the CSS file
 				$result = $this->upload_files('css');
@@ -266,7 +266,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		$overrides = array( 'test_form' => false, 'test_type' => false );
 		$file = wp_handle_upload( $_FILES[$which_file], $overrides );
-
+		
 		if ( isset( $file['error'] ) )
 			return $file;
 
@@ -331,8 +331,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function import_xhtml( $xhtml_file ) {
 		global $wpdb;
 
-		// Some of these variables could eventually become user options.
-
+		// Some of these variables could eventually become user options.		
 		$xhtml_file = realpath($xhtml_file);
 		$this->dom = new DOMDocument('1.0', 'utf-8');
 		$ret_val = $this->dom->load($xhtml_file);

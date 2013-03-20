@@ -23,8 +23,8 @@ if ( ! defined('ABSPATH') )
  */
 function add_admin_menu() {
     add_management_page(
-		__( 'SIL Dictionary', 'sil_dicitonary' ), // page title
-        __( 'SIL Dictionary', 'sil_dicitonary' ), // menu title
+		__( 'SIL Dictionary', 'sil_dictionary' ), // page title
+        __( 'SIL Dictionary', 'sil_dictionary' ), // menu title
 		SIL_DICTIONARY_USER_CAPABILITY, // user capability needed to run the menu
         __FILE__, // slug name
 		'sil_dictionary_main' ); // callback function
