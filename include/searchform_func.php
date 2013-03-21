@@ -80,4 +80,5 @@ function webonary_searchform() {
 }
 
 add_action('init', 'searchform_init');
+ 
 ?>

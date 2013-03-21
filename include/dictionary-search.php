@@ -66,7 +66,13 @@ function sil_dictionary_custom_join($join) {
 		if( strlen( trim( $key ) ) > 0)
 			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
-		if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
+		
+		if(isset($_GET['browse']))
+		{
+			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
+			addslashes( $_GET['browse'] ) . "%' AND relevance = 100 AND language_code = '$key' ";
+		}		
+		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
 		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '%" .
 				addslashes( $search ) . "%'";
@@ -92,7 +98,7 @@ function sil_dictionary_custom_join($join) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
 	}
-
+	
 	return $join;
 }
 
