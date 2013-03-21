@@ -1,3 +1,4 @@
+v. 1.8.9 21 March 2013 Excluded custom order for browse view 
 v. 1.8.8 21 March 2013 Added browse query (for alphabet)
 v. 1.8.7 20 March 2013 Corrected textdomain (sil_dictionary)
 v. 1.8.6 12 March 2013 Removed copying style.css to upload folder (use custom.css instead)
