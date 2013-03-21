@@ -146,7 +146,7 @@ function sil_dictionary_custom_order_by($orderby) {
 	$search_table_name = SEARCHTABLE;
 	
 	$orderby = "";
-	if(  !empty($wp_query->query_vars['s'])) {
+	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['browse'])) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
 
