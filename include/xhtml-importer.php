@@ -800,15 +800,25 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_post_id( $flexid ) {
 		global $wpdb;
 
+		return $wpdb->get_var( $wpdb->prepare( "
+			SELECT id
+			FROM $wpdb->posts
+			WHERE post_name = '%s'	collate utf8_bin AND post_status = 'publish'",
+			trim($flexid) ) );		
+	}
+	
+	function get_post_id_bytitle( $headword ) {
+		global $wpdb;
+
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
 			
 		return $wpdb->get_var( $wpdb->prepare( "
 			SELECT id
 			FROM $wpdb->posts
-			WHERE post_name = '%s'	collate utf8_bin AND post_status = 'publish'",
-			$flexid ) );		
-	}
+			WHERE post_title = '%s'	collate utf8_bin AND post_status = 'publish'",
+			trim($headword) ) );		
+	}	
 
 	//-----------------------------------------------------------------------------//
 
@@ -942,9 +952,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$sensereference->parentNode->removeChild($sensereference);
 				}
 												
-				$headword_text = trim($headword->textContent);				
-				
-				$post_id = $this->get_post_id( $headword_text );
+				$headword_text = trim($headword->textContent);		
+
+			
+				$post_id = $this->get_post_id_bytitle( $headword_text );
 				if ( $post_id != NULL ) {
 					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance );
 				}
