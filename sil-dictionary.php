@@ -9,7 +9,7 @@ Author: SIL International
 Author URI: http://www.sil.org/
 Text Domain: sil_dictionary
 Domain Path: /lang/
-Version: v. 1.8.9
+Version: v. 1.9.0
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
@@ -49,6 +49,8 @@ require_once( dirname( __FILE__ ) . '/include/dictionary-search.php' );
 require_once( dirname( __FILE__ ) . '/include/xhtml-importer.php' );
 // A replacement for the search box.
 require_once( dirname( __FILE__ ) . '/include/searchform_func.php' );
+// Creates the browse view based on shortcodes
+require_once( dirname( __FILE__ ) . '/include/browseview_func.php' );
 
 /*
  * Infrastructure hooks
