@@ -736,10 +736,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 	function import_xhtml_search( $entry, $post_id, $query, $relevance ) {
 
+		$subid = 0; 
+		if($relevance == ($this->headword_relevance - 5))
+		{
+			$subid = 1;
+		}
 		$fields = $this->dom_xpath->query( $query, $entry );
 		foreach ( $fields as $field ) {
-			$this->import_xhtml_search_string($post_id, $field, $relevance);
+			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
 			$this->convert_fields_to_links($post_id, $entry, $field);
+			if($subid > 0)
+			{
+				$subid++;
+			}
 		}				
 				
 	}	
@@ -754,7 +763,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $search_string = string we want to search for in the post
 	 * @param <int> $relevance = weighted importance of this particular string for search results
 	 */
-	function import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string = null) {
+	function import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string = null, $subid = 0) {
 		global $wpdb;
 			
 		$language_code = $field->getAttribute("lang");
@@ -766,16 +775,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$search_string = $field->textContent;
 		}
-						
+					
 		// We're using a generic $wpdb->query instead of a $wpdb->insert
 		// to make use of the ON DUPLICATE KEY feature of MySQL.
 
 		// $wdbt->prepare likes to add single quotes around string replacements,
 		// and that's why I concatenated the table name.			
 		$sql = $wpdb->prepare(		
-			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance)
-			VALUES (%d, '%s', '%s', %d)",
-			$post_id, $language_code, $search_string, $relevance, $search_string );
+			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
+			VALUES (%d, '%s', '%s', %d, %d)",
+			$post_id, $language_code, $search_string, $relevance, $subid );
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
 						
 			$wpdb->query( $sql );
@@ -785,7 +794,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if(strstr($search_string,"Ê¼"))
 		{
 			$mySearch_string = str_replace("Ê¼", "'", $search_string);
-			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string);
+			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string, $subid);
 		}
 	}
 
@@ -807,17 +816,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			trim($flexid) ) );		
 	}
 	
-	function get_post_id_bytitle( $headword ) {
+	function get_post_id_bytitle( $headword, $langcode, &$subid ) {
 		global $wpdb;
 
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
+		$sql = "SELECT post_id, subid
+			FROM $this->search_table_name
+			WHERE search_strings LIKE '%" . trim($headword) . "%' collate utf8_bin AND relevance >= 95 AND language_code <> '" . $langcode . "'";
 			
-		return $wpdb->get_var( $wpdb->prepare( "
-			SELECT id
-			FROM $wpdb->posts
-			WHERE post_title = '%s'	collate utf8_bin AND post_status = 'publish'",
-			trim($headword) ) );		
+		$row = $wpdb->get_row( $sql );
+		$subid = $row->subid;
+
+		return $row->post_id;
 	}	
 
 	//-----------------------------------------------------------------------------//
@@ -942,7 +953,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			//$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]', $entry );
 			$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]|./xhtml:span[@class = "senses"]/xhtml:span[starts-with(@class, "headref")]', $entry );
-						
+					
 			foreach ( $headwords as $headword ) {
 				
 				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
@@ -955,9 +966,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$headword_text = trim($headword->textContent);		
 
 			
-				$post_id = $this->get_post_id_bytitle( $headword_text );
+				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
 				if ( $post_id != NULL ) {
-					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance );
+					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance, null, $subid);
 				}
 			}
 			$entry_counter++;

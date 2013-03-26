@@ -148,7 +148,8 @@ function create_search_tables () {
 		`post_id` bigint(20) NOT NULL,
 		`language_code` varchar(20) NOT NULL,
 		`relevance` tinyint,
-		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, ";
+		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, 
+		`subid` INT NOT NULL DEFAULT  '0', ";
 		//PRIMARY KEY (`post_id`, `language_code`, `relevance`),
 		$sql .= " INDEX (relevance)
 		);";
