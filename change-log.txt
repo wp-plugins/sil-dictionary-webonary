@@ -1,3 +1,5 @@
+v. 1.9.4 27 March 2013 added setting "is SIL Dictionary"
+v. 1.9.3 27 March 2013 corrected browse view SQL statement
 v. 1.9.2 27 March 2013 added browse view functionality for English
 v. 1.9.1 26 March 2013 Improved reversal import, added subid to sil_search table
 v. 1.9.0 25 March 2013 Error in reversal import, fixed finding post_id
