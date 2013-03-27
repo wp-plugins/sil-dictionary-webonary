@@ -84,6 +84,10 @@ function user_input() {
 				<input name="include_partial_words" type="checkbox" value="1"
 							<?php checked('1', get_option('include_partial_words')); ?> />
 							<?php _e('Always include searching through partial words.'); ?>
+				<br>			
+				<input name="is_sil_dictionary" type="checkbox" value="1" 
+							<?php checked('1', get_option('is_sil_dictionary')); ?> />
+							<?php _e('is SIL Dictionary'); ?>							
 				<p>
 				<input type="submit" name="save_settings" value="<?php _e('Save', 'sil_dictionary'); ?>">
 				</p>

@@ -118,8 +118,8 @@ function getEnglishAlphabet($letter, $page)
 	global $wpdb;
 	
 	$sql = "SELECT a.search_strings AS English, b.search_strings AS Vernacular " .
-	" FROM wp_2_sil_search a " .
-	" INNER JOIN wp_2_sil_search b ON a.post_id = b.post_id AND a.subid = b.subid " .
+	" FROM " . SEARCHTABLE . " a " .
+	" INNER JOIN " . SEARCHTABLE. " b ON a.post_id = b.post_id AND a.subid = b.subid " .
 	" AND a.language_code =  'en' " .
 	" AND a.relevance >=95 " .
 	" AND a.search_strings LIKE  '" . $letter . "%' " .
