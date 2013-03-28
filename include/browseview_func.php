@@ -13,6 +13,7 @@ function englishalphabet_func( $atts ) {
 	<style type="text/css">
 	#searchresult { 
 		width:50%; 
+		min-width: 300px;
 		text-align:left; 
 	}
 	#englishcol { 
@@ -25,23 +26,22 @@ function englishalphabet_func( $atts ) {
 	#vernacularcol {
 		text-align:left;
 	}
-	table.lpTitleTable {border-collapse:collapse;border:1px solid silver;}
-	td.lpTitleLetterCell {max-width:2px;text-align:center;background-color: #EEEEEE;cursor:pointer;cursor:hand;border:1px solid silver;}
+	.lpTitleLetterCell {min-width:31px; height: 23x; padding-top: 3px; padding-bottom: 2px; text-bottom; text-align:center;background-color: #EEEEEE;cursor:pointer;cursor:hand;border:1px solid silver; float:left; position: relative;}
 	.odd { background: #CCCCCC; }; 
 	.even { background: #FFF; }; 		
 	</style>	
 	<?php 		
 	$alphas = range('a', 'z');
-	$display = "<table class=lpTitleTable width=100%>";
-	$display .= "<tr height=20>";
+	
+	$display = "<br>"; 
+	$display .= "<div style=\"min-width: 300px; width: 100%;\">";
 	foreach($alphas as $letter)
 	{
-    	$display .= "<td class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</span></td>";
+    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</a></span></div>";
 	}
-	$display .= "</tr>";
-	$display .= "</table>";
+	$display .= "</div>";
+	$display .=  "<div style=clear:both></div>";
 	
-
 	$page = $_GET['pagenr'];
 	if(!isset($_GET['pagenr']))
 	{
@@ -84,7 +84,7 @@ function englishalphabet_func( $atts ) {
     		break;
     	}
 	}
-
+	
 	if(!isset($_GET['totalEntries']))
 	{
 		$totalEntries = count($arrAlphabet);
