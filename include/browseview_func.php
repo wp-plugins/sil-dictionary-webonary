@@ -1,4 +1,24 @@
 <?php
+function displayAlphabet($alphas)
+{
+?>
+	<style type="text/css">
+
+	.lpTitleLetterCell {min-width:31px; height: 23x; padding-top: 3px; padding-bottom: 2px; text-bottom; text-align:center;background-color: #EEEEEE;cursor:pointer;cursor:hand;border:1px solid silver; float:left; position: relative;}
+	</style>	
+<?php 
+	$display = "<br>"; 
+	$display .= "<div style=\"min-width: 270px; width: 100%;\">";
+	foreach($alphas as $letter)
+	{
+    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</a></span></div>";
+	}
+	$display .= "</div>";
+	$display .=  "<div style=clear:both></div>";
+	
+	return $display;
+	
+}
 
 function englishalphabet_func( $atts ) {
 	if(isset($_GET['letter']))
@@ -26,21 +46,12 @@ function englishalphabet_func( $atts ) {
 	#vernacularcol {
 		text-align:left;
 	}
-	.lpTitleLetterCell {min-width:31px; height: 23x; padding-top: 3px; padding-bottom: 2px; text-bottom; text-align:center;background-color: #EEEEEE;cursor:pointer;cursor:hand;border:1px solid silver; float:left; position: relative;}
 	.odd { background: #CCCCCC; }; 
 	.even { background: #FFF; }; 		
 	</style>	
 	<?php 		
 	$alphas = range('a', 'z');
-	
-	$display = "<br>"; 
-	$display .= "<div style=\"min-width: 270px; width: 100%;\">";
-	foreach($alphas as $letter)
-	{
-    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</a></span></div>";
-	}
-	$display .= "</div>";
-	$display .=  "<div style=clear:both></div>";
+	$display = displayAlphabet($alphas);
 	
 	$page = $_GET['pagenr'];
 	if(!isset($_GET['pagenr']))
@@ -134,4 +145,13 @@ function getEnglishAlphabet($letter, $page)
 	
 	return $arrAlphabet;
 }
+
+function vernacularalphabet_func( $atts ) {
+	$alphas = explode(",",  get_option('vernacular_alphabet'));
+	$display = displayAlphabet($alphas);
+	
+	return $display;
+}
+
+add_shortcode( 'vernacularalphabet', 'vernacularalphabet_func' );
 ?>

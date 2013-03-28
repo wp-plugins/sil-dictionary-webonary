@@ -80,14 +80,15 @@ function user_input() {
 					<?php _e('Are you sure you want to delete the dictionary data?', 'sil_dictionary'); ?>
 					<input type="submit" name="delete_data" value="<?php _e('Delete', 'sil_dictionary'); ?>">
 				</p>
+				<h3><?php _e('Browse View');?></h3>
+				<?php _e('Vernacular Alphabet:'); ?>
+				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo get_option('vernacular_alphabet'); ?>" />
+				<?php _e('(Letters seperated by comma)'); ?>
+				<p>			
 				<h3><?php _e('Settings');?></h3>
 				<input name="include_partial_words" type="checkbox" value="1"
 							<?php checked('1', get_option('include_partial_words')); ?> />
 							<?php _e('Always include searching through partial words.'); ?>
-				<br>			
-				<input name="is_sil_dictionary" type="checkbox" value="1" 
-							<?php checked('1', get_option('is_sil_dictionary')); ?> />
-							<?php _e('is SIL Dictionary'); ?>							
 				<p>
 				<input type="submit" name="save_settings" value="<?php _e('Save', 'sil_dictionary'); ?>">
 				</p>
@@ -123,6 +124,7 @@ function run_user_action() {
     }
     if ( ! empty( $_POST['save_settings'])) {
     	update_option("include_partial_words", $_POST['include_partial_words']);
+    	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
     	echo "<br>" . _e('Settings saved');
     }    
 }
