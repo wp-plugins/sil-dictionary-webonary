@@ -13,7 +13,7 @@ function englishalphabet_func( $atts ) {
 	<style type="text/css">
 	#searchresult { 
 		width:50%; 
-		min-width: 300px;
+		min-width: 270px;
 		text-align:left; 
 	}
 	#englishcol { 
@@ -34,7 +34,7 @@ function englishalphabet_func( $atts ) {
 	$alphas = range('a', 'z');
 	
 	$display = "<br>"; 
-	$display .= "<div style=\"min-width: 300px; width: 100%;\">";
+	$display .= "<div style=\"min-width: 270px; width: 100%;\">";
 	foreach($alphas as $letter)
 	{
     	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</a></span></div>";
