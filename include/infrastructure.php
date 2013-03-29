@@ -30,6 +30,18 @@ function add_admin_menu() {
 		'sil_dictionary_main' ); // callback function
 }
 
+//get category id for "webonary", if it doesn't exist, create it.
+function get_category_id() {
+	global $wpdb;
+
+	$catid = $wpdb->get_var( $wpdb->prepare( "
+		SELECT term_id
+		FROM $wpdb->terms
+		WHERE name LIKE 'webonary'"));	
+
+	return $catid;
+}
+
 //---------------------------------------------------------------------------//
 
 function sil_dictionary_main() {
@@ -65,7 +77,7 @@ function user_input() {
 				<p><?php _e('Each dictionary entry is stored in a "post." Individual entries can be added, edited, and deleted by going to the Posts menu and selecting the Posts menu item.', 'sil_dictionary'); ?></p>
 				<p><?php _e('You can edit also lists. For example, to edit your list of languages, go to Posts and select Language.', 'sil_dictionary'); ?></p>
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
-				<p><?php _e('Lists and pages will be kept unless you check the following:'); ?></p>
+				<p><?php _e('Lists are kept unless you check the following:'); ?></p>
 				<p>
 					<label for="delete_taxonomies">
 						<input name="delete_taxonomies" type="checkbox" id="delete_taxonomies" value="1"
@@ -79,6 +91,8 @@ function user_input() {
 					</label><br />					 
 					<?php _e('Are you sure you want to delete the dictionary data?', 'sil_dictionary'); ?>
 					<input type="submit" name="delete_data" value="<?php _e('Delete', 'sil_dictionary'); ?>">
+					<br>
+					<?php _e('(deletes all posts in the category "webonary")', 'sil_dictionary'); ?>
 				</p>
 				<h3><?php _e('Browse View');?></h3>
 				<?php _e('Vernacular Alphabet:'); ?>
@@ -349,14 +363,18 @@ function clean_out_dictionary_data () {
 
 function remove_entries () {
 	global $wpdb;
-	$sql = $wpdb->prepare(  "DELETE FROM $wpdb->posts WHERE post_type IN ('post', 'revision');" );
-	$return_value = $wpdb->get_var( $sql );
+	
+	$catid = get_category_id();
+	
+	$sql = "DELETE FROM wp_4_posts " .
+	" WHERE post_type IN ('post', 'revision') AND " . 
+	" ID IN (SELECT object_id FROM wp_4_term_relationships WHERE wp_4_term_relationships.term_taxonomy_id = " . $catid .")";
 
-	$delete_pages = $_POST['delete_pages'];
-	if ($delete_pages == 1) {
-		$sql = $wpdb->prepare(  "DELETE FROM $wpdb->posts WHERE post_type = 'page';" );
-		$return_value = $wpdb->get_var( $sql );
-	}
+	$wpdb->query( $sql );
+	
+	$sql = "DELETE FROM wp_4_term_relationships WHERE term_taxonomy_id = " . $catid;
+	
+	$return_value = $wpdb->get_var( $sql );
 }
 
 //-----------------------------------------------------------------------------//
@@ -460,7 +478,8 @@ function uninstall_custom_table ( $table ) {
 function uninstall_sil_dictionary_infrastructure () {
 	
 	// Remove all the old dictionary entries.
-	remove_entries();
+	//DANGEROUS, this would remove all the posts, if somebody doesn't migrate the posts to pages
+	//remove_entries();
 
 	// Uninstall the custom table(s) and taxonomies.
 	unregister_custom_taxonomies();

@@ -130,6 +130,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		echo '<div class="narrow">';
 		echo '<p>' . __( 'Howdy! This importer allows you to import SIL FLEX XHTML data into your WordPress site.',
 				'sil_dictionary' ) . '</p>';
+		echo '<p style="color:red">' . __( 'Please note that the entries will be imported into "Posts". Webonary does not play well together with existing blogs. Articles should be posted under "Pages".',
+				'sil_dictionary' ) . '</p>';
 	}
 
 	//-----------------------------------------------------------------------------//
@@ -470,7 +472,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				/*
 				 * Insert the new entry into wp_posts
 				 */
-
+				
 				$post_id = $this->get_post_id( $flexid );
 				$post_id_exists = $post_id != NULL;	
 
@@ -486,6 +488,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'post_name' => $flexid
 				);
 				$post_id = wp_insert_post( $post );
+				wp_set_object_terms( $post_id, "webonary", 'category' );
 								
 				/*
 				 * Show progresss to the user.
@@ -798,6 +801,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 	}
 
+	
 	//-----------------------------------------------------------------------------//
 
 	/**
