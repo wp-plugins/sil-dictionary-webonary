@@ -1,3 +1,4 @@
+v. 2.0.1 02 April 2013 added browse view functionality for vernacular language
 v. 2.0.0 29 March 2013 entries get added to category "webonary". Other posts don't get deleted anymore. Posts don't get deleted on plugin uninstall.
 v. 1.9.7 28 March 2013 added setting to add vernacular alphabet for browse view display
 v. 1.9.6 28 March 2013 removed setting "is SIL Dictionary", see theme
