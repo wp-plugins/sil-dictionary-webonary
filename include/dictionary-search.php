@@ -67,10 +67,10 @@ function sil_dictionary_custom_join($join) {
 			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
 		
-		if(isset($_GET['browse']))
+		if(isset($_GET['letter']))
 		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
-			addslashes( $_GET['browse'] ) . "%' AND relevance = 100 AND language_code = '$key' ";
+			addslashes( $_GET['letter'] ) . "%' AND relevance >= 95 AND language_code = '$key' ";
 		}		
 		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
 		{
@@ -146,11 +146,14 @@ function sil_dictionary_custom_order_by($orderby) {
 	$search_table_name = SEARCHTABLE;
 	
 	$orderby = "";
-	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['browse'])) {
+	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['letter'])) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
+		$orderby .= " $wpdb->posts.post_title ASC";
 	}
-
-	$orderby .= " $wpdb->posts.post_title ASC";
+	else 
+	{
+		$orderby = " FIELD(SUBSTR($wpdb->posts.post_title, 1, 1), 'a', 'aa') ";
+	}
 
 	return $orderby;
 }

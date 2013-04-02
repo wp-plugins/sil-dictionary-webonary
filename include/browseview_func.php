@@ -1,5 +1,5 @@
 <?php
-function displayAlphabet($alphas)
+function displayAlphabet($alphas, $languagecode)
 {
 ?>
 	<style type="text/css">
@@ -11,7 +11,7 @@ function displayAlphabet($alphas)
 	$display .= "<div style=\"min-width: 270px; width: 100%;\">";
 	foreach($alphas as $letter)
 	{
-    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "\">" . $letter . "</a></span></div>";
+    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "&key=" . $languagecode . "\">" . $letter . "</a></span></div>";
 	}
 	$display .= "</div>";
 	$display .=  "<div style=clear:both></div>";
@@ -20,7 +20,27 @@ function displayAlphabet($alphas)
 	
 }
 
+function displayPagenumbers($totalEntries, $entriesPerPage, $languagecode)
+{
+	$totalPages = $totalEntries / $entriesPerPage;
+	for($page = 1; $page <= $totalPages; $page++)
+	{
+		if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
+		{
+			$display .= $page . " ";
+		}
+		else
+		{
+			$display .= "<a href=\"?letter=" . $chosenLetter . "&key=" . $languagecode . "&pagenr=" . $page . "&totalEntries=" . $totalEntries . "\">" . $page . "</a> ";
+		}		 
+	}		
+	return $display;
+}
+
 function englishalphabet_func( $atts ) {
+	
+	$languagecode = "en";
+	
 	if(isset($_GET['letter']))
 	{
 		$chosenLetter = $_GET['letter']; 
@@ -51,7 +71,7 @@ function englishalphabet_func( $atts ) {
 	</style>	
 	<?php 		
 	$alphas = range('a', 'z');
-	$display = displayAlphabet($alphas);
+	$display = displayAlphabet($alphas, $languagecode);
 	
 	$page = $_GET['pagenr'];
 	if(!isset($_GET['pagenr']))
@@ -104,20 +124,10 @@ function englishalphabet_func( $atts ) {
 	{
 		$totalEntries = $_GET['totalEntries'];
 	}
-	$totalPages = $totalEntries / 50;
-	for($page = 1; $page <= $totalPages; $page++)
-	{
-		if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
-		{
-			$display .= $page . " ";
-		}
-		else
-		{
-			$display .= "<a href=\"?letter=" . $chosenLetter . "&pagenr=" . $page . "&totalEntries=" . $totalEntries . "\">" . $page . "</a> ";
-		}		 
-	}
 
-	$display .=  "</div>";
+	$display .= displayPagenumbers($totalEntries, 50, $languagecode);
+
+	$display .=  "</div><br>";
 	
  return $display;
 }
@@ -147,9 +157,48 @@ function getEnglishAlphabet($letter, $page)
 }
 
 function vernacularalphabet_func( $atts ) {
-	$alphas = explode(",",  get_option('vernacular_alphabet'));
-	$display = displayAlphabet($alphas);
 	
+	$languagecode = "tlj";
+	
+	if(isset($_GET['letter']))
+	{
+		$chosenLetter = $_GET['letter']; 
+	}
+	else {
+		$chosenLetter = "a"; 
+	}
+		
+	$alphas = explode(",",  get_option('vernacular_alphabet'));
+	$display = displayAlphabet($alphas, $languagecode);
+	
+	$display .= "<div align=center><h1>" . $chosenLetter . "</h1></div><br>";
+
+    $display .= "<div id=searchresults>";
+    
+	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&posts_per_page=25&paged=" . $_GET['pagenr']);
+
+	foreach($arrPosts as $mypost)
+	{
+		$display .= "<div>" . $mypost->post_content . "</div>";
+	}
+	
+	$display .= "</div>";
+	
+	if(!isset($_GET['totalEntries']))
+	{
+		global $wp_query;
+		$totalEntries = $wp_query->found_posts;
+	}
+	else
+	{
+		$totalEntries = $_GET['totalEntries'];
+	}
+		
+	$display .= "<div align=center><br>";
+	$display .= displayPagenumbers($totalEntries, 25, $languagecode);
+	$display .= "</div><br>";
+	
+ 	wp_reset_query();
 	return $display;
 }
 
