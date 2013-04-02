@@ -156,6 +156,18 @@ function getEnglishAlphabet($letter, $page)
 	return $arrAlphabet;
 }
 
+function getVernacularHeadword($postid, $languagecode)
+{
+	global $wpdb;
+	
+	$sql = "SELECT search_strings " .
+	" FROM " . SEARCHTABLE . 
+	" WHERE post_id = " . $postid . " AND relevance = 100 AND language_code = '" . $languagecode . "'";
+
+	return $wpdb->get_var($sql);
+	
+}
+
 function vernacularalphabet_func( $atts ) {
 	
 	$languagecode = "tlj";
@@ -176,10 +188,19 @@ function vernacularalphabet_func( $atts ) {
     $display .= "<div id=searchresults>";
     
 	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&posts_per_page=25&paged=" . $_GET['pagenr']);
-
+	
 	foreach($arrPosts as $mypost)
 	{
-		$display .= "<div>" . $mypost->post_content . "</div>";
+		if($mypost->post_title != $mypost->search_strings)
+		{
+			$headword = getVernacularHeadword($mypost->ID, $languagecode);
+			$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
+			$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\?s=" . $headword . "\">" . $headword . "</a></div>";
+		}
+		else 
+		{
+			$display .= "<div class=post>" . $mypost->post_content . "</div>";
+		}
 	}
 	
 	$display .= "</div>";

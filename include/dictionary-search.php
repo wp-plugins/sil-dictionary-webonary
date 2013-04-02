@@ -21,7 +21,19 @@ if ( ! defined('ABSPATH') )
 	die( '-1' );
 
 //---------------------------------------------------------------------------//
-
+function sil_dictionary_select_fields() {
+	global $wp_query, $wpdb;
+	$search_table_name = SEARCHTABLE;
+	
+	if(  !empty($wp_query->query_vars['s']))
+	{
+		return $wpdb->posts.".*, " . $search_table_name . ".search_strings";
+	}
+	else
+	{
+		return $wpdb->posts.".*";
+	}
+}
 function sil_dictionary_select_distinct() {
 	return "DISTINCTROW";
 }
@@ -87,7 +99,7 @@ function sil_dictionary_custom_join($join) {
 		}
 		
 		$subquery =
-			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings " .
+			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
 			"FROM " . $search_table_name .
 			$subquery_where .
 			"GROUP BY post_id, language_code, search_strings " .
@@ -148,12 +160,13 @@ function sil_dictionary_custom_order_by($orderby) {
 	$orderby = "";
 	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['letter'])) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
-		$orderby .= " $wpdb->posts.post_title ASC";
 	}
-	else 
+	
+	if( !empty($wp_query->query_vars['s']))
 	{
-		$orderby = " FIELD(SUBSTR($wpdb->posts.post_title, 1, 1), 'a', 'aa') ";
+		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
 	}
+	//$orderby .= " $wpdb->posts.post_title ASC";
 
 	return $orderby;
 }
