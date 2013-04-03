@@ -163,15 +163,14 @@ function sil_dictionary_custom_order_by($orderby) {
 	}
 	else 
 	{
-		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
+		//$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
 	}
-	/*
+	
 	if( !empty($wp_query->query_vars['s']))
 	{
-		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
+		//$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
+		$orderby .= " $wpdb->posts.post_title ASC";
 	}
-	*/
-	$orderby .= " $wpdb->posts.post_title ASC";
 
 	return $orderby;
 }
