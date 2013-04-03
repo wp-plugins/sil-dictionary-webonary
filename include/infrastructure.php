@@ -151,6 +151,7 @@ function run_user_action() {
 function install_sil_dictionary_infrastructure() {
 	create_search_tables();
 	set_options();
+	set_field_sortorder();
 	//upload_stylesheet();
 	register_semantic_domains_taxonomy();
 	register_part_of_speech_taxonomy();
@@ -169,7 +170,8 @@ function create_search_tables () {
 		`language_code` varchar(20) NOT NULL,
 		`relevance` tinyint,
 		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, 
-		`subid` INT NOT NULL DEFAULT  '0', ";
+		`subid` INT NOT NULL DEFAULT  '0', 
+		'sortorder' INT NOT NULL DEFAULT '0'";
 		//PRIMARY KEY (`post_id`, `language_code`, `relevance`),
 		$sql .= " INDEX (relevance)
 		);";
@@ -398,6 +400,13 @@ function set_options () {
 				
 		dbDelta( $sql );
 	}	
+}
+
+function set_field_sortorder() {
+	global $wpdb;
+	
+	$sql = "ALTER TABLE " . $wpdb->prefix . "sil_search ADD sortorder INT NOT NULL DEFAULT  '0'";
+	$wpdb->query( $sql );
 }
 
 

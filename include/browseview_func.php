@@ -20,9 +20,9 @@ function displayAlphabet($alphas, $languagecode)
 	
 }
 
-function displayPagenumbers($totalEntries, $entriesPerPage, $languagecode)
+function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $languagecode)
 {
-	$totalPages = $totalEntries / $entriesPerPage;
+	$totalPages = round($totalEntries / $entriesPerPage, 0);
 	for($page = 1; $page <= $totalPages; $page++)
 	{
 		if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
@@ -125,7 +125,7 @@ function englishalphabet_func( $atts ) {
 		$totalEntries = $_GET['totalEntries'];
 	}
 
-	$display .= displayPagenumbers($totalEntries, 50, $languagecode);
+	$display .= displayPagenumbers($chosenLetter, $totalEntries, 50, $languagecode);
 
 	$display .=  "</div><br>";
 	
@@ -148,9 +148,10 @@ function getEnglishAlphabet($letter, $page)
 	" ORDER BY a.search_strings ";
 	if($page > 1)
 	{
-		$startFrom = $page * 50;
+		$startFrom = ($page - 1) * 50;
 		$sql .= " LIMIT " . $startFrom .", 50";
 	}
+	
 	$arrAlphabet = $wpdb->get_results($sql);
 	
 	return $arrAlphabet;
@@ -168,8 +169,8 @@ function getVernacularHeadword($postid, $languagecode)
 	
 }
 
-function vernacularalphabet_func( $atts ) {
-	
+function vernacularalphabet_func( $atts ) 
+{
 	$languagecode = "tlj";
 	
 	if(isset($_GET['letter']))
@@ -187,7 +188,7 @@ function vernacularalphabet_func( $atts ) {
 
     $display .= "<div id=searchresults>";
     
-	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&posts_per_page=25&paged=" . $_GET['pagenr']);
+	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&langcode=" . $languagecode . "&posts_per_page=25&paged=" . $_GET['pagenr']);
 	
 	foreach($arrPosts as $mypost)
 	{
@@ -207,7 +208,7 @@ function vernacularalphabet_func( $atts ) {
 	
 	if(!isset($_GET['totalEntries']))
 	{
-		global $wp_query;
+		global $wp_query;		
 		$totalEntries = $wp_query->found_posts;
 	}
 	else
@@ -216,7 +217,7 @@ function vernacularalphabet_func( $atts ) {
 	}
 		
 	$display .= "<div align=center><br>";
-	$display .= displayPagenumbers($totalEntries, 25, $languagecode);
+	$display .= displayPagenumbers($chosenLetter, $totalEntries, 25, $languagecode);
 	$display .= "</div><br>";
 	
  	wp_reset_query();

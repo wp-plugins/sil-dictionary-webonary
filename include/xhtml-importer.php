@@ -211,8 +211,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			</p>
 			</div>
 			<p>
-				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/><?php esc_attr_e('Configured Dictionary'); ?><BR>
-				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /><?php esc_attr_e('Reversal Index'); ?><BR>				
+				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/> <?php esc_attr_e('Configured Dictionary'); ?><BR>
+				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /> <?php esc_attr_e('Reversal Index'); ?><BR>
+				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <?php esc_attr_e('Stem View (for sort order)'); ?><BR>				
 			</p>
 			<div id="convertToLinks">
 				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
@@ -358,7 +359,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 		elseif ( $_POST['filetype'] == 'reversal')
 			$this->import_xhtml_reversal_indexes();
-
+		elseif ( $_POST['filetype'] == 'stem')
+			$this->import_xhtml_stem_indexes();
 		return;
 	} // function import_xhtml($xhtml_file)
 
@@ -788,6 +790,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, $search_string, $relevance, $subid );
+			//$sql = " ON DUPLICATE KEY UPDATE search_strings = '" . $search_string . "'";
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
 						
 			$wpdb->query( $sql );
@@ -827,7 +830,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// will probably fail.
 		$sql = "SELECT post_id, subid
 			FROM $this->search_table_name
-			WHERE search_strings LIKE '%" . trim($headword) . "%' collate utf8_bin AND relevance >= 95 AND language_code <> '" . $langcode . "'";
+			WHERE search_strings LIKE '%" . trim($headword) . "%' collate utf8_bin AND relevance >= 95";
+			$sql .= " AND language_code <> '" . $langcode . "'";
 			
 		$row = $wpdb->get_row( $sql );
 		$subid = $row->subid;
@@ -979,6 +983,38 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		} // foreach ( $entries as $entry )
 	}
 
+/**
+	 * Import stem indexes from a stem view index XHTML file. This will
+	 * not add any new lexical entries, but it will update the field "sortorder" in the search
+	 * table.
+	 */
+
+	function import_xhtml_stem_indexes() {
+
+		global $wpdb;
+		
+		//$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]');
+		$entries_count = $entries->length;
+		$entry_counter = 1;
+		foreach ( $entries as $entry ){
+
+
+			$headword_text = trim($entry->textContent);	
+
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' AND relevance >= 95" ;
+			$wpdb->query( $sql );
+			
+			/*
+			 * Show progresss to the user.
+			 */			
+			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
+
+			$entry_counter++;
+		} // foreach ( $entries as $entry )
+		
+	}
+	
 	//-----------------------------------------------------------------------------//
 
 	function sil_pathway_xhtml_Import()

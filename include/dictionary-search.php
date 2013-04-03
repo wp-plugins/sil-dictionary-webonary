@@ -25,7 +25,7 @@ function sil_dictionary_select_fields() {
 	global $wp_query, $wpdb;
 	$search_table_name = SEARCHTABLE;
 	
-	if(  !empty($wp_query->query_vars['s']))
+	if(  !empty($wp_query->query_vars['s']) && isset($wp_query->query_vars['letter']))
 	{
 		return $wpdb->posts.".*, " . $search_table_name . ".search_strings";
 	}
@@ -63,6 +63,10 @@ function sil_dictionary_custom_join($join) {
 		//search string gets trimmed and normalized to NFC 
 		$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
 		$key = $_GET['key'];
+		if(!isset($key))
+		{
+			$key = $wp_query->query_vars['langcode'];
+		}		
 		$partialsearch = $_GET['partialsearch'];
 		if(!isset($_GET['partialsearch']))
 		{
@@ -79,10 +83,10 @@ function sil_dictionary_custom_join($join) {
 			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
 		
-		if(isset($_GET['letter']))
+		if(isset($wp_query->query_vars['letter']))
 		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
-			addslashes( $_GET['letter'] ) . "%' AND relevance >= 95 AND language_code = '$key' ";
+			addslashes($wp_query->query_vars['letter']) . "%' AND relevance >= 95 AND language_code = '$key' ";
 		}		
 		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
 		{
@@ -99,7 +103,7 @@ function sil_dictionary_custom_join($join) {
 		}
 		
 		$subquery =
-			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings " .
+			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
 			"FROM " . $search_table_name .
 			$subquery_where .
 			"GROUP BY post_id, language_code, search_strings " .
@@ -139,6 +143,10 @@ function sil_dictionary_custom_where($where) {
 	if( !empty($wp_query->query_vars['s'])) {
 		$search = $wp_query->query_vars['s'];
 		$key = $_GET['key'];
+		if(!isset($key))
+		{
+			$key = $wp_query->query_vars['langcode'];
+		}
 		$where = ($wp_version >= 2.1) ? ' AND post_type = \'post\' AND post_status = \'publish\'' : ' AND post_status = \'publish\'';
 	}
 
@@ -158,18 +166,14 @@ function sil_dictionary_custom_order_by($orderby) {
 	$search_table_name = SEARCHTABLE;
 	
 	$orderby = "";
-	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['letter'])) {
+	if(  !empty($wp_query->query_vars['s']) && !isset($wp_query->query_vars['letter'])) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
-	}
-	else 
-	{
-		//$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
 	}
 	
 	if( !empty($wp_query->query_vars['s']))
 	{
-		//$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
-		$orderby .= " $wpdb->posts.post_title ASC";
+		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
+		//$orderby .= " $wpdb->posts.post_title ASC";
 	}
 
 	return $orderby;
