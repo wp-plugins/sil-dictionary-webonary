@@ -161,12 +161,17 @@ function sil_dictionary_custom_order_by($orderby) {
 	if(  !empty($wp_query->query_vars['s']) && !isset($_GET['letter'])) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
-	
+	else 
+	{
+		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
+	}
+	/*
 	if( !empty($wp_query->query_vars['s']))
 	{
 		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".post_id ASC";
 	}
-	//$orderby .= " $wpdb->posts.post_title ASC";
+	*/
+	$orderby .= " $wpdb->posts.post_title ASC";
 
 	return $orderby;
 }
