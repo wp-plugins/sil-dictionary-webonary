@@ -1,3 +1,4 @@
+v. 2.0.5 03 April 2013 Added import for stem view (adds sort order)
 v. 2.0.4 03 April 2013 changed sort order for the moment, since search function doesn't work
 v. 2.0.1 02 April 2013 added browse view functionality for vernacular language
 v. 2.0.0 29 March 2013 entries get added to category "webonary". Other posts don't get deleted anymore. Posts don't get deleted on plugin uninstall.

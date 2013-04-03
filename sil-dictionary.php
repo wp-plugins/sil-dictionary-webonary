@@ -9,7 +9,7 @@ Author: SIL International
 Author URI: http://www.sil.org/
 Text Domain: sil_dictionary
 Domain Path: /lang/
-Version: v. 2.0.4
+Version: v. 2.0.5
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
@@ -72,10 +72,8 @@ register_uninstall_hook( __FILE__, 'uninstall_sil_dictionary_infrastructure' );
 /*
  * Search hooks
  */
-if( isset($_GET['letter']))
-{
-	add_filter('posts_fields', 'sil_dictionary_select_fields');
-}
+
+add_filter('posts_fields', 'sil_dictionary_select_fields');
 add_filter('posts_distinct', 'sil_dictionary_select_distinct');
 add_filter('posts_join', 'sil_dictionary_custom_join');
 add_filter('posts_where', 'sil_dictionary_custom_where');
