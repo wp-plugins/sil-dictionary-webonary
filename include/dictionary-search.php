@@ -99,7 +99,7 @@ function sil_dictionary_custom_join($join) {
 		}
 		
 		$subquery =
-			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
+			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings " .
 			"FROM " . $search_table_name .
 			$subquery_where .
 			"GROUP BY post_id, language_code, search_strings " .
