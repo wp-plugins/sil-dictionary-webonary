@@ -83,6 +83,9 @@ function user_input() {
 						<input name="delete_taxonomies" type="checkbox" id="delete_taxonomies" value="1"
 							<?php checked('1', get_option('delete_taxonomies')); ?> />
 						<?php _e('Delete lists such as Part of Speech?') ?><br>
+						<input name="delete_allposts" type="checkbox" id="delete_allposts" value="1"
+							<?php checked('1', get_option('delete_allposts')); ?> />
+						<?php _e('Delete all posts, including the ones not in category "webonary" (legacy function)') ?><br>
 					</label><br />					 
 					<label for="delete_pages">
 						<!--<input name="delete_pages" type="checkbox" id="delete_pages" value="1"
@@ -368,10 +371,17 @@ function remove_entries () {
 	
 	$catid = get_category_id();
 	
-	$sql = "DELETE FROM " . $wpdb->prefix . "posts " .
-	" WHERE post_type IN ('post', 'revision') AND " . 
-	" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .")";
-
+	if($_POST['delete_allposts'] == 1)
+	{
+		$sql = "DELETE FROM " . $wpdb->prefix . "posts WHERE post_type IN ('post', 'revision')";
+	}
+	else 
+	{
+		//just posts in category "webonary"
+		$sql = "DELETE FROM " . $wpdb->prefix . "posts " .
+		" WHERE post_type IN ('post', 'revision') AND " . 
+		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .")";
+	}
 	$wpdb->query( $sql );
 	
 	$sql = "DELETE FROM " . $wpdb->prefix . "term_relationships WHERE term_taxonomy_id = " . $catid;
