@@ -1,3 +1,4 @@
+v. 2.0.7 05 April 2013 added legacy function to delete all posts (also those not in category 'webonary')
 v. 2.0.6 05 April 2013 fixed preset table prefix in function remove_entries
 v. 2.0.5 03 April 2013 Added import for stem view (adds sort order)
 v. 2.0.4 03 April 2013 changed sort order for the moment, since search function doesn't work
