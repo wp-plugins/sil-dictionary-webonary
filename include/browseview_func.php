@@ -171,7 +171,7 @@ function getVernacularHeadword($postid, $languagecode)
 
 function vernacularalphabet_func( $atts ) 
 {
-	$languagecode = "tlj";
+	$languagecode = get_option('languagecode');
 	
 	if(isset($_GET['letter']))
 	{
@@ -186,9 +186,20 @@ function vernacularalphabet_func( $atts )
 	
 	$display .= "<div align=center><h1>" . $chosenLetter . "</h1></div><br>";
 
+	if(empty($languagecode))
+	{
+		$display .=  "No language code provided. Please set in the Webonary settings.";
+		return $display;
+	}
+		
     $display .= "<div id=searchresults>";
     
 	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&langcode=" . $languagecode . "&posts_per_page=25&paged=" . $_GET['pagenr']);
+	
+	if(count($arrPosts) == 0)
+	{
+		$display .= "No entries exist starting with this letter."; 
+	}
 	
 	foreach($arrPosts as $mypost)
 	{

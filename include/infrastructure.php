@@ -103,6 +103,10 @@ function user_input() {
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>			
 				<h3><?php _e('Settings');?></h3>
+<h3><?php _e('Browse View');?></h3>
+				<?php _e('Ethnologue Language Code:'); ?>
+				<input name="languagecode" type="text" size=5 value="<?php echo get_option('languagecode'); ?>" />				
+				<p>	
 				<input name="include_partial_words" type="checkbox" value="1"
 							<?php checked('1', get_option('include_partial_words')); ?> />
 							<?php _e('Always include searching through partial words.'); ?>
@@ -141,6 +145,7 @@ function run_user_action() {
     }
     if ( ! empty( $_POST['save_settings'])) {
     	update_option("include_partial_words", $_POST['include_partial_words']);
+    	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
     	echo "<br>" . _e('Settings saved');
     }    
@@ -174,7 +179,7 @@ function create_search_tables () {
 		`relevance` tinyint,
 		`search_strings` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, 
 		`subid` INT NOT NULL DEFAULT  '0', 
-		'sortorder' INT NOT NULL DEFAULT '0'";
+		`sortorder` INT NOT NULL DEFAULT '0', ";
 		//PRIMARY KEY (`post_id`, `language_code`, `relevance`),
 		$sql .= " INDEX (relevance)
 		);";
