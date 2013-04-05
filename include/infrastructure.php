@@ -368,13 +368,13 @@ function remove_entries () {
 	
 	$catid = get_category_id();
 	
-	$sql = "DELETE FROM wp_4_posts " .
+	$sql = "DELETE FROM " . $wpdb->prefix . "posts " .
 	" WHERE post_type IN ('post', 'revision') AND " . 
-	" ID IN (SELECT object_id FROM wp_4_term_relationships WHERE wp_4_term_relationships.term_taxonomy_id = " . $catid .")";
+	" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .")";
 
 	$wpdb->query( $sql );
 	
-	$sql = "DELETE FROM wp_4_term_relationships WHERE term_taxonomy_id = " . $catid;
+	$sql = "DELETE FROM " . $wpdb->prefix . "term_relationships WHERE term_taxonomy_id = " . $catid;
 	
 	$return_value = $wpdb->get_var( $sql );
 }
