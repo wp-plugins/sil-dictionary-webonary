@@ -63,7 +63,6 @@ function user_input() {
 		<form method="post" action="">
 			<h2><?php _e( 'SIL Dictionary', 'sil_dictionary' ); ?></h2>
 			<?php
-			
 			/*
 			 * Standard UI
 			 */
@@ -103,7 +102,6 @@ function user_input() {
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>			
 				<h3><?php _e('Settings');?></h3>
-<h3><?php _e('Browse View');?></h3>
 				<?php _e('Ethnologue Language Code:'); ?>
 				<input name="languagecode" type="text" size=5 value="<?php echo get_option('languagecode'); ?>" />				
 				<p>	
