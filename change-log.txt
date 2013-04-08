@@ -1,3 +1,5 @@
+v. 2.1.1 08 April 2013 added possibilty to comment in browse view
+v. 2.1.0 08 April 2013 changed sort order from order by post_id to search_strings
 v. 2.0.9 05 April 2013 added field to add Ethnologue Language Code
 v. 2.0.8 05 April 2013 fixed create_search_tables bug
 v. 2.0.7 05 April 2013 added legacy function to delete all posts (also those not in category 'webonary')
