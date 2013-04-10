@@ -542,7 +542,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			} // foreach ( $headwords as $headword )
 			$entry_counter++;
 		} // foreach ($entries as $entry){
-		break;
 		$this->convert_fieldworks_links_to_wordpress();
 	}
 
