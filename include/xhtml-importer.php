@@ -784,7 +784,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, $search_string, $relevance, $subid );
-			$sql = " ON DUPLICATE KEY UPDATE search_strings = '" . $search_string . "'";
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
 						
 			$wpdb->query( $sql );
