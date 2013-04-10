@@ -437,7 +437,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
-
 			// Find the headword. Should be only 1 headword at most. The
 			// $headword->textContent picks up the value of both the headword and
 			// the homograph number. This is presumably because the XML DOM
@@ -445,7 +444,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// within the element node." The XHTML for an entry with homograph
 			// number looks like this:
 			// <span class="headword" lang="ii">my headword<span class="xhomographnumber">1</span></span>
-			
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
 			//$entry = $this->convert_fields_to_links($entry);
 			$entry_xml = $this->dom->saveXML( $entry );
@@ -466,11 +464,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$headword_text = str_replace($homograph, $h, $headword_text);
 					$h++;
 				}
-
 				$flexid = $entry->getAttribute("id");
 																					
 				$entry_xml = $this->dom->saveXML( $entry );												
-
 				/*
 				 * Insert the new entry into wp_posts
 				 */
@@ -491,12 +487,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				);
 				$post_id = wp_insert_post( $post );
 				wp_set_object_terms( $post_id, "webonary", 'category' );
-								
 				/*
 				 * Show progresss to the user.
 				 */
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
-
 				/*
 				 * Load the multilingual search table
 				 */
@@ -508,7 +502,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//import headword
 					$this->import_xhtml_search_string($post_id, $headword, $this->headword_relevance );
 					$this->convert_fields_to_links($post_id, $entry, $headword);		
-				
 					//sub headwords
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "headword-sub"]', ($this->headword_relevance - 5));
 					//lexeme forms
@@ -534,7 +527,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref-sub"]', $this->sense_crossref_relevance);
 					
 				}
-
 				/*
 				 * Load semantic domains
 				 */
@@ -547,11 +539,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				if ( $pos_taxonomy_exists )
 					$this->import_xhtml_part_of_speech( $entry, $post_id );
-
 			} // foreach ( $headwords as $headword )
 			$entry_counter++;
 		} // foreach ($entries as $entry){
-		
+		break;
 		$this->convert_fieldworks_links_to_wordpress();
 	}
 
@@ -725,7 +716,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		?>
 		<SCRIPT type="text/javascript">//<![CDATA[
 		d = document.getElementById("flushme");
-		d.innerHTML = "Importing <?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+		info = "Importing <?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+		info += "<br>";
+		info += "Memory Usage: <?php echo memory_get_usage(); ?> bytes";
+		d.innerHTML = info;
 		//]]></SCRIPT>
 		<?php		
 	}
@@ -790,7 +784,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, $search_string, $relevance, $subid );
-			//$sql = " ON DUPLICATE KEY UPDATE search_strings = '" . $search_string . "'";
+			$sql = " ON DUPLICATE KEY UPDATE search_strings = '" . $search_string . "'";
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
 						
 			$wpdb->query( $sql );
@@ -926,6 +920,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
 			
 			wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
+			$arrTerm = null;
 		}		
 
 	}
