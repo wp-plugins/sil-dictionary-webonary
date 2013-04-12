@@ -144,7 +144,7 @@ function getEnglishAlphabet($letter, $page)
 	" AND a.language_code =  'en' " .
 	" AND a.relevance >=95 " .
 	" AND a.search_strings LIKE  '" . $letter . "%' " .
-	" GROUP BY a.post_id " .
+	" GROUP BY a.post_id, a.search_strings " .
 	" ORDER BY a.search_strings ";
 	if($page > 1)
 	{

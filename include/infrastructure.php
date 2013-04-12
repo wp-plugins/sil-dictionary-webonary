@@ -418,7 +418,7 @@ function set_options () {
 function set_field_sortorder() {
 	global $wpdb;
 	
-	$sql = "ALTER TABLE " . $wpdb->prefix . "sil_search ADD sortorder INT NOT NULL DEFAULT  '0'";
+	$sql = " ALTER TABLE " . $wpdb->prefix . "sil_search ADD sortorder INT NOT NULL DEFAULT  '0'";
 	$wpdb->query( $sql );
 }
 

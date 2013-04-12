@@ -450,6 +450,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
 			//$headword = $headwords->item( 0 )->nodeValue;
+			$subid = 1;
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
@@ -500,10 +501,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$wpdb->query( $sql );
 					}
 					//import headword
-					$this->import_xhtml_search_string($post_id, $headword, $this->headword_relevance );
+					$this->import_xhtml_search_string($post_id, $headword, $this->headword_relevance, null, $subid);
 					$this->convert_fields_to_links($post_id, $entry, $headword);		
 					//sub headwords
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "headword-sub"]', ($this->headword_relevance - 5));
+					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "headword-sub"]', ($this->headword_relevance - 5), $subid);
 					//lexeme forms
 					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[contains(@class, "LexemeForm")]', $this->lexeme_form_relevance);
 					//definitions
@@ -539,6 +540,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				if ( $pos_taxonomy_exists )
 					$this->import_xhtml_part_of_speech( $entry, $post_id );
+				$subid ++;
 			} // foreach ( $headwords as $headword )
 			$entry_counter++;
 		} // foreach ($entries as $entry){
@@ -698,7 +700,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" WHERE ID = " . $post_id;
 		 		
 		$wpdb->query( $sql );
-				
+		
 		return $entry;
 	}
 
@@ -716,8 +718,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		<SCRIPT type="text/javascript">//<![CDATA[
 		d = document.getElementById("flushme");
 		info = "Importing <?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
-		info += "<br>";
-		info += "Memory Usage: <?php echo memory_get_usage(); ?> bytes";
+		//info += "<br>";
+		//info += "Memory Usage: <?php echo memory_get_usage(); ?> bytes";
 		d.innerHTML = info;
 		//]]></SCRIPT>
 		<?php		
@@ -732,12 +734,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $query = the xhtml query
 	 * @param <type> $relevance = weighted importance of this particular string for search results 
 	 */
-	function import_xhtml_search( $entry, $post_id, $query, $relevance ) {
+	function import_xhtml_search( $entry, $post_id, $query, $relevance, $subid = 0 ) {
 
-		$subid = 0; 
 		if($relevance == ($this->headword_relevance - 5))
 		{
-			$subid = 1;
+			$subid++;
 		}
 		$fields = $this->dom_xpath->query( $query, $entry );
 		foreach ( $fields as $field ) {
