@@ -1,3 +1,4 @@
+v. 2.1.5 12 April 2013 fixed an issue with English-Vernacular browse view, some entries did not show up
 v. 2.1.4 10 April 2013 removed a break that slipped in during debugging.
 v. 2.1.3 10 April 2013 removed on duplicate test in sql import string
 v. 2.1.2 10 April 2013 showing memory usage during import
