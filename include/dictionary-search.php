@@ -61,7 +61,14 @@ function sil_dictionary_custom_join($join) {
 	mb_internal_encoding("UTF-8");
 	if( !empty($wp_query->query_vars['s'])) {
 		//search string gets trimmed and normalized to NFC 
-		$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
+		if (class_exists("Normalizer", $autoload = false))
+		{
+			$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
+		}
+		else 
+		{
+			$search = trim($wp_query->query_vars['s']);
+		}
 		$key = $_GET['key'];
 		if(!isset($key))
 		{
@@ -87,6 +94,12 @@ function sil_dictionary_custom_join($join) {
 		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
 			addslashes($wp_query->query_vars['letter']) . "%' AND relevance >= 95 AND language_code = '$key' ";
+			
+			$arrNoLetters = explode(",",  $wp_query->query_vars['noletters']);
+			foreach($arrNoLetters as $noLetter)
+			{
+				$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' ";
+			}
 		}		
 		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
 		{

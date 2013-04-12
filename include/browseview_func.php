@@ -183,7 +183,6 @@ function vernacularalphabet_func( $atts )
 		
 	$alphas = explode(",",  get_option('vernacular_alphabet'));
 	$display = displayAlphabet($alphas, $languagecode);
-	
 	$display .= "<div align=center><h1>" . $chosenLetter . "</h1></div><br>";
 
 	if(empty($languagecode))
@@ -191,16 +190,31 @@ function vernacularalphabet_func( $atts )
 		$display .=  "No language code provided. Please set in the Webonary settings.";
 		return $display;
 	}
-		
-    $display .= "<div id=searchresults>";
+	
+	//if for example somebody searches for "k", but there is also a letter 'kp' in the alphabet then
+	//words starting with kp should not appear 
+	$noLetters = "";
+	foreach($alphas as $alpha)
+	{
+		if(preg_match("/" . $chosenLetter . "/i", $alpha) && $chosenLetter != $alpha)
+		{
+			if(strlen($noLetters) > 0)
+			{
+				$noLetters .= ",";
+			}
+			$noLetters .= $alpha;
+		}
+	}
+
+	
+	$display .= "<div id=searchresults>";
     
-	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&langcode=" . $languagecode . "&posts_per_page=25&paged=" . $_GET['pagenr']);
+	$arrPosts = query_posts("s=a&letter=" . $chosenLetter . "&noletters=" . $noLetters . "&langcode=" . $languagecode . "&posts_per_page=25&paged=" . $_GET['pagenr']);
 	
 	if(count($arrPosts) == 0)
 	{
 		$display .= "No entries exist starting with this letter."; 
 	}
-	
 	foreach($arrPosts as $mypost)
 	{
 		if($mypost->post_title != $mypost->search_strings)
@@ -219,7 +233,7 @@ function vernacularalphabet_func( $atts )
 	}
 	
 	$display .= "</div>";
-	
+
 	if(!isset($_GET['totalEntries']))
 	{
 		global $wp_query;		
