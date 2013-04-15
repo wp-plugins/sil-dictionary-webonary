@@ -200,8 +200,8 @@ function vernacularalphabet_func( $atts )
 	$noLetters = "";
 	foreach($alphas as $alpha)
 	{
-		$alpha = stripslashes($alpha);
-		if(preg_match("/" . $chosenLetter . "/i", $alpha) && $chosenLetter != $alpha)
+		//$alpha = stripslashes($alpha);
+		if(preg_match("/" . $chosenLetter . "/i", $alpha) && $chosenLetter != stripslashes($alpha))
 		{
 			if(strlen($noLetters) > 0)
 			{

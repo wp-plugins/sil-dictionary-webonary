@@ -92,10 +92,21 @@ function sil_dictionary_custom_join($join) {
 		
 		if(isset($wp_query->query_vars['letter']))
 		{
-			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
-			addslashes($wp_query->query_vars['letter']) . "%' AND relevance >= 95 AND language_code = '$key' ";
+			if (class_exists("Normalizer", $autoload = false))
+			{
+				$letter = normalizer_normalize(trim($wp_query->query_vars['letter']), Normalizer::FORM_C);
+				$noletters = normalizer_normalize(trim($wp_query->query_vars['noletters']), Normalizer::FORM_C);
+			}
+			else 
+			{
+				$letter = trim($wp_query->query_vars['letter']);
+				$noletters = trim($wp_query->query_vars['noletters']);
+			}
 			
-			$arrNoLetters = explode(",",  $wp_query->query_vars['noletters']);
+			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
+			addslashes($letter) . "%' AND relevance >= 95 AND language_code = '$key' ";
+			
+			$arrNoLetters = explode(",",  $noletters);
 			foreach($arrNoLetters as $noLetter)
 			{
 				if(strlen($noLetter) > 0)
