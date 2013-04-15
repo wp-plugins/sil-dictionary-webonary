@@ -11,7 +11,7 @@ function displayAlphabet($alphas, $languagecode)
 	$display .= "<div style=\"min-width: 270px; width: 100%;\">";
 	foreach($alphas as $letter)
 	{
-    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . $letter . "&key=" . $languagecode . "\">" . $letter . "</a></span></div>";
+    	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . stripslashes($letter) . "&key=" . $languagecode . "\">" . stripslashes($letter) . "</a></span></div>";
 	}
 	$display .= "</div>";
 	$display .=  "<div style=clear:both></div>";
@@ -23,6 +23,10 @@ function displayAlphabet($alphas, $languagecode)
 function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $languagecode)
 {
 	$totalPages = round($totalEntries / $entriesPerPage, 0);
+	if(($totalEntries / $entriesPerPage) > $totalPages)
+	{
+		$totalPages++;
+	}
 	for($page = 1; $page <= $totalPages; $page++)
 	{
 		if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
@@ -175,7 +179,7 @@ function vernacularalphabet_func( $atts )
 	
 	if(isset($_GET['letter']))
 	{
-		$chosenLetter = $_GET['letter']; 
+		$chosenLetter = stripslashes($_GET['letter']); 
 	}
 	else {
 		$chosenLetter = "a"; 
@@ -196,6 +200,7 @@ function vernacularalphabet_func( $atts )
 	$noLetters = "";
 	foreach($alphas as $alpha)
 	{
+		$alpha = stripslashes($alpha);
 		if(preg_match("/" . $chosenLetter . "/i", $alpha) && $chosenLetter != $alpha)
 		{
 			if(strlen($noLetters) > 0)

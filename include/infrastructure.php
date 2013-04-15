@@ -98,7 +98,7 @@ function user_input() {
 				</p>
 				<h3><?php _e('Browse View');?></h3>
 				<?php _e('Vernacular Alphabet:'); ?>
-				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo get_option('vernacular_alphabet'); ?>" />
+				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('vernacular_alphabet')); ?>" />
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>			
 				<h3><?php _e('Settings');?></h3>

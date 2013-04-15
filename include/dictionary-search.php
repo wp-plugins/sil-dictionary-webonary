@@ -98,7 +98,10 @@ function sil_dictionary_custom_join($join) {
 			$arrNoLetters = explode(",",  $wp_query->query_vars['noletters']);
 			foreach($arrNoLetters as $noLetter)
 			{
-				$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' ";
+				if(strlen($noLetter) > 0)
+				{
+					$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' ";
+				}
 			}
 		}		
 		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
