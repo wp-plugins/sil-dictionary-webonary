@@ -1,3 +1,5 @@
+v. 2.1.8 15 April 2013 fixed problem with searching for apostroph letters in browse view
+v. 2.1.7 15 April 2013 fixed problem with page numbers in browse view
 v. 2.l.6 12 April 2013 resolved issue in browse-view for letters like kp showing up when clicking on k
 v. 2.1.5 12 April 2013 fixed an issue with English-Vernacular browse view, some entries did not show up
 v. 2.1.4 10 April 2013 removed a break that slipped in during debugging.
