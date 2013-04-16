@@ -417,7 +417,12 @@ function set_options () {
 
 function set_field_sortorder() {
 	global $wpdb;
-	
+
+	$sql = " SHOW columns FROM " . $wpdb->prefix . "sil_search WHERE Field = 'sortorder'";
+	if($wpdb->get_row($sql))
+	{
+		return false;
+	}	
 	$sql = " ALTER TABLE " . $wpdb->prefix . "sil_search ADD sortorder INT NOT NULL DEFAULT  '0'";
 	$wpdb->query( $sql );
 }

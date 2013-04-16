@@ -213,7 +213,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			<p>
 				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/> <?php esc_attr_e('Configured Dictionary'); ?><BR>
 				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /> <?php esc_attr_e('Reversal Index'); ?><BR>
-				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <?php esc_attr_e('Stem View (for sort order)'); ?><BR>				
+				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <a href="http://webonary.org/data-transfer/#stemview" target="_blank"><?php esc_attr_e('Stem View (for sort order)'); ?></a><BR>				
 			</p>
 			<div id="convertToLinks">
 				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
@@ -696,7 +696,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $this->dom->saveXML( $entry );
 		
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $wpdb->prepare( $entry_xml ) . "'" . 
+		" SET post_content = '" . $wpdb->prepare( addslashes($entry_xml) ) . "'" . 
 		" WHERE ID = " . $post_id;
 		 		
 		$wpdb->query( $sql );
