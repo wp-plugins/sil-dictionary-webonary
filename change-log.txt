@@ -1,3 +1,4 @@
+v. 2.2.1 16 April 2013 fixed duplicate error on alter sortorder
 v. 2.2.0 15 April 2013 normalization doesn't solve umlaut problem, using COLLATE 'UTF8_BIN' instead
 v. 2.1.9 15 April 2013 added normalization for browse view letters, this will hopefully fix umlaut problem
 v. 2.1.8 15 April 2013 fixed problem with searching for apostroph letters in browse view
