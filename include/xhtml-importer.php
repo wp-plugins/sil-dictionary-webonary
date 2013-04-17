@@ -996,7 +996,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$headword_text = trim($entry->textContent);	
 
-			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' AND relevance >= 95" ;
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
 			$wpdb->query( $sql );
 			
 			/*
