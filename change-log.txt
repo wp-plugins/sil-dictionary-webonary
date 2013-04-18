@@ -1,3 +1,5 @@
+v. 2.2.4 18 April 2013 added category browse view
+v. 2.2.3 18 April 2013 remove square brackets for import of semantic domains 
 v. 2.2.2 17 April 2013 fixed sort order problem with umlauts
 v. 2.2.1 16 April 2013 fixed duplicate error on alter sortorder
 v. 2.2.0 15 April 2013 normalization doesn't solve umlaut problem, using COLLATE 'UTF8_BIN' instead
