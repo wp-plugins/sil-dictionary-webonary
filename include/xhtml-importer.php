@@ -880,7 +880,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$i = 0;
 		foreach ( $semantic_domain_terms as $field ) {
 			$semantic_domain_language = $field->getAttribute("lang");
-			$domain_name = $field->textContent;
+			$domain_name = str_replace("]", "", $field->textContent);
 						
 			$arrTerm = wp_insert_term(
 				$domain_name,
