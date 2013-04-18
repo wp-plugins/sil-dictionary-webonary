@@ -1,4 +1,87 @@
 <?php
+function ajaxsearch()
+{
+	$languagecode = get_option('languagecode');
+	
+	$display = "";
+	
+	if(strlen($_REQUEST["semdomain"]) > 0)
+	{
+		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&showposts=100");
+		$searchquery = $_REQUEST["semdomain"];				
+	}
+
+	if(count($arrPosts) == 0)
+	{
+		$display .= "No entries exist for '" . $searchquery . "'."; 
+	}
+	else
+	{
+		foreach($arrPosts as $mypost)
+		{
+			/* if($mypost->post_title != $mypost->search_strings)
+			{
+				$headword = getVernacularHeadword($mypost->ID, $languagecode);
+				$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
+				$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\?s=" . $headword . "\">" . $headword . "</a></div>";
+			}
+			else 
+			{
+			*/
+				$display .= "<div class=post>" . $mypost->post_content . "</div>";
+				if( comments_open($mypost->ID) ) {
+					$display .= "<a href=\"" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
+				}			
+			//}
+		}
+	}
+		
+	echo $display;
+	die();
+}
+
+add_action( 'wp_ajax_getAjaxsearch', 'ajaxsearch' );
+add_action( 'wp_ajax_nopriv_getAjaxsearch', 'ajaxsearch' );
+
+function categories_func( $atts ) 
+{
+?>	
+	<style>
+	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold; white-space:nowrap; }
+	   A  {text-decoration: none; color: navy; font-size: 15px;}
+	</style>
+
+	<script>
+	function displayEntry(word)
+	{
+		jQuery.ajax({
+     		url: '<?php echo admin_url('admin-ajax.php'); ?>',
+     		data : {action: "getAjaxsearch", semdomain : word}, 		
+     		type:'POST',
+     		dataType: 'html',
+     		success: function(output_string){ 
+        		jQuery('#searchresult').html(output_string);
+     		}
+	 })
+	}	
+	</script>
+	
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/ua.js" type="text/javascript"></script>
+	
+	<!-- Infrastructure code for the tree -->
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/ftiens4.js" type="text/javascript"></script>
+
+	<!-- Execution of the code that actually builds the specific tree.
+     The variable foldersTree creates its structure with calls to gFld, insFld, and insDoc -->
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/categoryNodes.js" type="text/javascript"></script>
+
+	<!-- Build the browser's objects and display default view of the tree. -->
+	<script language="JavaScript">initializeDocument()</script>
+<?php 	
+}
+add_shortcode( 'categories', 'categories_func' );
+
+
 function displayAlphabet($alphas, $languagecode)
 {
 ?>

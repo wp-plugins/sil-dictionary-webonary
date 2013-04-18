@@ -129,11 +129,10 @@ function sil_dictionary_custom_join($join) {
 			"ORDER BY relevance DESC) ";
 		$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
 	}
-	if( $_GET['tax'] > 1) {
+	if( $_GET['tax'] > 1 || strlen($wp_query->query_vars['semdomain']) > 0) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
 	}
-	
 	return $join;
 }
 
@@ -174,7 +173,12 @@ function sil_dictionary_custom_where($where) {
 	$wp_query->is_search = true;
 	$where .= " AND $wpdb->term_taxonomy.term_id = " . $_GET['tax'];
 	}
-
+	
+	if(strlen($wp_query->query_vars['semdomain']) > 0)
+	{
+	$wp_query->is_search = true;
+	$where .= " AND $wpdb->term_taxonomy.taxonomy = 'sil_semantic_domains' AND $wpdb->term_taxonomy.description = '" . $wp_query->query_vars['semdomain'] ."'";
+	}	
 	return $where;
 }
 
