@@ -10,7 +10,7 @@ USEICONS = 0
 // Decide if the tree is to start all open or just showing the root folders
 STARTALLOPEN = 0 //replace 0 with 1 to show the whole tree
 
-ICONPATH = '/wp-content/plugins/sil-dictionary/images/' //change if the gif's folder is a subfolder, for example: 'images/'
+ICONPATH = '/wp-content/plugins/sil-dictionary-webonary/images/' //change if the gif's folder is a subfolder, for example: 'images/'
 
 foldersTree = gFld("", "")
   aux1 = insFld(foldersTree, gFld("1. Universe, creation", "c0001.htm"))
