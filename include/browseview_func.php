@@ -66,14 +66,14 @@ function categories_func( $atts )
 	}	
 	</script>
 	
-	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/ua.js" type="text/javascript"></script>
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/ua.js" type="text/javascript"></script>
 	
 	<!-- Infrastructure code for the tree -->
-	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/ftiens4.js" type="text/javascript"></script>
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/ftiens4.js" type="text/javascript"></script>
 
 	<!-- Execution of the code that actually builds the specific tree.
      The variable foldersTree creates its structure with calls to gFld, insFld, and insDoc -->
-	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary/js/categoryNodes.js" type="text/javascript"></script>
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes.js" type="text/javascript"></script>
 
 	<!-- Build the browser's objects and display default view of the tree. -->
 	<script language="JavaScript">initializeDocument()</script>
