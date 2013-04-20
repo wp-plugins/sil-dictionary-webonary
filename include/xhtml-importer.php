@@ -269,6 +269,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		$overrides = array( 'test_form' => false, 'test_type' => false );
 		$file = wp_handle_upload( $_FILES[$which_file], $overrides );
+
 		
 		if ( isset( $file['error'] ) )
 			return $file;
@@ -310,7 +311,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			    echo "Target Path: " . $target_path;			    				    
 			}				
 		}
-
+		
 		// Construct the object array
 		$object = array( 'post_title' => $filename,
 			'post_content' => $url,
@@ -320,7 +321,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// Save the data
 		$id = wp_insert_attachment( $object, $file );
-
+		
 		return array( 'file' => $file, 'id' => $id );
 	}
 
@@ -340,7 +341,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$ret_val = $this->dom->load($xhtml_file);
 		$this->dom_xpath = new DOMXPath($this->dom);
 		$this->dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
-
 		/*
 		 * Load the Writing Systems (Languages)
 		 */
@@ -774,7 +774,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$search_string = $field->textContent;
 		}
-					
+							
 		// We're using a generic $wpdb->query instead of a $wpdb->insert
 		// to make use of the ON DUPLICATE KEY feature of MySQL.
 
@@ -823,9 +823,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// will probably fail.
 		$sql = "SELECT post_id, subid
 			FROM $this->search_table_name
-			WHERE search_strings LIKE '%" . trim($headword) . "%' collate utf8_bin AND relevance >= 95";
+			WHERE search_strings = '" . trim($headword) . "' collate utf8_bin AND relevance >= 95";
 			$sql .= " AND language_code <> '" . $langcode . "'";
-			
+									
 		$row = $wpdb->get_row( $sql );
 		$subid = $row->subid;
 
@@ -967,8 +967,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 												
 				$headword_text = trim($headword->textContent);		
 
-			
 				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
+				
 				if ( $post_id != NULL ) {
 					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance, null, $subid);
 				}
