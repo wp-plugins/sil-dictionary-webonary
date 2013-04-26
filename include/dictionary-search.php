@@ -195,7 +195,14 @@ function sil_dictionary_custom_order_by($orderby) {
 	
 	if( !empty($wp_query->query_vars['s']))
 	{
-		$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".search_strings ASC";
+		if(isset($wp_query->query_vars['letter']))
+		{
+			$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".search_strings ASC";	
+		}
+		else 
+		{
+			$orderby .= "menu_order ASC, " . $search_table_name . ".search_strings ASC";
+		}
 		//$orderby .= " $wpdb->posts.post_title ASC";
 	}
 
