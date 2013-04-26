@@ -996,7 +996,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$headword_text = trim($entry->textContent);	
 
-			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
+			$sql = "SELECT post_id, relevance
+			FROM $this->search_table_name
+			WHERE search_strings = '" . $headword_text . "' collate utf8_bin";
+									
+			$row = $wpdb->get_row( $sql );
+					
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE post_id = " . $row->post_id . " AND relevance = " . $row->relevance;
 			$wpdb->query( $sql );
 			
 			/*
