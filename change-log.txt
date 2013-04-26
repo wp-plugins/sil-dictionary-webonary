@@ -1,3 +1,4 @@
+v. 2.3.1 26 April 2013 reverted previous change and instead we import additional sorting in menu_order field
 v. 2.3.0 26 April 2013 import_xhtml_stem_indexes: removed only updating when relevance field is the same
 v. 2.2.9 26 April 2013 improved sortorder import (import_xhtml_stem_indexes)
 v. 2.2.8 20 April 2013 fixed problem importing reversals in get_post_id_bytitle
