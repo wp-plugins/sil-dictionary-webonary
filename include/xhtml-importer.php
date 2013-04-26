@@ -1002,9 +1002,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 									
 			$row = $wpdb->get_row( $sql );
 					
-			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE post_id = " . $row->post_id . " AND relevance = " . $row->relevance;
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE post_id = " . $row->post_id;
 			$wpdb->query( $sql );
-			
+
+			/*
+			$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $entry_counter . " WHERE post_title = '" . $headword_text . "' collate utf8_bin";
+			$wpdb->query( $sql );
+			*/
 			/*
 			 * Show progresss to the user.
 			 */			
