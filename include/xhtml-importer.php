@@ -116,7 +116,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$this->goodbye($xhtml_file, $css_file);
 				break;
-
+			/*
+			 * for indexing the search strings (configured dictionary)
+			 */
+			case 2 :
+				?>
+				<DIV ID="flushme">indexing...</DIV>
+				<?php
+				$this->index_searchstrings();
+				
+				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
+			?>
+			<?php	
+				break;
 			}
 			$this->footer();
 	}
@@ -141,9 +153,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 	function goodbye($xhtml_file, $css_file){		
 		
+		global $wpdb;
+		
 		if(isset($xhtml_file))
 		{
 			unlink($xhtml_file);
+			
+			$sql = "DELETE FROM " . $wpdb->prefix . "posts WHERE post_type = 'attachment' AND post_title LIKE '%.xhtml'";
+			
+			$wpdb->query( $sql );
 		}
 		if(isset($css_file))
 		{
@@ -151,8 +169,23 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 		
 		echo '<div class="narrow">';
-		
-		echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
+				
+		if ( $_POST['filetype'] == 'configured') {
+			echo '<strong>Next step: </strong>';
+			echo '<p>';
+				echo '<form enctype="multipart/form-data" id="import-upload-form" method="post" action="' . esc_attr(wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=2", 'import-upload')) . '">';
+					echo '<input type="submit" class="button" name="btnIndex" value="Index Search Strings"/>';
+					if(isset($_POST['chkConvertToLinks']))
+					{
+						echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
+					}
+				echo '</form>';	
+			echo '</p>';
+		}
+		else
+		{
+			echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
+		}
 	}
 	//-----------------------------------------------------------------------------//
 
@@ -163,6 +196,31 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @since 3.0
 	 */
 
+	function getArrFieldQueries()
+	{
+		if($_GET['step'] == 2)
+		{
+			$querystart = "//*";
+		}
+		else 
+		{
+			$querystart = ".//xhtml:span";
+		}
+		
+		$arrFieldQueries[0] = $querystart . '[@class="headword"]|//*[@class="headword_L2"]|//*[@class="headword-minor"]';
+		$arrFieldQueries[1] = $querystart . '[@class = "headword-sub"]';
+		$arrFieldQueries[2] = $querystart . '[contains(@class, "LexemeForm")]';
+		$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]';
+		$arrFieldQueries[4] = $querystart . '[@class = "definition-sub"]';
+		$arrFieldQueries[5] = $querystart . '[@class = "example"]';
+		$arrFieldQueries[6] = $querystart . '[@class = "translation"]';
+		$arrFieldQueries[7] = $querystart . '[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]';
+		$arrFieldQueries[8] = $querystart . '[@class = "variantref-form"]';
+		$arrFieldQueries[9] = $querystart . '[@class = "variantref-form-sub"]';
+		
+		return $arrFieldQueries;
+	}
+	
 	function get_user_input() {
 
 		$bytes = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
@@ -327,6 +385,78 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	//-----------------------------------------------------------------------------//
 
+	function index_searchstrings()
+	{
+		global $wpdb;
+		
+		$search_table_exists = $wpdb->get_var( "show tables like '$this->search_table_name'" ) == $this->search_table_name;
+		$pos_taxonomy_exists = taxonomy_exists( $this->pos_taxonomy );
+		$semantic_domains_taxonomy_exists = taxonomy_exists( $this->semantic_domains_taxonomy );
+		
+		if ( $search_table_exists ) {
+			$arrPosts = $this->get_posts();
+			
+			$subid = 1;
+			$entry_counter = 1;
+			$entries_count = count($arrPosts);
+			
+			foreach($arrPosts as $post)
+			{
+				if ( $post->ID ){
+					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
+					$wpdb->query( $sql );
+				}
+				
+				$doc = new DomDocument();
+				$doc->preserveWhiteSpace = false;
+				$doc->loadXML($post->post_content);
+
+				$xpath = new DOMXPath($doc);
+
+				$arrFieldQueries = $this->getArrFieldQueries();
+				
+				$headword = $xpath->query($arrFieldQueries[0])->item(0);
+				
+				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
+				
+				//import headword
+				$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
+				//sub headwords
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[1], ($this->headword_relevance - 5), $subid);
+				//lexeme forms
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[2], $this->lexeme_form_relevance);
+				//definitions
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[3], $this->definition_word_relevance);
+				//sub definitions
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[4], ($this->definition_word_relevance - 5));
+				//example sentences
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[5], $this->example_sentences_relevance);
+				//Translation of example sentences
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[6], $this->example_sentences_relevance);
+				//custom fields
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[7], $this->custom_field_relevance);					
+				//variant forms
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[8], $this->variant_form_relevance);
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[9], $this->variant_form_relevance);
+			
+				/*
+				 * Load semantic domains
+				 */
+				if ( $semantic_domains_taxonomy_exists )
+					$this->import_xhtml_semantic_domain($doc, $post->ID);				
+
+				/*
+				 * Load parts of speech (POS)
+				 */
+				if ( $pos_taxonomy_exists )
+					$this->import_xhtml_part_of_speech($doc, $post->ID);
+				
+				$subid++;
+				$entry_counter++;
+			}
+		}
+	}
+	
 	/**
 	 * Import the XHTML data
 	 *
@@ -425,10 +555,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function import_xhtml_entries () {
 		global $wpdb;
 
-		$search_table_exists = $wpdb->get_var( "show tables like '$this->search_table_name'" ) == $this->search_table_name;
-		$pos_taxonomy_exists = taxonomy_exists( $this->pos_taxonomy );
-		$semantic_domains_taxonomy_exists = taxonomy_exists( $this->semantic_domains_taxonomy );
-
 		/*
 		 * Loop through the entries so we can post them to WordPress.
 		 */
@@ -445,16 +571,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// number looks like this:
 			// <span class="headword" lang="ii">my headword<span class="xhomographnumber">1</span></span>
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
-			//$entry = $this->convert_fields_to_links($entry);
-			$entry_xml = $this->dom->saveXML( $entry );
 
+			$entry_xml = $this->dom->saveXML( $entry );
+	
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
 			//$headword = $headwords->item( 0 )->nodeValue;
-			$subid = 1;
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
 				$headword_text = $headword->textContent;
-
+	
 				//for sorting purposes we have to replace the homograph from 
 				//a subscript number to a normal number in the post_title 
 				$homographs = "₁,₂,₃,₄,₅,₆,₇,₈,₉";
@@ -474,11 +599,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$post_id = $this->get_post_id( $flexid );
 				$post_id_exists = $post_id != NULL;	
-
+	
 				// If the ID is not null, but has a value, wp_insert_post will
 				// update the record instead of adding a new record. When updating,
 				// it resets the post_modified and post_modified_gmt fields.
-
 				$post = array(
 					'ID' => $post_id,
 					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
@@ -488,62 +612,30 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				);
 				$post_id = wp_insert_post( $post );
 				wp_set_object_terms( $post_id, "webonary", 'category' );
+				
 				/*
 				 * Show progresss to the user.
 				 */
-				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
-				/*
-				 * Load the multilingual search table
-				 */
-				if ( $search_table_exists ) {
-					if ( $post_id_exists ){
-						$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post_id );
-						$wpdb->query( $sql );
-					}
-					//import headword
-					$this->import_xhtml_search_string($post_id, $headword, $this->headword_relevance, null, $subid);
-					$this->convert_fields_to_links($post_id, $entry, $headword);		
-					//sub headwords
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "headword-sub"]', ($this->headword_relevance - 5), $subid);
-					//lexeme forms
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[contains(@class, "LexemeForm")]', $this->lexeme_form_relevance);
-					//definitions
-					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "definition"]', $this->definition_word_relevance);					
-					//$this->import_xhtml_search($entry, $post_id, './xhtml:span[@class = "senses"]//xhtml:span[@class = "xitem"]|./xhtml:span[@class = "senses"]//xhtml:span[@class = "definition"]', $this->definition_word_relevance);					
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "LexSense-publishRoot-DefinitionPub_L2"]//xhtml:span[@class = "xitem"]|.//xhtml:span[@class = "definition"]|.//xhtml:span[@class = "definition_L2"]', $this->definition_word_relevance);					
-					//sub definitions
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "definition-sub"]', ($this->definition_word_relevance - 5));
-					//example sentences
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "example"]', $this->example_sentences_relevance);
-					//Translation of example sentences
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "translation"]', $this->example_sentences_relevance);
-					//custom fields
-					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexEntry-")]', $this->custom_field_relevance);
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]', $this->custom_field_relevance);					
-					//variant forms
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form"]', $this->variant_form_relevance);
-					$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "variantref-form-sub"]', $this->variant_form_relevance);
-					//synonyms (sense-crossref)
-					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref"]', $this->sense_crossref_relevance);				
-					//$this->import_xhtml_search($entry, $post_id, './/xhtml:span[@class = "sense-crossref-sub"]', $this->sense_crossref_relevance);
-					
-				}
-				/*
-				 * Load semantic domains
-				 */
-				if ( $semantic_domains_taxonomy_exists )
-					$this->import_xhtml_semantic_domain( $entry, $post_id );				
-				//$entry_xml = $this->dom->saveXML($entry);				
-
-				/*
-				 * Load parts of speech (POS)
-				 */
-				if ( $pos_taxonomy_exists )
-					$this->import_xhtml_part_of_speech( $entry, $post_id );
-				$subid ++;
+				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "<strong>Step 1 of 2: Importing Post Entries</strong><br>" );
 			} // foreach ( $headwords as $headword )
+			
+			if(isset($_POST['chkConvertToLinks']))
+			{
+				$arrFieldQueries = $this->getArrFieldQueries();
+				$x = 0;
+				foreach($arrFieldQueries as $fieldQuery)
+				{			
+					$fields = $this->dom_xpath->query($fieldQuery, $entry);
+						
+					foreach($fields as $field)
+					{
+						$this->convert_fields_to_links($post_id, $entry, $field);
+					}
+				}
+			}
 			$entry_counter++;
 		} // foreach ($entries as $entry){
+
 		$this->convert_fieldworks_links_to_wordpress();
 	}
 
@@ -600,8 +692,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// link example:
 		//		<a href="#hvo14216">
-
+		
 		$links = $this->dom_xpath->query('//xhtml:a');
+		$totalLinks = $links->length;
+		$linkcount = 1;
 		foreach ( $links as $link ) {
 
 			// Get the target hvo link to replace
@@ -633,67 +727,67 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$sql = $sql . '"';
 				$sql = $sql . "');";
 								
-				$wpdb->query( $sql );		
+				$wpdb->query( $sql );
+
+				$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
 				
 			} // foreach ( $cross_refs as $cross_ref )
+			$linkcount++;
 		} // foreach ( $links as $link )
 		
 	} // function convert_fieldworks_links_to_wordpress()
 
 	function convert_fields_to_links($post_id, $entry, $field) {
 		global $wpdb;
+
+		$searchstring = $field->textContent;
+		if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
+		{
+			$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
+		}		
 				
-		if(isset($_POST['chkConvertToLinks']))
-		{			
-			$searchstring = $field->textContent;			
-			if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
-			{
-				$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
-			}			
-			$Emphasized_Text = $this->dom_xpath->query( './/xhtml:span[@class = "Emphasized_Text"]', $field );
-
-			if($Emphasized_Text->length > 0)
-			{				
-				$field->removeChild($Emphasized_Text->item(0));
-			}
-			
-			$newelement = $this->dom->createElement('a');
-			$newelement->appendChild($this->dom->createTextNode(addslashes($field->textContent)));			
-			$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
-			$newelement->setAttribute("class", $field->getAttribute("class"));
-			//$field->nodeValue = "";
-			//$field->appendChild($newelement);
-			if($Emphasized_Text->length > 0)
-			{				
-				$Emphasized_Text->item(0)->insertBefore($newelement);
-				$newelement = $Emphasized_Text->item(0);
-			}						
-			$parent = $field->parentNode;			
-			$parent->replaceChild($newelement, $field);			
-			
-			$entry_xml = $this->dom->saveXML( $entry );
-						
-			$sql = "UPDATE $wpdb->posts " .
-			" SET post_content = '" . $wpdb->prepare( $entry_xml ) . "'" . 
-			" WHERE ID = " . $post_id;
-						 		
-			$wpdb->query( $sql );
+		$Emphasized_Text = $this->dom_xpath->query( './/xhtml:span[@class = "Emphasized_Text"]', $field);
+		//$Emphasized_Text = $xpath->query( '//span[@class = "Emphasized_Text"]');
+		
+		if($Emphasized_Text->length > 0)
+		{
+			$field->removeChild($Emphasized_Text->item(0));
 		}
-
-		return $entry;
+				
+		$newelement = $this->dom->createElement('a');
+		$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));	
+		$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
+		$newelement->setAttribute("class", $field->getAttribute("class"));
+		//$field->nodeValue = "";
+		//$field->appendChild($newelement);
+		if($Emphasized_Text->length > 0)
+		{				
+			$Emphasized_Text->item(0)->insertBefore($newelement);
+			$newelement = $Emphasized_Text->item(0);
+		}
+		$parent = $field->parentNode;	
+		$parent->replaceChild($newelement, $field);			
+		
+		$entry_xml = $this->dom->saveXML( $entry );
+							
+		$sql = "UPDATE $wpdb->posts " .
+		" SET post_content = '" . $wpdb->prepare( addslashes($entry_xml) ) . "'" . 
+		" WHERE ID = " . $post_id;
+			 		
+		$wpdb->query( $sql );
 	}	
 	         
-	function convert_semantic_domains_to_links($post_id, $entry, $field, $termid) {
+	function convert_semantic_domains_to_links($post_id, $doc, $field, $termid) {
 		global $wpdb;
 			
-		$newelement = $this->dom->createElement('a');
-		$newelement->appendChild($this->dom->createTextNode(addslashes($field->textContent)));		
+		$newelement = $doc->createElement('a');
+		$newelement->appendChild($doc->createTextNode(addslashes($field->textContent)));		
 		$newelement->setAttribute("href", "/?s=&partialsearch=1&tax=" . $termid);
 		$newelement->setAttribute("class", $field->getAttribute("class"));
 		$parent = $field->parentNode;			
 		$parent->replaceChild($newelement, $field);
 		
-		$entry_xml = $this->dom->saveXML( $entry );
+		$entry_xml = $doc->saveXML( $entry );
 		
 		$sql = "UPDATE $wpdb->posts " .
 		" SET post_content = '" . $wpdb->prepare( addslashes($entry_xml) ) . "'" . 
@@ -712,14 +806,23 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $entries_count = total number of entries
 	 * @param <type> $headword_text = text of the headword
 	 */
-	function import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text ) {		
+	function import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, $msg = "" ) {		
 		flush();
 		?>
 		<SCRIPT type="text/javascript">//<![CDATA[
 		d = document.getElementById("flushme");
-		info = "Importing <?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+		info = "<?php echo $msg; ?>";
+		<?php 
+		if($entries_count >= 1)
+		{
+		?>
+			info += "<?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+		<?php 
+		}
+		?>
 		//info += "<br>";
-		//info += "Memory Usage: <?php echo memory_get_usage(); ?> bytes";
+		//info += "Memory Usage: <?php echo memory_get_usage() . " bytes"; ?>";
+		
 		d.innerHTML = info;
 		//]]></SCRIPT>
 		<?php		
@@ -734,16 +837,20 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $query = the xhtml query
 	 * @param <type> $relevance = weighted importance of this particular string for search results 
 	 */
-	function import_xhtml_search( $entry, $post_id, $query, $relevance, $subid = 0 ) {
+	function import_xhtml_search( $doc, $post_id, $query, $relevance, $subid = 0 ) {
 
 		if($relevance == ($this->headword_relevance - 5))
 		{
 			$subid++;
 		}
-		$fields = $this->dom_xpath->query( $query, $entry );
+		//$fields = $this->dom_xpath->query( $query, $entry );
+
+		$xpath = new DOMXPath($doc);
+		
+		$fields = $xpath->query($query);
+				
 		foreach ( $fields as $field ) {
 			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
-			$this->convert_fields_to_links($post_id, $entry, $field);
 			if($subid > 0)
 			{
 				$subid++;
@@ -800,6 +907,30 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	
 	//-----------------------------------------------------------------------------//
 
+	function get_category_id() {
+	global $wpdb;
+	
+	$catid = $wpdb->get_var( $wpdb->prepare( "
+		SELECT term_id
+		FROM $wpdb->terms
+		WHERE name LIKE 'webonary'"));	
+	
+	return $catid;
+	}
+	
+	function get_posts() {
+		global $wpdb;
+
+		// @todo: If $headword_text has a double quote in it, this
+		// will probably fail.
+		$sql = "SELECT ID, post_title, post_content
+			FROM $wpdb->posts
+			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
+			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id();
+
+		return $wpdb->get_results($sql);
+	}	
+		
 	/**
 	 * Utility function return the post ID given a headword.
 	 * @param string $headword = headword to find
@@ -843,8 +974,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	// Currently we aren't deleting any existing POS terms. More than one post may
 	// refer to a domain. For the moment, any bad POSs must be removed by hand.
 
-	function import_xhtml_part_of_speech( $entry, $post_id ) {
-		$pos_terms = $this->dom_xpath->query( './/xhtml:span[contains(@class, "partofspeech")]', $entry );
+	function import_xhtml_part_of_speech( $doc, $post_id ) {
+
+		$xpath = new DOMXPath($doc);
+		
+		$pos_terms = $xpath->query('//span[contains(@class, "partofspeech")]');
+		
 		$i = 0;
 		//$parent_term_id = 0;
 		foreach ( $pos_terms as $pos_term ) {
@@ -874,9 +1009,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	// Currently we aren't deleting any existing semantic domains. More than one post may
 	// refer to a domain. For the moment, any bad domains must be removed by hand.
 
-	function import_xhtml_semantic_domain( $entry, $post_id ) {
+	function import_xhtml_semantic_domain( $doc, $post_id ) {
 
-		$semantic_domain_terms = $this->dom_xpath->query('.//xhtml:span[@class = "semantic-domains"]//xhtml:span[@class = "semantic-domain-name"]|.//xhtml:span[@class = "semantic-domains-sub"]//xhtml:span[@class = "semantic-domain-name-sub"]', $entry );
+		$xpath = new DOMXPath($doc);
+		
+		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
+		
 		$i = 0;
 		foreach ( $semantic_domain_terms as $field ) {
 			$semantic_domain_language = $field->getAttribute("lang");
@@ -906,7 +1044,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 			}
 			 	
-			$this->convert_semantic_domains_to_links($post_id, $entry, $field, $termid);			
+			$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
 						
 			/*
 			 * Load semantic domain into search table
@@ -996,15 +1134,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$headword_text = trim($entry->textContent);	
 
-			$sql = "SELECT post_id, relevance
-			FROM $this->search_table_name
-			WHERE search_strings = '" . $headword_text . "' collate utf8_bin";
-									
-			$row = $wpdb->get_row( $sql );
-					
-			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE post_id = " . $row->post_id . " AND relevance = " . $row->relevance;
+			//this is used for the browse view sort order
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
 			$wpdb->query( $sql );
-
+			
+			//this is used for the search sort order
 			$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $entry_counter . " WHERE post_title = '" . $headword_text . "' collate utf8_bin";
 			$wpdb->query( $sql );
 
