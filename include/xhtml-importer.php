@@ -274,7 +274,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank"><?php esc_attr_e('Sort Order (usually stem-based view)'); ?></a><BR>				
 			</p>
 			<div id="convertToLinks">
-				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input>
+				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links). - slows down import'); ?></input><br>
+				<input type="checkbox" name="chkShowDebug"> <?php esc_attr_e('Display debug messages'); ?></input>
 			</div>
 			<p class="submit">
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
@@ -476,7 +477,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		 */
 		if ( taxonomy_exists( $this->writing_system_taxonomy ) )
 			$this->import_xhtml_writing_systems();
-
 		/*
 		 * Import
 		 */
@@ -485,6 +485,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$reversals = $this->dom_xpath->query( '(//xhtml:span[contains(@class, "reversal-form")])[1]' );
 			if ( $reversals->length > 0 )
 				return;
+			//inform the user about which fields are available
+			$arrFieldQueries = $this->getArrFieldQueries();
+			foreach($arrFieldQueries as $fieldQuery)
+			{			
+				$fields = $this->dom_xpath->query($fieldQuery);
+				if($fields->length == 0 && isset($_POST['chkShowDebug']))
+				{
+					echo "No entries found for the query " . $fieldQuery . "<br>";
+				}
+			}						
 			$this->import_xhtml_entries();
 		}
 		elseif ( $_POST['filetype'] == 'reversal')
@@ -512,6 +522,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$writing_systems = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Language Name"]' );
 		// Currently we aren't using font info.
 		// $writing_system_fonts = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Default Font"]' );
+		if($writing_systems->length == 0 && isset($_POST['chkShowDebug']))
+		{
+			echo "The language names were not found. Please add the language name meta tag in your xhtml file.<br>";
+		}
 		foreach ( $writing_systems as $writing_system ) {
 			$writing_system_abbreviation = $writing_system->getAttribute( "name");
 			$writing_system_name = $writing_system->getAttribute( "content");
@@ -573,8 +587,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
 
 			$entry_xml = $this->dom->saveXML( $entry );
-	
+			
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
+			
+			if($headwords->length == 0) 
+			{
+				echo "<div style=color:red>ERROR: No headwords found.</div><br>";
+				return;
+			}
 			//$headword = $headwords->item( 0 )->nodeValue;
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
