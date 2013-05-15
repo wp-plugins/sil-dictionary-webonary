@@ -1,3 +1,4 @@
+v. 2.3.5 15 Mai 2013 fixed problem in browseview with "See main entry" link
 v. 2.3.4 15 Mai 2013 added lang attribute to import when converting to links
 v. 2.3.3 14 Mai 2013 you can now display some debugging messages when importing
 v. 2.3.2 07 Mai 2013 seperated import of posts and indexing of search strings into 2 steps, so that importing large dictionaries won't timeout
