@@ -309,7 +309,7 @@ function vernacularalphabet_func( $atts )
 		{
 			$headword = getVernacularHeadword($mypost->ID, $languagecode);
 			$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
-			$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\"?s=" . $headword . "\">" . $headword . "</a></div>";
+			$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\"/?s=" . $headword . "&partialsearch=1\">" . $headword . "</a></div>";
 		}
 		else 
 		{
