@@ -305,7 +305,7 @@ function vernacularalphabet_func( $atts )
 	}
 	foreach($arrPosts as $mypost)
 	{
-		if($mypost->post_title != $mypost->search_strings)
+		if(trim($mypost->post_title) != trim($mypost->search_strings))
 		{
 			$headword = getVernacularHeadword($mypost->ID, $languagecode);
 			$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
