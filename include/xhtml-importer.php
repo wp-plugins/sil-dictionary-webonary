@@ -611,8 +611,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$h++;
 				}
 				$flexid = $entry->getAttribute("id");
-																					
-				$entry_xml = $this->dom->saveXML( $entry );												
+
+				$entry_xml = $this->dom->saveXML($entry );	
+				
 				/*
 				 * Insert the new entry into wp_posts
 				 */
@@ -626,7 +627,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$post = array(
 					'ID' => $post_id,
 					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
-					'post_content' => $wpdb->prepare( $entry_xml ),
+					'post_content' =>  $entry_xml,
 					'post_status' => 'publish',						
 					'post_name' => $flexid
 				);
