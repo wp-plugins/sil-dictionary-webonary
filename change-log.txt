@@ -1,3 +1,4 @@
+v. 2.3.8 17 Mai 2013 removed $wpdb->prepare for inserting post_content, as it caused issues.
 v. 2.3.7 15 Mai 2013 added trim for if(trim($mypost->post_title) != trim($mypost->search_strings))
 v. 2.3.6 15 Mai 2013 added partial search query to the "See main entry" link
 v. 2.3.5 15 Mai 2013 fixed problem in browseview with "See main entry" link
