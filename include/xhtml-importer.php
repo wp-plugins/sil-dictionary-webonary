@@ -217,6 +217,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$arrFieldQueries[7] = $querystart . '[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]';
 		$arrFieldQueries[8] = $querystart . '[@class = "variantref-form"]';
 		$arrFieldQueries[9] = $querystart . '[@class = "variantref-form-sub"]';
+		$arrFieldQueries[10] = $querystart . '[@class = "sense-crossref"]';
 		
 		return $arrFieldQueries;
 	}
@@ -439,7 +440,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//variant forms
 				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[8], $this->variant_form_relevance);
 				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[9], $this->variant_form_relevance);
-			
+				//cross references
+				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[10], $this->sense_crossref_relevance);
+				
 				/*
 				 * Load semantic domains
 				 */
@@ -646,11 +649,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$x = 0;
 				foreach($arrFieldQueries as $fieldQuery)
 				{			
-					$fields = $this->dom_xpath->query($fieldQuery, $entry);
-						
-					foreach($fields as $field)
+					if (!preg_match("/sense-crossref/i", $fieldQuery))
 					{
-						$this->convert_fields_to_links($post_id, $entry, $field);
+						$fields = $this->dom_xpath->query($fieldQuery, $entry);
+							
+						foreach($fields as $field)
+						{
+							$this->convert_fields_to_links($post_id, $entry, $field);
+						}
 					}
 				}
 			}
@@ -725,10 +731,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// Now get the cross reference. Should only be one, but written to
 			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]', $link );
+			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")] ', $link );
+			
 			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
-				
+
+				$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
+				foreach($sensenumbers as $sensenumber)
+				{
+					$sensenumber->parentNode->removeChild($sensenumber);
+				}
+							
 				// Get the WordPress post ID for the link.
 				$flexid = str_replace("#", "", $href);				
 				$post_id = (string) $this->get_post_id( $flexid );
@@ -737,17 +750,24 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				// WordPress ID The update command should look like this:
 				// UPDATE `nuosu`.`wp_posts` SET post_content =
 				//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
-				if ( empty( $post_id ) )
-					$post_id = 'id-not-found';
+				//if ( empty( $post_id ) )
+					//$post_id = 'id-not-found';
 				$sql = "UPDATE $wpdb->posts SET post_content = ";
 				$sql = $sql . "REPLACE(post_content, 'href=";
 				$sql = $sql . '"' . $href . '"';
 				$sql = $sql . "', 'href=";
 				$sql = $sql . '"';
-				$sql = $sql . "index.php?p=" . $post_id;
+				if ( empty( $post_id ) )
+				{
+					$sql = $sql . "index.php?s=" . $link->textContent . "&partialsearch=1";
+				}
+				else 
+				{
+					$sql = $sql . "index.php?p=" . $post_id;
+				}
 				$sql = $sql . '"';
 				$sql = $sql . "');";
-								
+							
 				$wpdb->query( $sql );
 
 				$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
