@@ -1152,6 +1152,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if ( $post_id != NULL ) {
 					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance, null, $subid);
 				}
+				else
+				{
+					echo "PostId for '" . $headword_text . "' not found.<br>";
+				} 
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry )
