@@ -1,3 +1,5 @@
+v. 2.4.3 21 Mai 2013 don't anymore display page number in browse view if there is only 1 page.
+v. 2.4.2 21 Mai 2013 the link &partialsearch caused problems while indexing searchstrings. Replace & with html code. 
 v. 2.4.1 21 Mai 2013 giving error message for reversal import if postid is not found
 v. 2.4.0 21 Mai 2013 check for empty entries
 v. 2.3.9 20 Mai 2013 fixed issue when searching for and linking to cross references
