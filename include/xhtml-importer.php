@@ -593,7 +593,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
 			
-			if($headwords->length == 0) 
+			if($headwords->length == 0 && strlen(trim($entry->textContent)) > 0) 
 			{
 				echo "<div style=color:red>ERROR: No headwords found.</div><br>";
 				return;
