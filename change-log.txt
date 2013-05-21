@@ -1,3 +1,4 @@
+v. 2.4.1 21 Mai 2013 giving error message for reversal import if postid is not found
 v. 2.4.0 21 Mai 2013 check for empty entries
 v. 2.3.9 20 Mai 2013 fixed issue when searching for and linking to cross references
 v. 2.3.8 17 Mai 2013 removed $wpdb->prepare for inserting post_content, as it caused issues.
