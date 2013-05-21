@@ -110,16 +110,19 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 	{
 		$totalPages++;
 	}
-	for($page = 1; $page <= $totalPages; $page++)
+	if($totalPages > 1)
 	{
-		if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
+		for($page = 1; $page <= $totalPages; $page++)
 		{
-			$display .= $page . " ";
+			if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
+			{
+				$display .= $page . " ";
+			}
+			else
+			{
+				$display .= "<a href=\"?letter=" . $chosenLetter . "&key=" . $languagecode . "&pagenr=" . $page . "&totalEntries=" . $totalEntries . "\">" . $page . "</a> ";
+			}		 
 		}
-		else
-		{
-			$display .= "<a href=\"?letter=" . $chosenLetter . "&key=" . $languagecode . "&pagenr=" . $page . "&totalEntries=" . $totalEntries . "\">" . $page . "</a> ";
-		}		 
 	}		
 	return $display;
 }

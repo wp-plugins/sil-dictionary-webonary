@@ -759,7 +759,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$sql = $sql . '"';
 				if ( empty( $post_id ) )
 				{
-					$sql = $sql . "index.php?s=" . $link->textContent . "&partialsearch=1";
+					$sql = $sql . "index.php?s=" . $link->textContent . "&amp;partialsearch=1";
 				}
 				else 
 				{
@@ -915,6 +915,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 			
 		$language_code = $field->getAttribute("lang");
+		
 		if(isset($mySearch_string))
 		{
 			$search_string = $mySearch_string;
