@@ -997,7 +997,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// will probably fail.
 		$sql = "SELECT post_id, subid
 			FROM $this->search_table_name
-			WHERE search_strings = '" . trim($headword) . "' collate utf8_bin AND relevance >= 95";
+			WHERE search_strings = '" . addslashes(trim($headword)) . "' collate utf8_bin AND relevance >= 95";
 			$sql .= " AND language_code <> '" . $langcode . "'";
 									
 		$row = $wpdb->get_row( $sql );
