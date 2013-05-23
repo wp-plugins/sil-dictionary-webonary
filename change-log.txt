@@ -1,3 +1,4 @@
+v. 2.4.5 23 Mai 2013 normalizing headword in get_post_id_bytitle, so that words with accents get found in reversal import
 v. 2.4.4 22 Mai 2013 added addslashes to get_post_id_bytitle sql statement
 v. 2.4.3 21 Mai 2013 don't anymore display page number in browse view if there is only 1 page.
 v. 2.4.2 21 Mai 2013 the link &partialsearch caused problems while indexing searchstrings. Replace & with html code. 
