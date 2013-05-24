@@ -139,7 +139,64 @@ function englishalphabet_func( $atts ) {
 		$chosenLetter = "a"; 
 	}
 	
-	?>
+	$alphas = range('a', 'z');
+	$display = displayAlphabet($alphas, $languagecode);
+	
+	$display = reversalindex($display, $chosenLetter, $languagecode);
+		
+ return $display;
+}
+
+add_shortcode( 'englishalphabet', 'englishalphabet_func' );
+ 
+function getReversalEntries($letter, $page, $langcode)
+{
+	global $wpdb;
+	
+	$sql = "SELECT a.search_strings AS English, b.search_strings AS Vernacular " .
+	" FROM " . SEARCHTABLE . " a " .
+	" INNER JOIN " . SEARCHTABLE. " b ON a.post_id = b.post_id AND a.subid = b.subid " .
+	" AND a.language_code =  '" . $langcode . "' " .
+	" AND a.relevance >=95 " .
+	" AND a.search_strings LIKE  '" . $letter . "%' " .
+	" GROUP BY a.post_id, a.search_strings " .
+	" ORDER BY a.search_strings ";
+	if($page > 1)
+	{
+		$startFrom = ($page - 1) * 50;
+		$sql .= " LIMIT " . $startFrom .", 50";
+	}
+	
+	$arrAlphabet = $wpdb->get_results($sql);
+	
+	return $arrAlphabet;
+}
+
+add_shortcode( 'reversalindex2', 'reversalalphabet_func' );
+
+function reversalalphabet_func($atts)
+{
+	if(isset($_GET['letter']))
+	{
+		$chosenLetter = stripslashes($_GET['letter']); 
+	}
+	else {
+		$chosenLetter = "a"; 
+	}
+		
+	$alphas = explode(",",  get_option('reversal2_alphabet'));
+	$display = displayAlphabet($alphas, get_option('reversal2_langcode'));
+	
+	$display = reversalindex($display, $chosenLetter, get_option('reversal2_langcode'));
+		
+	return $display;
+} 
+
+add_shortcode( 'reversalindex2', 'reversalalphabet_func' );
+
+function reversalindex($display, $chosenLetter, $langcode)
+{
+?>
 	<style type="text/css">
 	#searchresult { 
 		width:50%; 
@@ -158,17 +215,14 @@ function englishalphabet_func( $atts ) {
 	}
 	.odd { background: #CCCCCC; }; 
 	.even { background: #FFF; }; 		
-	</style>	
-	<?php 		
-	$alphas = range('a', 'z');
-	$display = displayAlphabet($alphas, $languagecode);
-	
+	</style>		
+<?php
 	$page = $_GET['pagenr'];
 	if(!isset($_GET['pagenr']))
 	{
 		$page = 1;
 	}
-	$arrAlphabet = getEnglishAlphabet($chosenLetter, $page);
+	$arrAlphabet = getReversalEntries($chosenLetter, $page, $langcode);
 	
 	$display .=  "<div align=center>";
 	$display .= "<h1>" . $chosenLetter . "</h1><br>";
@@ -218,33 +272,8 @@ function englishalphabet_func( $atts ) {
 	$display .= displayPagenumbers($chosenLetter, $totalEntries, 50, $languagecode);
 
 	$display .=  "</div><br>";
-	
- return $display;
-}
 
-add_shortcode( 'englishalphabet', 'englishalphabet_func' );
- 
-function getEnglishAlphabet($letter, $page)
-{
-	global $wpdb;
-	
-	$sql = "SELECT a.search_strings AS English, b.search_strings AS Vernacular " .
-	" FROM " . SEARCHTABLE . " a " .
-	" INNER JOIN " . SEARCHTABLE. " b ON a.post_id = b.post_id AND a.subid = b.subid " .
-	" AND a.language_code =  'en' " .
-	" AND a.relevance >=95 " .
-	" AND a.search_strings LIKE  '" . $letter . "%' " .
-	" GROUP BY a.post_id, a.search_strings " .
-	" ORDER BY a.search_strings ";
-	if($page > 1)
-	{
-		$startFrom = ($page - 1) * 50;
-		$sql .= " LIMIT " . $startFrom .", 50";
-	}
-	
-	$arrAlphabet = $wpdb->get_results($sql);
-	
-	return $arrAlphabet;
+	return $display;
 }
 
 function getVernacularHeadword($postid, $languagecode)

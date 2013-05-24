@@ -101,6 +101,14 @@ function user_input() {
 				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('vernacular_alphabet')); ?>" />
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>			
+				 <b><?php _e('If you have a reversal index other than English, enter the information here:'); ?></b><br>
+				<?php _e('Reversal Index Alphabet:'); ?>
+				<input name="reversal2_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('reversal2_alphabet')); ?>" />
+				<?php _e('(Letters seperated by comma)'); ?>
+				<p>
+				<?php _e('Reversal Index Language Code:'); ?>
+				<input name="reversal2_langcode" type="text" size=5 value="<?php echo get_option('reversal2_langcode'); ?>" />
+				<p>
 				<h3><?php _e('Settings');?></h3>
 				<?php _e('Ethnologue Language Code:'); ?>
 				<input name="languagecode" type="text" size=5 value="<?php echo get_option('languagecode'); ?>" />				
@@ -145,6 +153,9 @@ function run_user_action() {
     	update_option("include_partial_words", $_POST['include_partial_words']);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
+    	update_option("reversal2_alphabet", $_POST['reversal2_alphabet']);
+    	update_option("reversal2_langcode", $_POST['reversal2_langcode']);
+    	
     	echo "<br>" . _e('Settings saved');
     }    
 }

@@ -993,11 +993,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_post_id_bytitle( $headword, $langcode, &$subid ) {
 		global $wpdb;
 
-		if (class_exists("Normalizer", $autoload = false))
-		{
-			$headword = normalizer_normalize($headword, Normalizer::FORM_C);
-		}
-				
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
 		$sql = "SELECT post_id, subid
