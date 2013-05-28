@@ -576,7 +576,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		 * Loop through the entries so we can post them to WordPress.
 		 */
 
-		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
+		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]|//xhtml:div[@class="minorentry"]');
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
