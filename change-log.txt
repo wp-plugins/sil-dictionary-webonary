@@ -1,3 +1,4 @@
+v. 2.4.8 28 Mai 2013 importer now also imports minor entries
 v. 2.4.7 24 Mai 2013 added possibility to add a reversal index browse view for a language other than English
 v. 2.4.6 23 Mai 2013 reverted last change, normalizing wasn't a problem
 v. 2.4.5 23 Mai 2013 normalizing headword in get_post_id_bytitle, so that words with accents get found in reversal import
