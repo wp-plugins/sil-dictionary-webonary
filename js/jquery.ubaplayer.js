@@ -145,15 +145,11 @@
 			},
 
 			addListeners: function(elem) {
-				$(elem).bind( 'play', function(){
-			        alert('play');
-				});
-				/*
 				$(elem).bind({
 					"canplay": _methods.onLoaded,
 					"error": _methods.onError,
 					"ended": _methods.onEnded
-				}); */
+				});
 			},
 
 			removeListeners: function(elem) {
