@@ -80,5 +80,30 @@ function webonary_searchform() {
 }
 
 add_action('init', 'searchform_init');
- 
+
+function add_header()
+{
+?>
+	<link rel="stylesheet" href="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/audiolibs/css/styles.css" />
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/jquery.ubaplayer.js" type="text/javascript"></script>
+	<script>
+	jQuery(function(){
+		jQuery("#ubaPlayer").ubaPlayer({
+				codecs: [{name:"MP3", codec: 'audio/mpeg;'}]
+			});
+         });
+     </script>		
+<?php 
+}
+
+add_action('wp_head', 'add_header');
+
+function add_footer()
+{
+?>
+	<div id="ubaPlayer"></div>
+<?php 
+}
+
+add_action('wp_footer', 'add_footer');
 ?>
