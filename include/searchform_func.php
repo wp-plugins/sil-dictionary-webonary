@@ -89,7 +89,7 @@ function add_header()
 	<script>
 	jQuery(function(){
 		jQuery("#ubaPlayer").ubaPlayer({
-				codecs: [{name:"MP3", codec: 'audio/mpeg;'}]
+				codecs: [{name:"OGG", codec: 'audio/ogg; codecs="vorbis"'}]
 			});
          });
      </script>		
