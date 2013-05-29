@@ -1,4 +1,4 @@
-v. 2.4.9 29 Mai 2013 webonary can now play audio files (import not working yet)
+v. 2.5.0 29 Mai 2013 webonary can now play audio files (import not working yet)
 v. 2.4.8 28 Mai 2013 importer now also imports minor entries
 v. 2.4.7 24 Mai 2013 added possibility to add a reversal index browse view for a language other than English
 v. 2.4.6 23 Mai 2013 reverted last change, normalizing wasn't a problem
