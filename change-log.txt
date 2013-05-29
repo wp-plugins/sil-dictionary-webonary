@@ -1,3 +1,4 @@
+v. 2.5.2 29 Mai 2013 changed codecs from mp3 to ogg, so that it gets supported in Firefox
 v. 2.5.1 29 Mai 2013 removed some test code from jquery.ubaplayer.js
 v. 2.5.0 29 Mai 2013 webonary can now play audio files (import not working yet)
 v. 2.4.8 28 Mai 2013 importer now also imports minor entries
