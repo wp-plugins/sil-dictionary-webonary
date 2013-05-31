@@ -576,7 +576,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		 * Loop through the entries so we can post them to WordPress.
 		 */
 
-		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]|//xhtml:div[@class="minorentry"]');
+		//the query looks for the spans with the headword and returns their parent <div class="entry">
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..');
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
@@ -590,7 +591,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
 
 			$entry_xml = $this->dom->saveXML( $entry );
-			
+				
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
 			
 			if($headwords->length == 0 && strlen(trim($entry->textContent)) > 0) 
@@ -620,13 +621,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				/*
 				 * Insert the new entry into wp_posts
 				 */
-				
+								
 				$post_id = $this->get_post_id( $flexid );
 				$post_id_exists = $post_id != NULL;	
 	
 				// If the ID is not null, but has a value, wp_insert_post will
 				// update the record instead of adding a new record. When updating,
 				// it resets the post_modified and post_modified_gmt fields.
+				
 				$post = array(
 					'ID' => $post_id,
 					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
@@ -635,6 +637,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'post_name' => $flexid
 				);
 				$post_id = wp_insert_post( $post );
+				
+				//print_r($wpdb->queries);
+				//echo "<hr>";
+				
 				wp_set_object_terms( $post_id, "webonary", 'category' );
 				
 				/*
@@ -663,7 +669,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry_counter++;
 		} // foreach ($entries as $entry){
 
-		$this->convert_fieldworks_links_to_wordpress();
+		if($entries->length > 0)
+		{
+			$this->convert_fieldworks_links_to_wordpress();
+		}
 	}
 
 	//-----------------------------------------------------------------------------//
