@@ -589,6 +589,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// number looks like this:
 			// <span class="headword" lang="ii">my headword<span class="xhomographnumber">1</span></span>
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
+			$entry = $this->convert_fieldworks_audio_to_wordpress($entry);
 
 			$entry_xml = $this->dom->saveXML( $entry );
 				
@@ -677,13 +678,30 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	//-----------------------------------------------------------------------------//
 
-	/**
-	 * Convert links exported by the FLEx Configured Dictionary Export into
-	 * links that WordPress understands, such as http://localhost/?p=61151.
-	 * In this case, 61151 is the ID in wp_posts for the entry.
-	 * @global $wpdb
-	 */
 
+	function convert_fieldworks_audio_to_wordpress ($entry) {
+		global $wpdb;
+
+		// audio example:
+		//<a class="audioButton" href="/files/audio/sprache.mp3"></a>
+
+		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029a̱ doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
+		$audios = $this->dom_xpath->query('./xhtml:span[contains(@class, "Audio")]', $entry);
+
+		foreach ( $audios as $audio ) {
+		
+			$newelement = $this->dom->createElement('a');
+			$newelement->appendChild($this->dom->createTextNode(""));
+			$newelement->setAttribute("class", "audioButton");
+			$newelement->setAttribute("href", "/files/audio/" . $audio->textContent);
+			$parent = $audio->parentNode;	
+			$parent->replaceChild($newelement, $audio);			
+									
+		} // foreach ( $audios as $audio )
+		
+		return $entry;
+	}
+			
 	function convert_fieldworks_images_to_wordpress ($entry) {
 		global $wpdb;
 
@@ -693,7 +711,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$images = $this->dom_xpath->query('//xhtml:img', $entry);
 
 		foreach ( $images as $image ) {
-
+			
 			$src = $image->getAttribute( "src" );
 			$upload_dir = wp_upload_dir();			
 			$replaced_src = str_ireplace("pictures/", $upload_dir['baseurl'] . "/images/thumbnail/", $src);
