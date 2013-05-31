@@ -1,3 +1,4 @@
+v. 2.5.5 31 Mai 2013 added convert_fieldworks_audio_to_wordpress
 v. 2.5.4 31 Mai 2013 there was a problem importing minorentries, since they were under class minorentry. Solved this by looking for the parent of headword instead of searching for entry-class 
 v. 2.5.3 29 Mai 2013 changed codecs back to mp3, as ogg won't play in IE. Removed "loading" class to fix Firefox bug
 v. 2.5.2 29 Mai 2013 changed codecs from mp3 to ogg, so that it gets supported in Firefox
