@@ -603,18 +603,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			//$headword = $headwords->item( 0 )->nodeValue;
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
-				$headword_text = $headword->textContent;
 	
-				//for sorting purposes we have to replace the homograph from 
-				//a subscript number to a normal number in the post_title 
-				$homographs = "₁,₂,₃,₄,₅,₆,₇,₈,₉";
-				$arrHomographs = explode(",", $homographs);
-				$h = 1;
-				foreach($arrHomographs as $homograph)
-				{
-					$headword_text = str_replace($homograph, $h, $headword_text);
-					$h++;
-				}
+				$entry = $this->convert_homographs($entry, "xhomographnumber");
+				
+				$headword_text = $headword->textContent;
+				
 				$flexid = $entry->getAttribute("id");
 
 				$entry_xml = $this->dom->saveXML($entry );	
@@ -846,6 +839,28 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$wpdb->query( $sql );
 	}	
 	         
+	function convert_homographs($entry, $classname)
+	{
+		$arrHomographs = $this->dom_xpath->query( './/xhtml:span[@class="' . $classname . '"]', $entry );
+		foreach($arrHomographs as $homograph)
+		{
+			$numbers = array("1", "2", "3", "4", "5");
+			$homographs = array("₁", "₂", "₃", "₄", "₅");
+			
+			$newHomograph = str_replace($numbers, $homographs, $homograph->textContent);
+			
+			$newNode = $this->dom->createElement('span', $newHomograph);
+			$newNode->setAttribute('class', 'xhomographnumber');
+
+			// fetch and replace the old element
+			//$oldNode = $dom->getElementById('old_div');
+			$parent = $homograph->parentNode;	
+			$parent->replaceChild($newNode, $homograph);	
+		}
+		
+		return $entry;
+	}
+	
 	function convert_semantic_domains_to_links($post_id, $doc, $field, $termid) {
 		global $wpdb;
 			
@@ -1166,6 +1181,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					
 			foreach ( $headwords as $headword ) {
 				
+				$entry = $this->convert_homographs($entry, "Homograph-Number");
+				
 				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
 				$sensereferences = $this->dom_xpath->query('//xhtml:span[@class="Sense-Reference-Number"]', $headword);			
 				foreach($sensereferences as $sensereference)
@@ -1205,7 +1222,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
 
-
+			$entry = $this->convert_homographs($entry, "xhomographnumber");
+						
 			$headword_text = trim($entry->textContent);	
 
 			//this is used for the browse view sort order
