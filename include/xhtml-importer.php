@@ -751,7 +751,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// Now get the cross reference. Should only be one, but written to
 			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")] ', $link );
+			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]|.//xhtml:span[contains(@class,"HeadWordRef")]', $link );
 			
 			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
@@ -860,7 +860,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		return $entry;
 	}
-	
 	function convert_semantic_domains_to_links($post_id, $doc, $field, $termid) {
 		global $wpdb;
 			
