@@ -104,6 +104,15 @@ function displayAlphabet($alphas, $languagecode)
 
 function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $languagecode)
 {
+?>
+	<link rel="stylesheet" href="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/wp-page-numbers/classic/wp-page-numbers.css" />
+	
+<?php
+	$currentPage = $_GET['pagenr'];
+	if(!isset($currentPage))
+	{
+		$currentPage = 1;
+	} 	
 	$totalPages = round($totalEntries / $entriesPerPage, 0);
 	if(($totalEntries / $entriesPerPage) > $totalPages)
 	{
@@ -111,17 +120,72 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 	}
 	if($totalPages > 1)
 	{
-		for($page = 1; $page <= $totalPages; $page++)
+		$display .= "<div  id='wp_page_numbers'><ul>";
+		$nextpage = "&gt;";
+		$prevpage = "&lt;";
+		$url = "?letter=" . $chosenLetter . "&key=" . $languagecode . "&totalEntries=" . $totalEntries;
+
+		$limit_pages = 10;
+		/*
+		$startspace = "...";
+		$endspace = "...";
+		
+		$limit = ($limit_pages%2) ? true : false;
+		
+		if($limit == true)
 		{
+			$limit_pages_left = ($limit_pages-1)/2;
+			$limit_pages_right = ($limit_pages-1)/2;
+		}
+		else
+		{
+			$limit_pages_left = $limit_pages/2;
+			$limit_pages_right = ($limit_pages/2)-1;
+		}
+		*/	
+		$display .= "<li class=page_info>" . gettext("Page") . " " . $currentPage . " " . gettext("of") . " " . $totalPages . "</li>";	
+		if( $totalPages > 1 && $currentPage > 1 )
+		{
+			$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage - 1) . "\">" .$prevpage . "</a></li>";
+		}
+
+		$start = 1;
+		if($currentPage > ($limit_pages - 5))
+		{
+			$display .= "<li><a href=\"" . $url . "&pagenr=" . 1 . "\">" . 1 . "</a></li> ";
+			$display .= "<li class=space>...</li>";
+			$start = $currentPage - 5;
+			if($currentPage == 6)
+			{
+				$start = 2;
+			}
+		}
+		
+		for($page = $start; $page <= $totalPages; $page++)
+		{
+			$class = "";
 			if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
 			{
-				$display .= $page . " ";
+				$class="class=active_page";
 			}
-			else
+			$display .= "<li " . $class . "><a href=\"" . $url . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
+			$minusPages = 5;
+			if($currentPage < 5)
 			{
-				$display .= "<a href=\"?letter=" . $chosenLetter . "&key=" . $languagecode . "&pagenr=" . $page . "&totalEntries=" . $totalEntries . "\">" . $page . "</a> ";
-			}		 
+				$minusPages = $currentPage;
+			}
+			if(($currentPage + $limit_pages - $minusPages) == $page && ($currentPage + $limit_pages) < $totalPages)
+			{
+				$display .= "<li class=space>...</li>";
+				$display .= "<li " . $class . "><a href=\"" . $url . "&pagenr=" . $totalPages . "\">" . $totalPages . "</a></li> ";
+				break;
+			}
 		}
+		if( $currentPage != "" && $currentPage < $totalPages)
+		{
+			$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage + 1) . "\">" .$nextpage . "</a></li>";
+		}
+		$display .= "</ul></div>";
 	}		
 	return $display;
 }
@@ -372,4 +436,5 @@ function vernacularalphabet_func( $atts )
 }
 
 add_shortcode( 'vernacularalphabet', 'vernacularalphabet_func' );
+
 ?>
