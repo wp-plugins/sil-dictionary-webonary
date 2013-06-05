@@ -1,3 +1,4 @@
+v. 2.5.9 06 June 2013 browse view page number display: using same style sheet as for search view, and with next/prev links
 v. 2.5.8 03 June 2013 added conversion for HeadWordRef links
 v. 2.5.7 02 June 2013 centered browseview alphabet
 v. 2.5.6 02 June 2013 convert homograph numbers into small numbers
