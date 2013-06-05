@@ -1,3 +1,4 @@
+v. 2.6.1 06 June 2013 added headword minor import for sort order (import_xhtml_stem_indexes) 
 v. 2.6.0 06 June 2013 center page numbers in browse view
 v. 2.5.9 06 June 2013 browse view page number display: using same style sheet as for search view, and with next/prev links
 v. 2.5.8 03 June 2013 added conversion for HeadWordRef links
