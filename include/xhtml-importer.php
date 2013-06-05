@@ -1216,7 +1216,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 		
 		//$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
-		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]');
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]|//xhtml:span[@class="headword-minor"]');
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
