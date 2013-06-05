@@ -90,7 +90,7 @@ function displayAlphabet($alphas, $languagecode)
 	</style>	
 <?php 
 	$display = "<br>"; 
-	$display .= "<div style=\"text-align:center;\"><div class=buttons style=\"display:inline-block;\">";
+	$display .= "<div style=\"text-align:center;\"><div style=\"display:inline-block;\">";
 	foreach($alphas as $letter)
 	{
     	$display .= "<div class=\"lpTitleLetterCell\"><span class=lpTitleLetter><a href=\"?letter=" . stripslashes($letter) . "&key=" . $languagecode . "\">" . stripslashes($letter) . "</a></span></div>";
@@ -120,29 +120,13 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 	}
 	if($totalPages > 1)
 	{
+		$display .= "<div style=\"text-align:center;\"><div style=\"display:inline-block;\">";
 		$display .= "<div  id='wp_page_numbers'><ul>";
 		$nextpage = "&gt;";
 		$prevpage = "&lt;";
 		$url = "?letter=" . $chosenLetter . "&key=" . $languagecode . "&totalEntries=" . $totalEntries;
 
 		$limit_pages = 10;
-		/*
-		$startspace = "...";
-		$endspace = "...";
-		
-		$limit = ($limit_pages%2) ? true : false;
-		
-		if($limit == true)
-		{
-			$limit_pages_left = ($limit_pages-1)/2;
-			$limit_pages_right = ($limit_pages-1)/2;
-		}
-		else
-		{
-			$limit_pages_left = $limit_pages/2;
-			$limit_pages_right = ($limit_pages/2)-1;
-		}
-		*/	
 		$display .= "<li class=page_info>" . gettext("Page") . " " . $currentPage . " " . gettext("of") . " " . $totalPages . "</li>";	
 		if( $totalPages > 1 && $currentPage > 1 )
 		{
@@ -186,6 +170,7 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 			$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage + 1) . "\">" .$nextpage . "</a></li>";
 		}
 		$display .= "</ul></div>";
+		$display .= "</div></div>";
 	}		
 	return $display;
 }
