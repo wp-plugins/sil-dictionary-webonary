@@ -590,7 +590,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// <span class="headword" lang="ii">my headword<span class="xhomographnumber">1</span></span>
 			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
 			$entry = $this->convert_fieldworks_audio_to_wordpress($entry);
-
+			
 			$entry_xml = $this->dom->saveXML( $entry );
 				
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
@@ -679,10 +679,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//<a class="audioButton" href="/files/audio/sprache.mp3"></a>
 
 		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029a̱ doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
-		$audios = $this->dom_xpath->query('./xhtml:span[contains(@class, "Audio")]', $entry);
+		$audios = $this->dom_xpath->query('.//xhtml:span[contains(@class, "Audio")]', $entry);
 
 		foreach ( $audios as $audio ) {
-		
+					
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($this->dom->createTextNode(""));
 			$newelement->setAttribute("class", "audioButton");
