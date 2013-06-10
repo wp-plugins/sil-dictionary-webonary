@@ -612,13 +612,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$entry_xml = $this->dom->saveXML($entry );	
 				
+				$entry_xml = str_replace("'","&#39;",$entry_xml);
+				
 				/*
 				 * Insert the new entry into wp_posts
 				 */
 								
 				$post_id = $this->get_post_id( $flexid );
 				$post_id_exists = $post_id != NULL;	
-	
+				
 				// If the ID is not null, but has a value, wp_insert_post will
 				// update the record instead of adding a new record. When updating,
 				// it resets the post_modified and post_modified_gmt fields.
