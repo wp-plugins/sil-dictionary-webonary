@@ -686,7 +686,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($this->dom->createTextNode(""));
 			$newelement->setAttribute("class", "audioButton");
-			$newelement->setAttribute("href", "/files/audio/" . $audio->textContent);
+			$newelement->setAttribute("href", "/files/audio/" . trim($audio->textContent));
 			$parent = $audio->parentNode;	
 			$parent->replaceChild($newelement, $audio);			
 									
