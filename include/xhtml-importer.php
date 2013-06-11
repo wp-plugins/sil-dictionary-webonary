@@ -1163,6 +1163,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
 
+			if(strlen(trim($entry->textContent)) == 0)
+			{
+				$entry_counter++;
+				continue;	
+			}
 			/*
 			 * Show progresss to the user.
 			 */
@@ -1173,7 +1178,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			 */
 
 			// Should be only 1 reversal at most per entry.
-			$reversals = $this->dom_xpath->query( './xhtml:span[contains(@class, "reversal-form")]', $entry );					
+			$reversals = $this->dom_xpath->query( './xhtml:span[contains(@class, "reversal-form")]', $entry );
 			$reversal_language = $reversals->item(0)->getAttribute( "lang" );
 			$reversal_text = $reversals->item(0)->textContent;
 			
