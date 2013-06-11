@@ -192,7 +192,6 @@ function create_search_tables () {
 		$sql .= " PRIMARY KEY (`post_id`, `language_code`, `relevance`, `search_strings` ( 200 )), ";
 		$sql .= " INDEX (relevance)
 		);";
-		echo $sql;
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
 }
