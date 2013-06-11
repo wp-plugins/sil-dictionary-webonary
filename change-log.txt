@@ -1,3 +1,5 @@
+v. 2.6.6 11 June 2013 solved problem with empty reversal entries
+v. 2.6.5 10 June 2013 duplicates shouldn't anymore be inserted (using INSERT IGNORE + set PRIMARY KEYS)
 v. 2.6.4 10 June 2013 Wordpress automatically converts apostroph to &#8217; on display, changed importer to convert it to &#39;
 v. 2.6.3 10 June 2013 importer now trims spaces for audio files.
 v. 2.6.2 06 June 2013 fixed problem of not finding all audio files on import
