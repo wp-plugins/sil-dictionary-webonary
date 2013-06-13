@@ -179,6 +179,7 @@ function sil_dictionary_custom_where($where) {
 	$wp_query->is_search = true;
 	$where .= " AND $wpdb->term_taxonomy.taxonomy = 'sil_semantic_domains' AND $wpdb->term_taxonomy.description = '" . $wp_query->query_vars['semdomain'] ."'";
 	}	
+	
 	return $where;
 }
 

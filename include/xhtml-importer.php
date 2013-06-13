@@ -1110,7 +1110,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$domain_name,
 				$this->semantic_domains_taxonomy,
 				array(
-					'description' => $domain_name,
+					'description' => trim($domain_name),
 					'slug' => $domain_name 
 				));		
 													
