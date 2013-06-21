@@ -197,14 +197,15 @@ function englishalphabet_func( $atts ) {
 
 add_shortcode( 'englishalphabet', 'englishalphabet_func' );
  
-function getReversalEntries($letter, $page, $langcode)
+function getReversalEntries($letter, $page, $reversalLangcode)
 {
 	global $wpdb;
 	
 	$sql = "SELECT a.search_strings AS English, b.search_strings AS Vernacular " .
 	" FROM " . SEARCHTABLE . " a " .
 	" INNER JOIN " . SEARCHTABLE. " b ON a.post_id = b.post_id AND a.subid = b.subid " .
-	" AND a.language_code =  '" . $langcode . "' " .
+	" AND a.language_code =  '" . $reversalLangcode . "' " .
+	" AND b.language_code = '" . get_option('languagecode') . "' " . 
 	" AND a.relevance >=95 " .
 	" AND a.search_strings LIKE  '" . $letter . "%' " .
 	" GROUP BY a.post_id, a.search_strings " .
