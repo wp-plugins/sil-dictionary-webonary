@@ -207,7 +207,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$querystart = ".//xhtml:span";
 		}
 		
-		$arrFieldQueries[0] = $querystart . '[@class="headword"]|//*[@class="headword_L2"]|//*[@class="headword-minor"]';
+		//$arrFieldQueries[0] = $querystart . '[@class="headword"]|//*[@class="headword_L2"]|//*[@class="headword-minor"]';
+		$arrFieldQueries[0] = $querystart . '[@class="headword"]|./*[@class="headword_L2"]|./*[@class="headword-minor"]';
 		$arrFieldQueries[1] = $querystart . '[@class = "headword-sub"]';
 		$arrFieldQueries[2] = $querystart . '[contains(@class, "LexemeForm")]';
 		$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]';
@@ -592,11 +593,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry = $this->convert_fieldworks_audio_to_wordpress($entry);
 			
 			$entry_xml = $this->dom->saveXML( $entry );
-				
+
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
-			
+
 			if($headwords->length == 0 && strlen(trim($entry->textContent)) > 0) 
-			{
+			{				
 				echo "<div style=color:red>ERROR: No headwords found.</div><br>";
 				return;
 			}
@@ -644,7 +645,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "<strong>Step 1 of 2: Importing Post Entries</strong><br>" );
 			} // foreach ( $headwords as $headword )
-			
+
 			if(isset($_POST['chkConvertToLinks']))
 			{
 				$arrFieldQueries = $this->getArrFieldQueries();
@@ -654,7 +655,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					if (!preg_match("/sense-crossref/i", $fieldQuery))
 					{
 						$fields = $this->dom_xpath->query($fieldQuery, $entry);
-							
+					
 						foreach($fields as $field)
 						{
 							$this->convert_fields_to_links($post_id, $entry, $field);
