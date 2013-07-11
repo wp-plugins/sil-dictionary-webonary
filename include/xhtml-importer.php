@@ -610,6 +610,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$headword_text = $headword->textContent;
 				
 				$flexid = $entry->getAttribute("id");
+				
+				if(strlen(trim($flexid)) == 0)
+				{
+					$flexid = $headword_text;
+				}
 
 				$entry_xml = $this->dom->saveXML($entry );	
 				
