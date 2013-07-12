@@ -132,6 +132,7 @@ function sil_dictionary_custom_join($join) {
 	if( $_GET['tax'] > 1 || strlen($wp_query->query_vars['semdomain']) > 0) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
+		$join .= " JOIN " . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
 	}
 	return $join;
 }
@@ -194,7 +195,7 @@ function sil_dictionary_custom_order_by($orderby) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
 	
-	if( !empty($wp_query->query_vars['s']))
+	if( !empty($wp_query->query_vars['s']) || strlen($wp_query->query_vars['semdomain']) > 0)
 	{
 		if(isset($wp_query->query_vars['letter']))
 		{
