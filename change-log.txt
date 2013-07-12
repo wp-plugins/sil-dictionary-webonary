@@ -1,3 +1,4 @@
+v. 2.7.3 12 July 2013 added sort order for semantic domains
 v. 2.7.2 11 July 2013 variants get imported double, because they don't have an id. Instead I use headword for variants to check post_name
 v. 2.7.1 05 July 2013 Fixed problem with xpath query for headword-minor in getArrFieldQueries
 v. 2.7.0 21 June 2013 fixed problem with missing language code for reversal indexes (when more than one reversal index)
