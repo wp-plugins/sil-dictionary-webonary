@@ -1,6 +1,7 @@
 <?php
 function ajaxsearch()
 {
+	global $wpdb;
 	$languagecode = get_option('languagecode');
 	
 	$display = "";
@@ -8,6 +9,7 @@ function ajaxsearch()
 	if(strlen($_REQUEST["semdomain"]) > 0)
 	{
 		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&showposts=100");
+		//print_r($wpdb->queries);
 		$searchquery = $_REQUEST["semdomain"];				
 	}
 
