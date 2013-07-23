@@ -422,28 +422,33 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
 				
-				//import headword
-				$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
-				//sub headwords
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[1], ($this->headword_relevance - 5), $subid);
-				//lexeme forms
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[2], $this->lexeme_form_relevance);
-				//definitions
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[3], $this->definition_word_relevance);
-				//sub definitions
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[4], ($this->definition_word_relevance - 5));
-				//example sentences
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[5], $this->example_sentences_relevance);
-				//Translation of example sentences
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[6], $this->example_sentences_relevance);
-				//custom fields
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[7], $this->custom_field_relevance);					
-				//variant forms
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[8], $this->variant_form_relevance);
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[9], $this->variant_form_relevance);
-				//cross references
-				$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[10], $this->sense_crossref_relevance);
-				
+				$headwordminor = $xpath->query('//span[@class = "headword-minor"]');
+								
+				if($headwordminor->length == 0)
+				{
+					//import headword
+					$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
+					//sub headwords
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[1], ($this->headword_relevance - 5), $subid);
+					//lexeme forms
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[2], $this->lexeme_form_relevance);
+					//definitions
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[3], $this->definition_word_relevance);
+					//sub definitions
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[4], ($this->definition_word_relevance - 5));
+					//example sentences
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[5], $this->example_sentences_relevance);
+					//Translation of example sentences
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[6], $this->example_sentences_relevance);
+					//custom fields
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[7], $this->custom_field_relevance);					
+					//variant forms
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[8], $this->variant_form_relevance);
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[9], $this->variant_form_relevance);
+					//cross references
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[10], $this->sense_crossref_relevance);
+				}
+					
 				/*
 				 * Load semantic domains
 				 */
@@ -686,7 +691,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// audio example:
 		//<a class="audioButton" href="/files/audio/sprache.mp3"></a>
 
-		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029a̱ doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
+		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029aÃ± doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
 		$audios = $this->dom_xpath->query('.//xhtml:span[contains(@class, "Audio")]', $entry);
 
 		foreach ( $audios as $audio ) {
@@ -853,7 +858,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach($arrHomographs as $homograph)
 		{
 			$numbers = array("1", "2", "3", "4", "5");
-			$homographs = array("₁", "₂", "₃", "₄", "₅");
+			$homographs = array("‚ÇÅ", "‚ÇÇ", "‚ÇÉ", "‚ÇÑ", "‚ÇÖ");
 			
 			$newHomograph = str_replace($numbers, $homographs, $homograph->textContent);
 			
@@ -989,9 +994,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 		//this replaces the special apostroph with the standard apostroph
 		//the first time round the special apostroph is inserted, so that both searches are valid
-		if(strstr($search_string,"Ê¼"))
+		if(strstr($search_string,"√ä¬º"))
 		{
-			$mySearch_string = str_replace("Ê¼", "'", $search_string);
+			$mySearch_string = str_replace("√ä¬º", "'", $search_string);
 			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string, $subid);
 		}
 	}
@@ -1105,7 +1110,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		$xpath = new DOMXPath($doc);
 		
-		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
+		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-minor"]//span[@class = "semantic-domain-name-minor"]');
 		
 		$i = 0;
 		foreach ( $semantic_domain_terms as $field ) {
@@ -1137,19 +1142,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			 	
 			$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
-						
+
+			$headwordminor = $xpath->query('//span[@class = "headword-minor"]');
+
 			/*
 			 * Load semantic domain into search table
 			 */
-			$x = 0;
-			if($field->getAttribute("class") == "semantic-domains-sub" || $field->getAttribute("class") == "semantic-domain-name-sub")
-			{
-				$x = -5;
-			}
-			$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
-			
-			wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
-			$arrTerm = null;
+				$x = 0;
+				if($headwordminor->length == 0)
+				{				
+					$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
+				}
+				wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
+				$arrTerm = null;
 		}		
 
 	}
