@@ -211,7 +211,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$arrFieldQueries[0] = $querystart . '[@class="headword"]|./*[@class="headword_L2"]|./*[@class="headword-minor"]';
 		$arrFieldQueries[1] = $querystart . '[@class = "headword-sub"]';
 		$arrFieldQueries[2] = $querystart . '[contains(@class, "LexemeForm")]';
-		$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]';
+		$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]|//*[@class = "definition-minor"]';
 		$arrFieldQueries[4] = $querystart . '[@class = "definition-sub"]';
 		$arrFieldQueries[5] = $querystart . '[@class = "example"]';
 		$arrFieldQueries[6] = $querystart . '[@class = "translation"]';
@@ -422,8 +422,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
 				
-				$headwordminor = $xpath->query('//span[@class = "headword-minor"]');
-								
+				$headwordminor = $xpath->query('//*[@class = "headword-minor"]');
+
 				if($headwordminor->length == 0)
 				{
 					//import headword
@@ -764,7 +764,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// Now get the cross reference. Should only be one, but written to
 			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]|.//xhtml:span[contains(@class,"HeadWordRef")]', $link );
+			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
+			
+			$link_xml = $this->dom->saveXML( $link );
+			echo $link_xml . " " . $cross_refs->length . "<hr>";
 			
 			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
@@ -800,7 +803,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 				$sql = $sql . '"';
 				$sql = $sql . "');";
-							
+											
 				$wpdb->query( $sql );
 
 				$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
@@ -813,7 +816,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function convert_fields_to_links($post_id, $entry, $field) {
 		global $wpdb;
-
+		
 		$searchstring = $field->textContent;
 		if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
 		{
@@ -827,7 +830,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$field->removeChild($Emphasized_Text->item(0));
 		}
-				
+						
 		$newelement = $this->dom->createElement('a');
 		$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));	
 		$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
@@ -875,7 +878,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	}
 	function convert_semantic_domains_to_links($post_id, $doc, $field, $termid) {
 		global $wpdb;
-			
+
 		$newelement = $doc->createElement('a');
 		$newelement->appendChild($doc->createTextNode(addslashes($field->textContent)));		
 		$newelement->setAttribute("href", "/?s=&partialsearch=1&tax=" . $termid);
@@ -1110,12 +1113,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		$xpath = new DOMXPath($doc);
 		
-		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-minor"]//span[@class = "semantic-domain-name-minor"]');
+		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-minor"]//span[@class = "semantic-domain-name-minor"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
 		
 		$i = 0;
 		foreach ( $semantic_domain_terms as $field ) {
 			$semantic_domain_language = $field->getAttribute("lang");
 			$domain_name = str_replace("]", "", $field->textContent);
+			$domain_class = $field->getAttribute("class");
 						
 			$arrTerm = wp_insert_term(
 				$domain_name,
@@ -1140,10 +1144,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$i++;
 				}
 			}
-			 	
+			 				
 			$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
 
-			$headwordminor = $xpath->query('//span[@class = "headword-minor"]');
+			$headwordminor = $xpath->query('//*[@class = "headword-minor"]');
 
 			/*
 			 * Load semantic domain into search table
@@ -1153,7 +1157,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{				
 					$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
 				}
-				wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
+				if($domain_class != "semantic-domain-name-sub")
+				{
+					wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
+				}
 				$arrTerm = null;
 		}		
 

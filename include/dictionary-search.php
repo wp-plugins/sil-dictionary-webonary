@@ -120,14 +120,17 @@ function sil_dictionary_custom_join($join) {
 					addslashes( $search ) . "[[:>:]]'";
 			}
 		}
+		if($_GET['tax'] < 1)
+		{
+			$subquery =
+				" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
+				"FROM " . $search_table_name .
+				$subquery_where .
+				"GROUP BY post_id, language_code, search_strings " .
+				"ORDER BY relevance DESC) ";
 		
-		$subquery =
-			" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
-			"FROM " . $search_table_name .
-			$subquery_where .
-			"GROUP BY post_id, language_code, search_strings " .
-			"ORDER BY relevance DESC) ";
-		$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
+			$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
+		}
 	}
 	if( $_GET['tax'] > 1 || strlen($wp_query->query_vars['semdomain']) > 0) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
@@ -190,11 +193,11 @@ function sil_dictionary_custom_order_by($orderby) {
 	$search_table_name = SEARCHTABLE;
 	
 	$orderby = "";
-	if(  !empty($wp_query->query_vars['s']) && !isset($wp_query->query_vars['letter'])) {
+	if(  !empty($wp_query->query_vars['s']) && !isset($wp_query->query_vars['letter']) && $_GET['tax'] < 1) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
 	
-	if( !empty($wp_query->query_vars['s']))
+	if( !empty($wp_query->query_vars['s']) && $_GET['tax'] < 1)
 	{
 		if(isset($wp_query->query_vars['letter']))
 		{
@@ -207,7 +210,7 @@ function sil_dictionary_custom_order_by($orderby) {
 		//$orderby .= " $wpdb->posts.post_title ASC";
 	}
 	
-	if(strlen($wp_query->query_vars['semdomain']) > 0)
+	if(strlen($wp_query->query_vars['semdomain']) > 0 || $_GET['tax'] > 1)
 	{
 		$orderby .= "menu_order ASC, post_title ASC";
 	}
