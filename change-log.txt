@@ -1,4 +1,5 @@
-v. 2.7.6 23 July 2013 fixed some problem with converting minor entries to links & search doesn't anymore look in table search_strings when searching for taxonomies
+v. 2.7.7 24 July 2013 removed debugging info
+v. 2.7.6 24 July 2013 fixed some problem with converting minor entries to links & search doesn't anymore look in table search_strings when searching for taxonomies
 v. 2.7.5 23 July 2013 the importer will now not import semantic-domains for subentries, instead it will import them for the minor-entries
 v. 2.7.4 15 July 2013 more work on sort order for semantic domains
 v. 2.7.3 12 July 2013 added sort order for semantic domains
