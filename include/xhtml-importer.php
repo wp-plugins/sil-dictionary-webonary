@@ -766,9 +766,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// handle more if they come along.
 			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
 			
-			$link_xml = $this->dom->saveXML( $link );
-			echo $link_xml . " " . $cross_refs->length . "<hr>";
-			
 			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
 
