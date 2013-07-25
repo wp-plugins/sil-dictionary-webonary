@@ -858,7 +858,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach($arrHomographs as $homograph)
 		{
 			$numbers = array("1", "2", "3", "4", "5");
-			$homographs = array("‚ÇÅ", "‚ÇÇ", "‚ÇÉ", "‚ÇÑ", "‚ÇÖ");
+			$homographs = array("₁", "₂", "₃", "₄", "₅");
 			
 			$newHomograph = str_replace($numbers, $homographs, $homograph->textContent);
 			
