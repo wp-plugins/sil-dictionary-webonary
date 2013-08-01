@@ -405,6 +405,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			foreach($arrPosts as $post)
 			{
+				$subentry = false;
 				if ( $post->ID ){
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
 					$wpdb->query( $sql );
@@ -413,19 +414,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$doc = new DomDocument();
 				$doc->preserveWhiteSpace = false;
 				$doc->loadXML($post->post_content);
-
+				
 				$xpath = new DOMXPath($doc);
 
 				$arrFieldQueries = $this->getArrFieldQueries();
 				
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
 				
-				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
-				
-				$headwordminor = $xpath->query('//*[@class = "headword-minor"]');
-
-				if($headwordminor->length == 0)
+				if(isset($headword))
 				{
+					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
+				
 					//import headword
 					$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
 					//sub headwords
@@ -448,13 +447,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//cross references
 					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[10], $this->sense_crossref_relevance);
 				}
-					
+				else
+				{
+					$subentry = true;
+				}
+			
 				/*
 				 * Load semantic domains
 				 */
 				if ( $semantic_domains_taxonomy_exists )
-					$this->import_xhtml_semantic_domain($doc, $post->ID);				
-
+				{
+					$this->import_xhtml_semantic_domain($doc, $post->ID, $subentry, false);
+					$this->import_xhtml_semantic_domain($doc, $post->ID, $subentry, true);
+				}
 				/*
 				 * Load parts of speech (POS)
 				 */
@@ -583,7 +588,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		 */
 
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
-		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..');
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
@@ -598,9 +603,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry = $this->convert_fieldworks_audio_to_wordpress($entry);
 			
 			$entry_xml = $this->dom->saveXML( $entry );
-
-			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]', $entry );
-
+			
+			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]|./*[@class="headword-sub"]', $entry );
+			
 			if($headwords->length == 0 && strlen(trim($entry->textContent)) > 0) 
 			{				
 				echo "<div style=color:red>ERROR: No headwords found.</div><br>";
@@ -942,10 +947,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//$fields = $this->dom_xpath->query( $query, $entry );
 
 		$xpath = new DOMXPath($doc);
-		
-		$fields = $xpath->query($query);
 				
+		$fields = $xpath->query($query);
+		
 		foreach ( $fields as $field ) {
+
 			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
 			if($subid > 0)
 			{
@@ -967,7 +973,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 	function import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string = null, $subid = 0) {
 		global $wpdb;
-			
+		
 		$language_code = $field->getAttribute("lang");
 		
 		if(isset($mySearch_string))
@@ -1106,12 +1112,26 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	// Currently we aren't deleting any existing semantic domains. More than one post may
 	// refer to a domain. For the moment, any bad domains must be removed by hand.
 
-	function import_xhtml_semantic_domain( $doc, $post_id ) {
+	function import_xhtml_semantic_domain( $doc, $post_id, $subentry, $convertToLinks) {
 
 		$xpath = new DOMXPath($doc);
 		
-		$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-minor"]//span[@class = "semantic-domain-name-minor"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
-		
+		if($convertToLinks == true)
+		{
+			$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
+		}
+		else
+		{
+			if($subentry)
+			{
+				$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
+			}
+			else
+			{
+				$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]');
+			}
+		}
+
 		$i = 0;
 		foreach ( $semantic_domain_terms as $field ) {
 			$semantic_domain_language = $field->getAttribute("lang");
@@ -1141,25 +1161,28 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$i++;
 				}
 			}
-			 				
-			$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
 
-			$headwordminor = $xpath->query('//*[@class = "headword-minor"]');
-
+			if($convertToLinks == true)
+			{
+				$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
+			}
+			else
+			{
 			/*
 			 * Load semantic domain into search table
 			 */
 				$x = 0;
-				if($headwordminor->length == 0)
-				{				
+				if(!$subentry)
+				{	
 					$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
 				}
-				if($domain_class != "semantic-domain-name-sub")
-				{
+				////if($domain_class != "semantic-domain-name-sub")
+				////{
 					wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
-				}
+				////}
+			}
 				$arrTerm = null;
-		}		
+		}
 
 	}
 
@@ -1238,7 +1261,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 		
 		//$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
-		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]|//xhtml:span[@class="headword-minor"]');
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]|//xhtml:span[@class="headword-minor"]|//xhtml:span[@class="headword-sub"]');
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
