@@ -82,7 +82,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$step = (int) $_GET['step'];
 
 		$this->header();
-
+		
 		switch ($step) {
 			/*
 			 * First, greet the user and prompt for files.
@@ -125,6 +125,31 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<?php
 				$this->index_searchstrings();
 				
+				$this->goodbye($xhtml_file, $css_file);
+				break;				
+			case 3 :
+				?>
+				<DIV ID="flushme">converting links...</DIV>
+				<?php 
+				$arrPosts = $this->get_posts();			
+
+				$entry_counter = 1;
+				$entries_count = count($arrPosts);
+				
+				foreach($arrPosts as $post)
+				{
+					$doc = new DomDocument();
+					$doc->preserveWhiteSpace = false;
+					$doc->loadXML($post->post_content);
+					$xpath = new DOMXPath($doc);
+
+					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Converting Links</strong><br>");
+				
+					$this->convert_fields_to_links($post->ID, $doc, $xpath);
+
+					$entry_counter++;
+				}
+					
 				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
 			?>
 			<?php	
@@ -171,16 +196,33 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		echo '<div class="narrow">';
 				
 		if ( $_POST['filetype'] == 'configured') {
-			echo '<strong>Next step: </strong>';
-			echo '<p>';
-				echo '<form enctype="multipart/form-data" id="import-upload-form" method="post" action="' . esc_attr(wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=2", 'import-upload')) . '">';
-					echo '<input type="submit" class="button" name="btnIndex" value="Index Search Strings"/>';
-					if(isset($_POST['chkConvertToLinks']))
-					{
-						echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
-					}
-				echo '</form>';	
-			echo '</p>';
+			if($_GET['step'] == 1)
+			{
+				echo '<strong>Next step: </strong>';
+				echo '<p>';
+					echo '<form enctype="multipart/form-data" id="import-upload-form" method="post" action="' . esc_attr(wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=2", 'import-upload')) . '">';
+						echo '<input type="submit" class="button" name="btnIndex" value="Index Search Strings"/>';
+						if(isset($_POST['chkConvertToLinks']))
+						{
+							echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
+							echo '<input type="hidden" name="filetype" value="configured"></input>';
+						}
+					echo '</form>';	
+				echo '</p>';
+			}
+			if($_GET['step'] == 2 && isset($_POST['chkConvertToLinks']))
+			{
+				echo '<strong>Next step: </strong>';
+				echo '<p>';
+					echo '<form enctype="multipart/form-data" id="import-upload-form" method="post" action="' . esc_attr(wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=3", 'import-upload')) . '">';
+						echo '<input type="submit" class="button" name="btnIndex" value="Convert Links"/>';
+						if(isset($_POST['chkConvertToLinks']))
+						{
+							echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
+						}
+					echo '</form>';	
+				echo '</p>';
+			}				
 		}
 		else
 		{
@@ -198,9 +240,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function getArrFieldQueries()
 	{
-		if($_GET['step'] == 2)
+		if($_GET['step'] >= 2)
 		{
-			$querystart = "//*";
+			$querystart = "//span";
 		}
 		else 
 		{
@@ -661,6 +703,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "<strong>Step 1 of 2: Importing Post Entries</strong><br>" );
 			} // foreach ( $headwords as $headword )
 
+			/*
 			if(isset($_POST['chkConvertToLinks']))
 			{
 				$arrFieldQueries = $this->getArrFieldQueries();
@@ -678,6 +721,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					}
 				}
 			}
+			*/
 			$entry_counter++;
 		} // foreach ($entries as $entry){
 
@@ -816,44 +860,59 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 	} // function convert_fieldworks_links_to_wordpress()
 
-	function convert_fields_to_links($post_id, $entry, $field) {
+	function convert_fields_to_links($post_id, $entry, $xpath) {
 		global $wpdb;
 		
-		$searchstring = $field->textContent;
-		if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
-		{
-			$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
-		}		
-				
-		$Emphasized_Text = $this->dom_xpath->query( './/xhtml:span[@class = "Emphasized_Text"]', $field);
-		//$Emphasized_Text = $xpath->query( '//span[@class = "Emphasized_Text"]');
+		$arrFieldQueries = $this->getArrFieldQueries();
 		
-		if($Emphasized_Text->length > 0)
-		{
-			$field->removeChild($Emphasized_Text->item(0));
-		}
-						
-		$newelement = $this->dom->createElement('a');
-		$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));	
-		$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
-		$newelement->setAttribute("class", $field->getAttribute("class"));
-		$newelement->setAttribute("lang", $field->getAttribute("lang"));
-		//$field->nodeValue = "";
-		//$field->appendChild($newelement);
-		if($Emphasized_Text->length > 0)
-		{				
-			$Emphasized_Text->item(0)->insertBefore($newelement);
-			$newelement = $Emphasized_Text->item(0);
-		}
-		$parent = $field->parentNode;	
-		$parent->replaceChild($newelement, $field);			
-		
-		$entry_xml = $this->dom->saveXML( $entry );
+		foreach($arrFieldQueries as $fieldQuery)
+		{			
+			if (!preg_match("/sense-crossref/i", $fieldQuery))
+			{
+				$fields = $xpath->query($fieldQuery);							
 							
+				foreach($fields as $field)
+				{
+					$searchstring = $field->textContent;
+					if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
+					{
+						$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
+					}		
+							
+					//$Emphasized_Text = $this->dom_xpath->query( './/xhtml:span[@class = "Emphasized_Text"]', $field);
+					$Emphasized_Text = $xpath->query( '//span[@class = "Emphasized_Text"]');
+					
+					if($Emphasized_Text->length > 0)
+					{
+						$field->removeChild($Emphasized_Text->item(0));
+					}
+									
+					//$newelement = $this->dom->createElement('a');
+					$newelement = $entry->createElement('a');
+					//$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));	
+					$newelement->appendChild($entry->createTextNode(addslashes(trim($field->textContent))));
+					$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
+					$newelement->setAttribute("class", $field->getAttribute("class"));
+					$newelement->setAttribute("lang", $field->getAttribute("lang"));
+					//$field->nodeValue = "";
+					//$field->appendChild($newelement);
+					if($Emphasized_Text->length > 0)
+					{				
+						$Emphasized_Text->item(0)->insertBefore($newelement);
+						$newelement = $Emphasized_Text->item(0);
+					}
+					$parent = $field->parentNode;	
+					$parent->replaceChild($newelement, $field);			
+				}
+			}
+		}
+
+		$entry_xml = $entry->saveXML( $entry );
+				
 		$sql = "UPDATE $wpdb->posts " .
 		" SET post_content = '" . $wpdb->prepare( addslashes($entry_xml) ) . "'" . 
 		" WHERE ID = " . $post_id;
-			 		
+		
 		$wpdb->query( $sql );
 	}	
 	         
@@ -1000,9 +1059,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 		//this replaces the special apostroph with the standard apostroph
 		//the first time round the special apostroph is inserted, so that both searches are valid
-		if(strstr($search_string,"√ä¬º"))
+		if(strstr($search_string,"’"))
 		{
-			$mySearch_string = str_replace("√ä¬º", "'", $search_string);
+			$mySearch_string = str_replace("’º", "'", $search_string);
 			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string, $subid);
 		}
 	}
