@@ -1080,6 +1080,25 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	return $catid;
 	}
 	
+	function get_duplicate($postid, $searchstring, $relevance, $lang) {
+		global $wpdb;
+		
+		$isDuplicate = false;
+		
+		$duplicatePostId = $wpdb->get_var( $wpdb->prepare( "
+			SELECT post_id
+			FROM $this->search_table_name
+			WHERE post_id = " . $postid . " AND search_strings = '" . $searchstring . 
+			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'"));	
+		
+		if($duplicatePostId == $postid)
+		{
+			$isDuplicate = true;
+		}
+		
+		return $isDuplicate;
+	}
+	
 	function get_posts() {
 		global $wpdb;
 
@@ -1233,7 +1252,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$x = 0;
 				if(!$subentry)
 				{	
-					$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
+					$isDuplicate = $this->get_duplicate($post_id, $field->textContent, ($this->semantic_domain_relevance - $x), $semantic_domain_language);
+					if(!$isDuplicate)
+					{
+						$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
+					}
 				}
 				////if($domain_class != "semantic-domain-name-sub")
 				////{
