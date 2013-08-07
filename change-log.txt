@@ -1,3 +1,4 @@
+v. 2.8.0 07 August 2013 converting links is now a seperate step 
 v. 2.7.9 01 August 2013 using subentries as headword instead of minor-entries for semantic domains (see version 2.7.5) 
 v. 2.7.8 25 July 2013 fixed homographs
 v. 2.7.7 24 July 2013 removed debugging info
