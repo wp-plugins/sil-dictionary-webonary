@@ -1061,7 +1061,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//the first time round the special apostroph is inserted, so that both searches are valid
 		if(strstr($search_string,"’"))
 		{
-			$mySearch_string = str_replace("’º", "'", $search_string);
+			$mySearch_string = str_replace("’", "'", $search_string);
 			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string, $subid);
 		}
 	}
@@ -1088,7 +1088,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$duplicatePostId = $wpdb->get_var( $wpdb->prepare( "
 			SELECT post_id
 			FROM $this->search_table_name
-			WHERE post_id = " . $postid . " AND search_strings = '" . $searchstring . 
+			WHERE post_id = " . $postid . " AND search_strings = '" . addslashes($searchstring) . 
 			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'"));	
 		
 		if($duplicatePostId == $postid)
