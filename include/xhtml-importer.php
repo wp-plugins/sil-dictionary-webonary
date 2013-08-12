@@ -898,7 +898,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							
 							$field = $newField->item(0);
 							$searchstring = $field->textContent;
-							echo $searchstring . "<br>";
 						}
 					}				
 
