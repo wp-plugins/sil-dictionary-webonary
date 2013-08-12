@@ -1,3 +1,4 @@
+v. 2.8.5 12 August 2013 removed echo output
 v. 2.8.4 12 August 2013 fixed problems with definitions when converting links
 v. 2.8.3 09 August 2013	fixed problem with converting links concerning class Emphasized_Text
 v. 2.8.2 07 August 2013 added slashes for getDuplicate sql select
