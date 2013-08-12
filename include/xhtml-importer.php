@@ -885,17 +885,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					{
 						$Emphasized_Text = $xpath->query('//span[@class = "Emphasized_Text"]');
 						
-						if($field->getAttribute("class") == "definition-sub")
+						if($Emphasized_Text->length > 0)
 						{
-							$newField = $xpath->query('//span[@class="definition-sub"]/node()[not(@class = "Emphasized_Text")]');
+							if($field->getAttribute("class") == "definition-sub")
+							{
+								$newField = $xpath->query('//span[@class="definition-sub"]/node()[not(@class = "Emphasized_Text")]');
+							}
+							else 
+							{
+								$newField = $xpath->query('//span[@class="definition"]/node()[not(@class = "Emphasized_Text")]');
+							}
+							
+							$field = $newField->item(0);
+							$searchstring = $field->textContent;
+							echo $searchstring . "<br>";
 						}
-						else 
-						{
-							$newField = $xpath->query('//span[@class="definition"]/node()[not(@class = "Emphasized_Text")]');
-						}
-						
-						$field = $newField->item(0);
-						$searchstring = $field->textContent;
 					}				
 
 					//if($Emphasized_Text->length == 0)
@@ -915,13 +919,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							$newelement->setAttribute("class", $field->getAttribute("class"));
 						}
 						$newelement->setAttribute("lang", $field->getAttribute("lang"));
-						//$field->nodeValue = "";
-						//$field->appendChild($newelement);
+						/*
 						if($Emphasized_Text->length > 0)
 						{							
 							$Emphasized_Text->item(0)->insertBefore($newelement);
 							$newelement = $Emphasized_Text->item(0);				
 						}
+						*/
 						$parent = $field->parentNode;	
 						$parent->replaceChild($newelement, $field);		
 					}
