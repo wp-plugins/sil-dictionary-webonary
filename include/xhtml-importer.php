@@ -261,7 +261,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$arrFieldQueries[8] = $querystart . '[@class = "variantref-form"]';
 		$arrFieldQueries[9] = $querystart . '[@class = "variantref-form-sub"]';
 		$arrFieldQueries[10] = $querystart . '[@class = "sense-crossref"]';
-		
+
 		return $arrFieldQueries;
 	}
 	
@@ -318,7 +318,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank"><?php esc_attr_e('Sort Order (usually stem-based view)'); ?></a><BR>				
 			</p>
 			<div id="convertToLinks">
-				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links). - slows down import'); ?></input><br>
+				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input><br>
 				<input type="checkbox" name="chkShowDebug"> <?php esc_attr_e('Display debug messages'); ?></input>
 			</div>
 			<p class="submit">
@@ -861,48 +861,70 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	} // function convert_fieldworks_links_to_wordpress()
 
 	function convert_fields_to_links($post_id, $entry, $xpath) {
+		
 		global $wpdb;
 		
-		$arrFieldQueries = $this->getArrFieldQueries();
+		$arrFieldQueries = $this->getArrFieldQueries(true);
 		
 		foreach($arrFieldQueries as $fieldQuery)
 		{			
 			if (!preg_match("/sense-crossref/i", $fieldQuery))
 			{
 				$fields = $xpath->query($fieldQuery);							
-							
+			
 				foreach($fields as $field)
 				{
+					$Emphasized_Text = null;
 					$searchstring = $field->textContent;
 					if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
 					{
 						$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
 					}		
 							
-					//$Emphasized_Text = $this->dom_xpath->query( './/xhtml:span[@class = "Emphasized_Text"]', $field);
-					$Emphasized_Text = $xpath->query( '//span[@class = "Emphasized_Text"]');
-					
-					if($Emphasized_Text->length > 0)
+					if($field->getAttribute("class") == "definition" || $field->getAttribute("class") == "definition-sub")
 					{
-						$field->removeChild($Emphasized_Text->item(0));
+						$Emphasized_Text = $xpath->query('//span[@class = "Emphasized_Text"]');
+						
+						if($field->getAttribute("class") == "definition-sub")
+						{
+							$newField = $xpath->query('//span[@class="definition-sub"]/node()[not(@class = "Emphasized_Text")]');
+						}
+						else 
+						{
+							$newField = $xpath->query('//span[@class="definition"]/node()[not(@class = "Emphasized_Text")]');
+						}
+						
+						$field = $newField->item(0);
+						$searchstring = $field->textContent;
+					}				
+
+					//if($Emphasized_Text->length == 0)
+					if($field->getAttribute("class") != "partofspeech")
+					{
+						//$newelement = $this->dom->createElement('a');
+						$newelement = $entry->createElement('a');
+						//$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));
+						$newelement->appendChild($entry->createTextNode(addslashes(trim($field->textContent))));
+						$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
+						if($Emphasized_Text->length > 0)
+						{
+							$newelement->setAttribute("class", "definition");
+						}
+						else
+						{
+							$newelement->setAttribute("class", $field->getAttribute("class"));
+						}
+						$newelement->setAttribute("lang", $field->getAttribute("lang"));
+						//$field->nodeValue = "";
+						//$field->appendChild($newelement);
+						if($Emphasized_Text->length > 0)
+						{							
+							$Emphasized_Text->item(0)->insertBefore($newelement);
+							$newelement = $Emphasized_Text->item(0);				
+						}
+						$parent = $field->parentNode;	
+						$parent->replaceChild($newelement, $field);		
 					}
-									
-					//$newelement = $this->dom->createElement('a');
-					$newelement = $entry->createElement('a');
-					//$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));	
-					$newelement->appendChild($entry->createTextNode(addslashes(trim($field->textContent))));
-					$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
-					$newelement->setAttribute("class", $field->getAttribute("class"));
-					$newelement->setAttribute("lang", $field->getAttribute("lang"));
-					//$field->nodeValue = "";
-					//$field->appendChild($newelement);
-					if($Emphasized_Text->length > 0)
-					{				
-						$Emphasized_Text->item(0)->insertBefore($newelement);
-						$newelement = $Emphasized_Text->item(0);
-					}
-					$parent = $field->parentNode;	
-					$parent->replaceChild($newelement, $field);			
 				}
 			}
 		}
