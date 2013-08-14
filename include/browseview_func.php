@@ -61,9 +61,16 @@ function categories_func( $atts )
      		data : {action: "getAjaxsearch", semdomain : word}, 		
      		type:'POST',
      		dataType: 'html',
-     		success: function(output_string){ 
+     		success: function(output_string){
         		jQuery('#searchresult').html(output_string);
-     		}
+        		//jQuery('.subentries').hide("fast");
+			var elems = document.getElementsByClassName('subentries'), i;
+			var x = 0;
+		    for (i in elems) {
+		    	document.getElementsByClassName("subentries")[x].style.display = 'none';
+		    	x++;
+		    }        		
+     		}     		
 	 })
 	}	
 	</script>
