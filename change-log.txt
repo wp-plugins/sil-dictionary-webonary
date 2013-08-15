@@ -1,3 +1,4 @@
+v. 2.8.7 15 August 2013 replacing class=subentry to class=entry, if no class "entry" exists, so that we don't have to mess with css-file. 
 v. 2.8.6 14 August 2013 added javascript to hide subentries in category browse view
 v. 2.8.5 12 August 2013 removed echo output
 v. 2.8.4 12 August 2013 fixed problems with definitions when converting links
