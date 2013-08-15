@@ -672,6 +672,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$entry_xml = str_replace("'","&#39;",$entry_xml);
 				
+				if (!preg_match("/class=\"entry\"/i", $entry_xml))
+				{
+					$entry_xml = str_replace("class=\"subentry\"","class=\"entry\"",$entry_xml);
+				}
+				
 				/*
 				 * Insert the new entry into wp_posts
 				 */
