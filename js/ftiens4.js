@@ -300,7 +300,7 @@ function linkFolderHTML(isTextLink)
 	//searchlink = "?s=&partialsearch=1&semdomain=" + this.desc.replace(/[0-9]|[.]/g, '').trim();
 	  searchlink = "#";
 	if (USEFRAMES)
-	  docW = docW + "<a onclick=\"displayEntry('" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "');\" href='" + searchlink + "' "
+	  docW = docW + "<a class=categorylink onclick=\"displayEntry('" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "');\" href='" + searchlink + "' "
 	else
 	  docW = docW + "<a href='" + this.hreference + "' TARGET=_top "
         
