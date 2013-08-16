@@ -675,6 +675,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if (!preg_match("/class=\"entry\"/i", $entry_xml))
 				{
 					$entry_xml = str_replace("class=\"subentry\"","class=\"entry\"",$entry_xml);
+					$entry_xml = str_replace("class=\"headword-sub\"","class=\"headword\"",$entry_xml);
 				}
 				
 				/*
