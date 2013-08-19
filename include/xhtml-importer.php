@@ -463,7 +463,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
 				
-				if(isset($headword))
+				if(isset($headword) && $post->post_parent == 0)
 				{
 					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
 				
@@ -672,11 +672,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$entry_xml = str_replace("'","&#39;",$entry_xml);
 				
+				$post_parent = 0;
 				if (!preg_match("/class=\"entry\"/i", $entry_xml))
 				{
+					$post_parent = 1;
 					$entry_xml = str_replace("class=\"subentry\"","class=\"entry\"",$entry_xml);
-					//currently can't replace headword-sub with headword, as this will cause problems with indexing search strings
-					//$entry_xml = str_replace("class=\"headword-sub\"","class=\"headword\"",$entry_xml);
+					$entry_xml = str_replace("class=\"headword-sub\"","class=\"headword\"",$entry_xml);
 				}
 				/*
 				 * Insert the new entry into wp_posts
@@ -693,7 +694,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'ID' => $post_id,
 					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
 					'post_content' =>  $entry_xml,
-					'post_status' => 'publish',						
+					'post_status' => 'publish',			
+					'post_parent' => $post_parent,	
 					'post_name' => $flexid
 				);
 				$post_id = wp_insert_post( $post );
@@ -1135,10 +1137,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
-		$sql = "SELECT ID, post_title, post_content
+		$sql = "SELECT ID, post_title, post_content, post_parent
 			FROM $wpdb->posts
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
-			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id();
+			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id(); 
 
 		return $wpdb->get_results($sql);
 	}	
