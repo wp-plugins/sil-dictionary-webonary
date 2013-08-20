@@ -1,3 +1,4 @@
+v. 2.9.3 20 August 2013 headword-minor entries didn't get indexed anymore because of previous change. Fixed that.
 v. 2.9.2 19 August 2013 replacing class=headword-sub to class=headword now works, since we insert 1 into posts.post_parent if it is a subentry and check this field for 0 on indexing
 v. 2.9.1 16 August 2013 reverted change of v. 2.8.8: currently can't replace headword-sub with headword, as this will cause problems with indexing search strings
 v. 2.9.0 16 August 2013 submitted changed ftiens.js to repository
