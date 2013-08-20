@@ -49,7 +49,7 @@ function categories_func( $atts )
 {
 ?>	
 	<style>
-	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold; white-space:nowrap; }
+	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold;}
 	   a.categorylink {text-decoration: none; color: navy; font-size: 15px;}
 	</style>
 
