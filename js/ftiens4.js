@@ -178,7 +178,7 @@ function drawFolder(insertAtObj)
   if (WRAPTEXT)
 	  docW = docW + "</td>"+this.prependHTML+"<td valign=top width=100%>"
   else
-	  docW = docW + "</td>"+this.prependHTML+"<td valign=top nowrap width=100%>"
+	  docW = docW + "</td>"+this.prependHTML+"<td valign=top width=100%>"
   if (USETEXTLINKS) 
   { 
     docW = docW + this.linkHTML(true) 
@@ -465,7 +465,7 @@ function drawItem(insertAtObj)
   if (WRAPTEXT)
     docW = docW + "</td>"+this.prependHTML+"<td valign=top width=100%>"
   else
-    docW = docW + "</td>"+this.prependHTML+"<td valign=top nowrap width=100%>"
+    docW = docW + "</td>"+this.prependHTML+"<td valign=top width=100%>"
 
   if (USETEXTLINKS) 
     docW = docW + "<a " + fullLink + " id=\"itemTextLink"+this.id+"\">" + this.desc + "</a>"
