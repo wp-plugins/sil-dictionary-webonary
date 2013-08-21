@@ -257,7 +257,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 ?>
 	<style type="text/css">
 	#searchresult { 
-		width:50%; 
+		width:70%; 
 		min-width: 270px;
 		text-align:left; 
 	}
@@ -265,7 +265,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 		float:left; 
 		margin: 1px; 
 		padding-left: 2px;
-		width:60%; 
+		width:50%; 
 		text-align:left; 
 	}
 	#vernacularcol {
