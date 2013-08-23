@@ -131,7 +131,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				?>
 				<DIV ID="flushme">converting links...</DIV>
 				<?php 
-				$arrPosts = $this->get_posts();			
+				$arrPosts = $this->get_posts("indexed");			
 
 				$entry_counter = 1;
 				$entries_count = count($arrPosts);
@@ -450,6 +450,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$subentry = false;
 				if ( $post->ID ){
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
+					$wpdb->query( $sql );
+					//set as indexed
+					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
 					$wpdb->query( $sql );
 				}
 				
@@ -872,6 +875,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		global $wpdb;
 		
+		$sql = "UPDATE $wpdb->posts SET pinged = 'linksconverted' WHERE ID = " . $post_id;
+		$wpdb->query( $sql );
+		
 		$arrFieldQueries = $this->getArrFieldQueries(true);
 		
 		foreach($arrFieldQueries as $fieldQuery)
@@ -1132,7 +1138,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		return $isDuplicate;
 	}
 	
-	function get_posts() {
+	function get_posts($index = "") {
 		global $wpdb;
 
 		// @todo: If $headword_text has a double quote in it, this
@@ -1141,7 +1147,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			FROM $wpdb->posts
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
 			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id(); 
-
+		//using pinged field for not yet indexed
+		$sql .= " AND pinged = '" . $index . "'";
+		
+		
 		return $wpdb->get_results($sql);
 	}	
 		
