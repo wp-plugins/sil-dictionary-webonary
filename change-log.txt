@@ -1,3 +1,4 @@
+v. 2.9.7 26 Agust 2013 made vernacular browse-view case-insensitive
 v. 2.9.6 23 August 2013 setting field "pinged" so that we can split big files and only index the searchstrings that haven't been indexed yet
 v. 2.9.5 21 August 2013 made the table width of the reversal browse view wider
 v. 2.9.4 20 August 2013 removed nowrap from category links
