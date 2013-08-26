@@ -96,14 +96,16 @@ function sil_dictionary_custom_join($join) {
 			$noletters = trim($wp_query->query_vars['noletters']);
 			
 			$subquery_where .= $search_table_name . ".search_strings LIKE '" .
-			addslashes($letter) . "%' COLLATE 'UTF8_BIN' AND relevance >= 95 AND language_code = '$key' ";
+			addslashes($letter) . "%' COLLATE 'UTF8_BIN' OR " . $search_table_name . ".search_strings LIKE '" .
+			addslashes(strtoupper($letter)) . "%' COLLATE 'UTF8_BIN' AND relevance >= 95 AND language_code = '$key' ";
 			
 			$arrNoLetters = explode(",",  $noletters);
 			foreach($arrNoLetters as $noLetter)
 			{
 				if(strlen($noLetter) > 0)
 				{
-					$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' COLLATE 'UTF8_BIN'";
+					$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' COLLATE 'UTF8_BIN'" .
+					" AND " . $search_table_name . ".search_strings NOT LIKE '" . strtoupper($noLetter) ."%' COLLATE 'UTF8_BIN'";
 				}
 			}
 		}		
