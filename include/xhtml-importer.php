@@ -1292,14 +1292,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			 * Load semantic domain into search table
 			 */
 				$x = 0;
-				if(!$subentry)
-				{	
+				//if(!$subentry)
+				//{	
 					$isDuplicate = $this->get_duplicate($post_id, $field->textContent, ($this->semantic_domain_relevance - $x), $semantic_domain_language);
 					if(!$isDuplicate)
 					{
 						$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
 					}
-				}
+				//}
 				////if($domain_class != "semantic-domain-name-sub")
 				////{
 					wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
