@@ -687,7 +687,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 								
 				$post_id = $this->get_post_id( $flexid );
-				$post_id_exists = $post_id != NULL;	
+				$post_id_exists = $post_id != NULL;
+
+				
 				
 				// If the ID is not null, but has a value, wp_insert_post will
 				// update the record instead of adding a new record. When updating,
@@ -699,7 +701,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'post_content' =>  $entry_xml,
 					'post_status' => 'publish',			
 					'post_parent' => $post_parent,	
-					'post_name' => $flexid
+					'post_name' => $flexid,
+					'comment_status' => get_option('default_comment_status')
 				);
 				$post_id = wp_insert_post( $post );
 				

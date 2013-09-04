@@ -119,8 +119,16 @@ function user_input() {
 				<p>
 				<input type="submit" name="save_settings" value="<?php _e('Save', 'sil_dictionary'); ?>">
 				</p>
+				<?php 
+				/*
+				?>
+				<h3><?php _e('Comments');?></h3>
+				If you have the comments turned on, you need to re-sync your comments after re-importing of your posts.
+				<p>
+				<a href="admin.php?import=comments-resync">Re-sync comments</a>
 				<?php
-			}
+				*/
+				}
 
 			/*
 			 * Delete finished
