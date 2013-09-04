@@ -1,3 +1,4 @@
+v. 3.0.0 04 September 2013 if comments open, it will keep the comment status open for the old entries on re-import
 v. 2.9.9 02 September 2013 now indexing subentry semantic domains again
 v. 2.9.8 26 August 2013 added some brackets to the just changed sql statement
 v. 2.9.7 26 Agust 2013 made vernacular browse-view case-insensitive

@@ -9,7 +9,7 @@ Author: SIL International
 Author URI: http://www.sil.org/
 Text Domain: sil_dictionary
 Domain Path: /lang/
-Version: v. 2.9.9
+Version: v. 3.0.0
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
@@ -50,6 +50,8 @@ require_once( dirname( __FILE__ ) . '/include/xhtml-importer.php' );
 require_once( dirname( __FILE__ ) . '/include/searchform_func.php' );
 // Creates the browse view based on shortcodes
 require_once( dirname( __FILE__ ) . '/include/browseview_func.php' );
+// Adds functiionality to save the post_name in comment_type and resync comments
+require_once( dirname( __FILE__ ) . '/include/comments_func.php' );
 
 /*
  * Infrastructure hooks
@@ -79,3 +81,5 @@ add_filter('posts_where', 'sil_dictionary_custom_where');
 add_filter('posts_orderby', 'sil_dictionary_custom_order_by');
 add_action('search_message', 'sil_dictionary_custom_message');
 add_action('pre_get_posts','no_standard_sort');
+
+add_action( 'preprocess_comment' , 'preprocess_comment_add_type' ); 
