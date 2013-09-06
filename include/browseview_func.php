@@ -405,7 +405,7 @@ function vernacularalphabet_func( $atts )
 		{
 			$display .= "<div class=post>" . $mypost->post_content . "</div>";
 			if( comments_open($mypost->ID) ) {
-				$display .= "<a href=\"" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
+				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
 			}			
 		}
 	}
