@@ -1,3 +1,4 @@
+v. 3.0.2 06 September 2013 noticed another comments link that needed fixing
 v. 3.0.1 06 September 2013 fixed link for comments in browse view
 v. 3.0.0 04 September 2013 if comments open, it will keep the comment status open for the old entries on re-import
 v. 2.9.9 02 September 2013 now indexing subentry semantic domains again
