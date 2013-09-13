@@ -21,20 +21,12 @@ function ajaxsearch()
 	{
 		foreach($arrPosts as $mypost)
 		{
-			/* if($mypost->post_title != $mypost->search_strings)
-			{
-				$headword = getVernacularHeadword($mypost->ID, $languagecode);
-				$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
-				$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\?s=" . $headword . "\">" . $headword . "</a></div>";
+			$display .= "<div class=post>" . $mypost->post_content . "</div>";
+			/*
+			if( comments_open($mypost->ID) ) {
+				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
 			}
-			else 
-			{
-			*/
-				$display .= "<div class=post>" . $mypost->post_content . "</div>";
-				if( comments_open($mypost->ID) ) {
-					$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
-				}			
-			//}
+			*/			
 		}
 	}
 		
@@ -404,9 +396,11 @@ function vernacularalphabet_func( $atts )
 		else 
 		{
 			$display .= "<div class=post>" . $mypost->post_content . "</div>";
+			/*
 			if( comments_open($mypost->ID) ) {
 				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
 			}			
+			*/
 		}
 	}
 	
