@@ -924,7 +924,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						//$newelement = $this->dom->createElement('a');
 						$newelement = $entry->createElement('a');
 						//$newelement->appendChild($this->dom->createTextNode(addslashes(trim($field->textContent))));
-						$newelement->appendChild($entry->createTextNode(addslashes(trim($field->textContent))));
+						$newelement->appendChild($entry->createTextNode(addslashes($field->textContent)));
 						$newelement->setAttribute("href", "/?s=" . addslashes(trim($searchstring)) . "&partialsearch=1");
 						if($Emphasized_Text->length > 0)
 						{
