@@ -87,12 +87,11 @@ class class_resync_comments extends WP_Importer
  * $callback.
  */
 $comments_resync = new class_resync_comments();
-/*
+
 register_importer('comments-resync',
 		__('Comments Re-Sync', 'sil_dictionary'),
 		__('If you have the comments turned on, you need to re-sync your comments after re-importing of your posts.', 'sil_dictionary'),
 		array ($comments_resync, 'start'));
-*/
 		
 function preprocess_comment_add_type( $commentdata ) {
 
