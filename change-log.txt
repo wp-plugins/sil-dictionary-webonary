@@ -1,3 +1,4 @@
+v. 3.0.7 25 September 2013 showing box with semantic domain search results
 v. 3.0.6 25 September 2013 semantic domains don't anymore get imported into the search table (only as taxonomies)
 v. 3.0.5 23 September 2013 now also doing subquery if there is a taxonomy
 v. 3.0.4 20 September 2013 removed trim of textContent on convert_fields_to_links
