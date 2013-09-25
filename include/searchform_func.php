@@ -76,6 +76,24 @@ function webonary_searchform() {
 				?>
 			</div>
 		</form>
+		<?php 
+		if(strlen(trim($_GET['s'])) > 0)
+		{
+			$sem_domains = get_terms( 'sil_semantic_domains', 'name__like=' .  trim($_GET['s']) .''); 		
+			if(count($sem_domains) > 0)
+			{
+				echo "<p>&nbsp;</p>";
+				echo "<strong>";
+				 _e('Found in Semantic Domains:', 'sil_dictionary');
+				echo "</strong>";
+				echo "<ul>";
+				foreach ($sem_domains as $sem_domain ) {
+				  echo '<li><a href="?s=&partialsearch=1&tax=' . $sem_domain->term_id . '">'. $sem_domain->description . '</a></li>';
+				}
+				echo "</ul>";
+			}
+		}	
+		?>
 <?php
 }
 
