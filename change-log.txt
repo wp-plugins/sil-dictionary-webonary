@@ -1,3 +1,4 @@
+v. 3.0.9 30 September 2013 removed double addslashes from convert_to_links
 v. 3.0.8 25 September 2013 made re-syncing of comments possible again
 v. 3.0.7 25 September 2013 showing box with semantic domain search results
 v. 3.0.6 25 September 2013 semantic domains don't anymore get imported into the search table (only as taxonomies)
