@@ -151,6 +151,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 					
 				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
+				echo '<p>&nbsp;</p>';
+				echo '<p>After importing, go to <strong>Tools - <a href="../wp-admin/tools.php?page=sil-dictionary-webonary/include/infrastructure.php">SIL Dictionary</a></strong> to configure more settings.</p>';
 			?>
 			<?php	
 				break;
