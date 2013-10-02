@@ -268,20 +268,23 @@ function run_user_action() {
     	
     	foreach($arrLanguages as $language)
     	{
-	    	$sql = "INSERT INTO  $wpdb->terms (name,slug) VALUES ('" . $_POST[$language['name']] . "','" . $_POST[$language['code']] . "')
-	  		ON DUPLICATE KEY UPDATE name = '" . $_POST[$language['name']]  . "'";
-	    	
-	    	$wpdb->query( $sql );
-	    	
-	    	$lastid = $wpdb->insert_id;
-	    	
-	    	if($lastid != 0)
-	    	{
-		    	$sql = "INSERT INTO  $wpdb->term_taxonomy (term_id, taxonomy,description,count) VALUES (" . $lastid . ", 'sil_writing_systems', '" . $_POST[$language['name']] . "',999999)
-		  		ON DUPLICATE KEY UPDATE description = '" . $_POST[$language['name']]  . "'";
-	    	    	
-	    		$wpdb->query( $sql );
-	    	}
+    		if(strlen(trim($_POST[$language['code']])) != 0)
+    		{
+		    	$sql = "INSERT INTO  $wpdb->terms (name,slug) VALUES ('" . $_POST[$language['name']] . "','" . $_POST[$language['code']] . "')
+		  		ON DUPLICATE KEY UPDATE name = '" . $_POST[$language['name']]  . "'";
+		    	
+		    	$wpdb->query( $sql );
+		    	
+		    	$lastid = $wpdb->insert_id;
+		    	
+		    	if($lastid != 0)
+		    	{
+			    	$sql = "INSERT INTO  $wpdb->term_taxonomy (term_id, taxonomy,description,count) VALUES (" . $lastid . ", 'sil_writing_systems', '" . $_POST[$language['name']] . "',999999)
+			  		ON DUPLICATE KEY UPDATE description = '" . $_POST[$language['name']]  . "'";
+		    	    	
+		    		$wpdb->query( $sql );
+		    	}
+    		}
     	}    	
     	
     	echo "<br>" . _e('Settings saved');
