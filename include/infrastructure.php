@@ -30,6 +30,23 @@ function add_admin_menu() {
 		'sil_dictionary_main' ); // callback function
 }
 
+function ajaxlanguage()
+{
+	global $wpdb;
+	
+	$languagename = $wpdb->get_var( $wpdb->prepare( "
+		SELECT name
+		FROM $wpdb->terms
+		WHERE slug = '" . $_POST['languagecode'] . "'"));	
+	
+		
+	echo $languagename;
+	die();
+}
+
+add_action( 'wp_ajax_getAjaxlanguage', 'ajaxlanguage' );
+add_action( 'wp_ajax_nopriv_getAjaxlanguage', 'ajaxlanguage' );
+
 //get category id for "webonary", if it doesn't exist, create it.
 function get_category_id() {
 	global $wpdb;
@@ -40,6 +57,18 @@ function get_category_id() {
 		WHERE name LIKE 'webonary'"));	
 
 	return $catid;
+}
+
+function get_LanguageCodes() {
+	global $wpdb;
+
+	$sql = "SELECT language_code, name
+		FROM " . $wpdb->prefix . "sil_search
+		LEFT JOIN " . $wpdb->terms . " ON " . $wpdb->terms . ".slug = " . $wpdb->prefix . "sil_search.language_code
+		GROUP BY language_code
+		ORDER BY language_code";
+	
+	return $wpdb->get_results($sql);;
 }
 
 //---------------------------------------------------------------------------//
@@ -56,8 +85,28 @@ function sil_dictionary_main() {
  */
 function user_input() {
 	
+	$arrLanguageCodes = get_LanguageCodes();
+	
 	// enctype="multipart/form-data"
 	?>
+	<script>
+	function getLanguageName(selectbox, langname)
+	{
+		var e = document.getElementById(selectbox);
+		var langcode = e.options[e.selectedIndex].value;
+			
+		jQuery.ajax({
+     		url: '<?php echo admin_url('admin-ajax.php'); ?>',
+     		data : {action: "getAjaxlanguage", languagecode : langcode}, 	
+     		type:'POST',
+     		dataType: 'html',
+     		success: function(output_string){
+        		jQuery('#' + langname).val(output_string);
+     		}     		
+	 })
+	}	
+	</script>
+	
 	<div class="wrap">
 		<div id="icon-tools" class="icon32"></div>
 		<form method="post" action="">
@@ -96,23 +145,61 @@ function user_input() {
 					<br>
 					<?php _e('(deletes all posts in the category "webonary")', 'sil_dictionary'); ?>
 				</p>
-				<h3><?php _e('Browse View');?></h3>
+				<h3><?php _e('Settings');?></h3>
+				<p>
+				<?php _e('Vernacular Language Code:'); ?>
+				<select id=vernacularLanguagecode name="languagecode" onchange="getLanguageName('vernacularLanguagecode', 'vernacularName');">
+					<option value=""></option>
+					<?php 
+					$x = 0;
+					foreach($arrLanguageCodes as $languagecode) {?>
+						<option value="<?php echo $languagecode->language_code; ?>" <?php if(get_option('languagecode') == $languagecode->language_code) { $i = $x; ?>selected<?php }?>><?php echo $languagecode->language_code; ?></option>
+					<?php 
+					$x++;
+					} ?>
+				</select>
+				<?php _e('Language Name:'); ?> <input  id=vernacularName type="text" name="txtVernacularName" value="<?php echo $arrLanguageCodes[$i]->name; ?>">
+				<p>
 				<?php _e('Vernacular Alphabet:'); ?>
 				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('vernacular_alphabet')); ?>" />
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>			
-				 <b><?php _e('If you have a reversal index other than English, enter the information here:'); ?></b><br>
-				<?php _e('Reversal Index Alphabet:'); ?>
+				<b><?php _e('Reversal Indexes:'); ?></b>
+				<p>
+				<?php _e('Main reversal index code (usually English):'); ?>
+				<select id=reversalLangcode name="reversal_langcode" onchange="getLanguageName('reversalLangcode', 'reversalName');">
+					<option value=""></option>
+					<?php
+						$x = 0;
+						foreach($arrLanguageCodes as $languagecode) {?>
+						<option value="<?php echo $languagecode->language_code; ?>" <?php if(get_option('reversal_langcode') == $languagecode->language_code) { $k = $x; ?>selected<?php }?>><?php echo $languagecode->language_code; ?></option>
+					<?php
+						$x++; 
+						} ?>
+				</select>
+				<?php _e('Language Name:'); ?> <input id=reversalName type="text" name="txtReversalName" value="<?php echo $arrLanguageCodes[$k]->name; ?>">
+				<p>
+				 <i><?php _e('If you have a second reversal index, enter the information here:'); ?></i>
+				 <p>
+				<?php _e('Secondary reversal index code:'); ?>
+				<select id=reversal2Langcode name="reversal2_langcode" onchange="getLanguageName('reversal2Langcode', 'reversal2Name');">
+					<option value=""></option>
+					<?php
+					$x = 0; 
+					foreach($arrLanguageCodes as $languagecode) {?>
+						<option value="<?php echo $languagecode->language_code; ?>" <?php if(get_option('reversal2_langcode') == $languagecode->language_code) { $n = $x; ?>selected<?php }?>><?php echo $languagecode->language_code; ?></option>
+					<?php 
+					$x++;
+					} ?>
+				</select>
+				<?php _e('Language Name:'); ?> <input id=reversal2Name type="text" name="txtReversal2Name" value="<?php echo $arrLanguageCodes[$n]->name; ?>">
+				<p>
+				<?php _e('Secondary Reversal Index Alphabet:'); ?>
 				<input name="reversal2_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('reversal2_alphabet')); ?>" />
 				<?php _e('(Letters seperated by comma)'); ?>
 				<p>
-				<?php _e('Reversal Index Language Code:'); ?>
-				<input name="reversal2_langcode" type="text" size=5 value="<?php echo get_option('reversal2_langcode'); ?>" />
+				<b><?php _e('Search Options:'); ?></b>
 				<p>
-				<h3><?php _e('Settings');?></h3>
-				<?php _e('Ethnologue Language Code:'); ?>
-				<input name="languagecode" type="text" size=5 value="<?php echo get_option('languagecode'); ?>" />				
-				<p>	
 				<input name="include_partial_words" type="checkbox" value="1"
 							<?php checked('1', get_option('include_partial_words')); ?> />
 							<?php _e('Always include searching through partial words.'); ?>
@@ -154,6 +241,8 @@ function user_input() {
  * Do what the user said to do.
  */
 function run_user_action() {
+	global $wpdb;
+	
     if ( ! empty( $_POST['delete_data'])) {
         clean_out_dictionary_data();
     }
@@ -161,8 +250,39 @@ function run_user_action() {
     	update_option("include_partial_words", $_POST['include_partial_words']);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
+    	update_option("reversal_langcode", $_POST['reversal_langcode']);
     	update_option("reversal2_alphabet", $_POST['reversal2_alphabet']);
     	update_option("reversal2_langcode", $_POST['reversal2_langcode']);
+    	
+    	if(trim(strlen($_POST['txtVernacularName'])) == 0)
+    	{
+    		echo "<br><span style=\"color:red\">Please fill out the textfields for the language names, as they will appear in a dropdown below the searcbhox.</span><br>";
+    	}
+    	
+    	$arrLanguages[0]['name'] = "txtVernacularName";
+    	$arrLanguages[0]['code'] = "languagecode";
+    	$arrLanguages[1]['name'] = "txtReversalName";
+    	$arrLanguages[1]['code'] = "reversal_langcode";
+    	$arrLanguages[2]['name'] = "txtReversal2Name";
+    	$arrLanguages[2]['code'] = "reversal2_langcode";
+    	
+    	foreach($arrLanguages as $language)
+    	{
+	    	$sql = "INSERT INTO  $wpdb->terms (name,slug) VALUES ('" . $_POST[$language['name']] . "','" . $_POST[$language['code']] . "')
+	  		ON DUPLICATE KEY UPDATE name = '" . $_POST[$language['name']]  . "'";
+	    	
+	    	$wpdb->query( $sql );
+	    	
+	    	$lastid = $wpdb->insert_id;
+	    	
+	    	if($lastid != 0)
+	    	{
+		    	$sql = "INSERT INTO  $wpdb->term_taxonomy (term_id, taxonomy,description,count) VALUES (" . $lastid . ", 'sil_writing_systems', '" . $_POST[$language['name']] . "',999999)
+		  		ON DUPLICATE KEY UPDATE description = '" . $_POST[$language['name']]  . "'";
+	    	    	
+	    		$wpdb->query( $sql );
+	    	}
+    	}    	
     	
     	echo "<br>" . _e('Settings saved');
     }    
