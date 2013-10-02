@@ -1,3 +1,4 @@
+v. 3.1.2 02 October 2013 added dropdown for language code selection and textboxes to add language names for search dropdown
 v. 3.1.1 01 October 2013 the name of the definition could be definition1_L2, therefore changed xPath query to [starts-with(@class,"definition")]
 v. 3.1.0 30 September 2013 added some instructions for configuration
 v. 3.0.9 30 September 2013 removed double addslashes from convert_to_links
