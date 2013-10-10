@@ -831,7 +831,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// Now get the cross reference. Should only be one, but written to
 			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './/xhtml:span[starts-with(@class,"sense-crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
+			$cross_refs = $this->dom_xpath->query( './/xhtml:span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
 			
 			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
 			foreach ( $cross_refs as $cross_ref ) {
