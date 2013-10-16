@@ -1,3 +1,4 @@
+v. 3.1.5 16 October 2013 updated importer to use new language header scheme (name = "DC.language")
 v. 3.1.4 10 October 2013 now checking if class contains name "crossref" instead of just "sense-crossref" for converting FLEx links
 v. 3.1.3 02 October 2013 made that language code doesn't get inserted if empty
 v. 3.1.2 02 October 2013 added dropdown for language code selection and textboxes to add language names for search dropdown
