@@ -582,9 +582,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// An example of writing system and font in meta of the XHTML file header:
 		// <meta name="en" content="English" scheme="Language Name" />
 		// <meta name="en" content="Times New Roman" scheme="Default Font" />
-		$writing_systems = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Language Name"]' );
+		$writing_systems = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Language Name"]|//xhtml:meta[@name = "DC.language"]' );
 		// Currently we aren't using font info.
 		// $writing_system_fonts = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Default Font"]' );
+		echo var_dump($writing_systems) . "<br>";
 		if($writing_systems->length == 0 && isset($_POST['chkShowDebug']))
 		{
 			echo "The language names were not found. Please add the language name meta tag in your xhtml file.<br>";
@@ -592,6 +593,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach ( $writing_systems as $writing_system ) {
 			$writing_system_abbreviation = $writing_system->getAttribute( "name");
 			$writing_system_name = $writing_system->getAttribute( "content");
+			
+			if($writing_system->getAttribute( "name") == "DC.language")
+			{
+				$content = explode(":", $writing_system->getAttribute( "content"));
+				$writing_system_abbreviation = $content[0];
+				$writing_system_name = $content[1];
+			}
+			
 			// Currently we aren't using font info.
 			//$writing_system_font = $this->dom_xpath->query(
 			//  '../xhtml:meta[@name = "' . $writing_system_abbreviation . '" and @scheme = "Default Font"]',
