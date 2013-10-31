@@ -342,15 +342,17 @@ function vernacularalphabet_func( $atts )
 {
 	$languagecode = get_option('languagecode');
 	
+	$alphas = explode(",",  get_option('vernacular_alphabet'));
+	
 	if(isset($_GET['letter']))
 	{
 		$chosenLetter = stripslashes($_GET['letter']); 
 	}
 	else {
-		$chosenLetter = "a"; 
+		$chosenLetter = $alphas[0]; 
 	}
 		
-	$alphas = explode(",",  get_option('vernacular_alphabet'));
+	
 	$display = displayAlphabet($alphas, $languagecode);
 	$display .= "<div align=center><h1>" . $chosenLetter . "</h1></div><br>";
 
