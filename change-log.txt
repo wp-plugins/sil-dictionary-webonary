@@ -1,3 +1,5 @@
+v. 3.1.7 31 October 2013 added following message to settings: "You need to first import your xhtml file before you can select a language code."
+v. 3.1.6 31 October 2013 made the vernacular browse view choose first letter in vernacular alphabet instead of a
 v. 3.1.5 16 October 2013 updated importer to use new language header scheme (name = "DC.language")
 v. 3.1.4 10 October 2013 now checking if class contains name "crossref" instead of just "sense-crossref" for converting FLEx links
 v. 3.1.3 02 October 2013 made that language code doesn't get inserted if empty
