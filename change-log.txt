@@ -1,3 +1,4 @@
+v. 3.1.9 01 November 2013 "No headwords found" error wasn't showing anymore. Fixed that.
 v. 3.1.8 31 October 2013 removed output of var_dump from importer
 v. 3.1.7 31 October 2013 added following message to settings: "You need to first import your xhtml file before you can select a language code."
 v. 3.1.6 31 October 2013 made the vernacular browse view choose first letter in vernacular alphabet instead of a
