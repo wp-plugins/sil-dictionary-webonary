@@ -553,6 +553,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach($arrFieldQueries as $fieldQuery)
 			{			
 				$fields = $this->dom_xpath->query($fieldQuery);
+				//echo $fieldQuery . " " . $fields->length . "<br>";
 				if($fields->length == 0 && isset($_POST['chkShowDebug']))
 				{
 					echo "No entries found for the query " . $fieldQuery . "<br>";
@@ -647,6 +648,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
+
+		if($entries->length == 0) 
+		{				
+			echo "<div style=color:red>ERROR: No headwords found.</div><br>";
+			return;
+		}
+		
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
 			// Find the headword. Should be only 1 headword at most. The
@@ -663,11 +671,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]|./*[@class="headword-sub"]', $entry );
 			
-			if($headwords->length == 0 && strlen(trim($entry->textContent)) > 0) 
-			{				
-				echo "<div style=color:red>ERROR: No headwords found.</div><br>";
-				return;
-			}
 			//$headword = $headwords->item( 0 )->nodeValue;
 			foreach ( $headwords as $headword ) {
 				$headword_language = $headword->getAttribute( "lang" );
