@@ -1,3 +1,4 @@
+v. 3.2.1 11 November 2013 when converting audio, replace backslash with forward slash
 v. 3.2.0 07 November 2013 searching for audio is now case insensitive
 v. 3.1.9 01 November 2013 "No headwords found" error wasn't showing anymore. Fixed that.
 v. 3.1.8 31 October 2013 removed output of var_dump from importer
