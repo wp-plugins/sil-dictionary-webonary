@@ -95,9 +95,10 @@ function sil_dictionary_custom_join($join) {
 			$letter = trim($wp_query->query_vars['letter']);
 			$noletters = trim($wp_query->query_vars['noletters']);
 			
-			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" .
-			addslashes($letter) . "%' COLLATE 'UTF8_BIN' OR " . $search_table_name . ".search_strings LIKE '" .
-			addslashes(strtoupper($letter)) . "%' COLLATE 'UTF8_BIN') AND relevance >= 95 AND language_code = '$key' ";
+			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" . addslashes($letter) . "%' COLLATE 'UTF8_BIN'" . 
+			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes(strtoupper($letter)) . "%' COLLATE 'UTF8_BIN' " .
+			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes("-" . $letter) . "%' COLLATE 'UTF8_BIN') " . 
+			" AND relevance >= 95 AND language_code = '$key' ";
 			
 			$arrNoLetters = explode(",",  $noletters);
 			foreach($arrNoLetters as $noLetter)
