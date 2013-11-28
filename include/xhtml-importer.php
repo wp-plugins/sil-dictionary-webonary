@@ -701,7 +701,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 * Insert the new entry into wp_posts
 				 */
 								
-				$post_id = $this->get_post_id( $flexid );
+				//$post_id = $this->get_post_id( $flexid );
+				$post_id = $this->get_post_id_bytitle( $headword_text, $headword_language, $subid, true);
 				$post_id_exists = $post_id != NULL;
 
 				
@@ -1187,7 +1188,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			trim($flexid) ) );		
 	}
 	
-	function get_post_id_bytitle( $headword, $langcode, &$subid ) {
+	function get_post_id_bytitle( $headword, $langcode, &$subid, $isLangCode = false ) {
 		global $wpdb;
 
 		// @todo: If $headword_text has a double quote in it, this
@@ -1195,8 +1196,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$sql = "SELECT post_id, subid
 			FROM $this->search_table_name
 			WHERE search_strings = '" . addslashes(trim($headword)) . "' collate utf8_bin AND relevance >= 95";
+		if($isLangCode)
+		{
+			$sql .= " AND language_code = '" . $langcode . "'";			
+		}
+		else 
+		{
 			$sql .= " AND language_code <> '" . $langcode . "'";
-									
+		}
+			
 		$row = $wpdb->get_row( $sql );
 		$subid = $row->subid;
 
