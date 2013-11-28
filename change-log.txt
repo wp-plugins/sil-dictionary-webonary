@@ -1,4 +1,5 @@
-v. 3.2.3 15 November browseview: added search for hyphen before letter
+v. 3.2.4 28 November 2013 now searching for post_id by headword instead of flex_id since the flex_id can change. This should prevent duplicate entries on re-import
+v. 3.2.3 15 November 2013 browseview: added search for hyphen before letter
 v. 3.2.2 13 November 2013 added French translations
 v. 3.2.1 11 November 2013 when converting audio, replace backslash with forward slash
 v. 3.2.0 07 November 2013 searching for audio is now case insensitive
