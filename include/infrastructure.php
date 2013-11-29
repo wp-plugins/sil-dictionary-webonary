@@ -34,10 +34,11 @@ function ajaxlanguage()
 {
 	global $wpdb;
 	
-	$languagename = $wpdb->get_var( $wpdb->prepare( "
-		SELECT name
+	$sql = "SELECT name
 		FROM $wpdb->terms
-		WHERE slug = '" . $_POST['languagecode'] . "'"));	
+		WHERE slug = '" . $_POST['languagecode'] . "'";
+		
+	$languagename = $wpdb->get_var( $sql);	
 	
 		
 	echo $languagename;
@@ -51,10 +52,11 @@ add_action( 'wp_ajax_nopriv_getAjaxlanguage', 'ajaxlanguage' );
 function get_category_id() {
 	global $wpdb;
 
-	$catid = $wpdb->get_var( $wpdb->prepare( "
-		SELECT term_id
+	$sql = "SELECT term_id
 		FROM $wpdb->terms
-		WHERE name LIKE 'webonary'"));	
+		WHERE name LIKE 'webonary'";
+		
+	$catid = $wpdb->get_var( $sql);	
 
 	return $catid;
 }
@@ -637,7 +639,7 @@ function uninstall_custom_tables () {
 
 function uninstall_custom_table ( $table ) {
 	global $wpdb;
-	$sql = $wpdb->prepare( "DROP TABLE " . $table . ";" );
+	$sql = "DROP TABLE " . $table . ";";
 	$return_value = $wpdb->get_var( $sql );
 }
 

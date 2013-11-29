@@ -770,7 +770,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// audio example:
 		//<a class="audioButton" href="/files/audio/sprache.mp3"></a>
 
-		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029aÃ± doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
+		//<span class="LexEntry-publishStemPara-Audio"><span lang="trc-Zxxx-x-audio" xml:space="preserve">634962856425589029a√É¬± doj.wav</span><span lang="en" xml:space="preserve"> </span></span>
 		$audios = $this->dom_xpath->query('.//xhtml:span[contains(@class, "Audio")]|.//xhtml:span[contains(@class, "audio")]', $entry);
 
 		foreach ( $audios as $audio ) {
