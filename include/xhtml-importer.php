@@ -125,6 +125,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<?php
 				$this->index_searchstrings();
 				
+				$xhtml_file = $result['file'];	
+				
 				$this->goodbye($xhtml_file, $css_file);
 				break;				
 			case 3 :
@@ -181,7 +183,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function goodbye($xhtml_file, $css_file){		
 		
 		global $wpdb;
-		
+
 		if(isset($xhtml_file))
 		{
 			unlink($xhtml_file);
@@ -189,10 +191,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$sql = "DELETE FROM " . $wpdb->prefix . "posts WHERE post_type = 'attachment' AND post_title LIKE '%.xhtml'";
 			
 			$wpdb->query( $sql );
-		}
-		if(isset($css_file))
-		{
-			unlink($css_file);
 		}
 		
 		echo '<div class="narrow">';
@@ -369,6 +367,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	// upload it, and there is no indication to the user as to what happened.
 
 	function upload_files( $which_file ) {
+		global $wpdb;
+		
 		if ( !isset($_FILES[$which_file]) ) {
 			$file['error'] = __( 'The file is either empty, or uploads are disabled in your php.ini, or post_max_size is defined as smaller than upload_max_filesize in php.ini.' );
 			return $file;
@@ -428,6 +428,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// Save the data
 		$id = wp_insert_attachment( $object, $file );
+		
+		if($extension == "css")
+		{
+			unlink($file);
+			
+			$sql = "DELETE FROM " . $wpdb->prefix . "posts WHERE post_type = 'attachment' AND post_title LIKE '%." . $extension . "'";
+			
+			$wpdb->query( $sql );
+		}
 		
 		return array( 'file' => $file, 'id' => $id );
 	}
@@ -1206,9 +1215,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 			
 		$row = $wpdb->get_row( $sql );
-		$subid = $row->subid;
-
-		return $row->post_id;
+		
+		$postid = 0;
+		if(count($row) > 0)
+		{
+			$subid = $row->subid;
+			$postid = $row->post_id;
+		}
+		return $postid;
 	}	
 
 	//-----------------------------------------------------------------------------//
