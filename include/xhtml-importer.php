@@ -722,7 +722,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$post = array(
 					'ID' => $post_id,
-					'post_title' => $wpdb->prepare( $headword_text ), // has headword and homograph number
+					'post_title' => $headword_text, // has headword and homograph number
 					'post_content' =>  $entry_xml,
 					'post_status' => 'publish',			
 					'post_parent' => $post_parent,	
@@ -976,7 +976,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $entry->saveXML( $entry );
 						
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $wpdb->prepare( $entry_xml ) . "'" . 
+		" SET post_content = '" . $entry_xml . "'" . 
 		" WHERE ID = " . $post_id;
 				
 		$wpdb->query( $sql );
@@ -1016,7 +1016,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $doc->saveXML( $entry );
 		
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $wpdb->prepare( addslashes($entry_xml) ) . "'" . 
+		" SET post_content = '" . $entry_xml . "'" . 
 		" WHERE ID = " . $post_id;
 		 		
 		$wpdb->query( $sql );
@@ -1138,10 +1138,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_category_id() {
 	global $wpdb;
 	
-	$catid = $wpdb->get_var( $wpdb->prepare( "
+	$catid = $wpdb->get_var( "
 		SELECT term_id
 		FROM $wpdb->terms
-		WHERE name LIKE 'webonary'"));	
+		WHERE name LIKE 'webonary'");	
 	
 	return $catid;
 	}
@@ -1151,11 +1151,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		$isDuplicate = false;
 		
-		$duplicatePostId = $wpdb->get_var( $wpdb->prepare( "
+		$duplicatePostId = $wpdb->get_var( "
 			SELECT post_id
 			FROM $this->search_table_name
 			WHERE post_id = " . $postid . " AND search_strings = '" . addslashes($searchstring) . 
-			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'"));	
+			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'");	
 		
 		if($duplicatePostId == $postid)
 		{
@@ -1190,11 +1190,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_post_id( $flexid ) {
 		global $wpdb;
 
-		return $wpdb->get_var( $wpdb->prepare( "
+		return $wpdb->get_var( "
 			SELECT id
 			FROM $wpdb->posts
 			WHERE post_name = '%s'	collate utf8_bin AND post_status = 'publish'",
-			trim($flexid) ) );		
+			trim($flexid) );		
 	}
 	
 	function get_post_id_bytitle( $headword, $langcode, &$subid, $isLangCode = false ) {
