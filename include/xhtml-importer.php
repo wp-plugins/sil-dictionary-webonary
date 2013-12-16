@@ -883,11 +883,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$sql = $sql . '"';
 				if ( empty( $post_id ) )
 				{
-					$sql = $sql . "index.php?s=" . $link->textContent . "&amp;partialsearch=1";
+					$sql = $sql . "?s=" . $link->textContent . "&amp;partialsearch=1";
 				}
 				else 
 				{
-					$sql = $sql . "index.php?p=" . $post_id;
+					$sql = $sql . "?p=" . $post_id;
 				}
 				$sql = $sql . '"';
 				$sql = $sql . "');";
