@@ -786,13 +786,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		foreach ( $audios as $audio ) {
 					
-			$newelement = $this->dom->createElement('a');
-			$newelement->appendChild($this->dom->createTextNode(""));
-			$newelement->setAttribute("class", "audioButton");
-			$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audio->textContent)));
-			$parent = $audio->parentNode;	
-			$parent->replaceChild($newelement, $audio);			
-									
+			if(strlen(trim($audio->textContent)) > 0)
+			{
+				$newelement = $this->dom->createElement('a');
+				$newelement->appendChild($this->dom->createTextNode(""));
+				$newelement->setAttribute("class", "audioButton");
+				$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audio->textContent)));
+				$parent = $audio->parentNode;	
+				$parent->replaceChild($newelement, $audio);			
+			}									
 		} // foreach ( $audios as $audio )
 		return $entry;
 	}
