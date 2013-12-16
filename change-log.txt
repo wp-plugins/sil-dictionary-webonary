@@ -1,3 +1,4 @@
+v. 3.2.8 16 December 2013 link to audio now also works for single hosted sites
 v. 3.2.7 10 December 2013 fixed some more wp_prepare problems
 v. 3.2.6 03 December 2013 css-files get deleted again after upload
 v. 3.2.5 29 November 2013 wp_prepare now requirs 2 arguments. Fixed the code so that warnings no longer appear.
