@@ -290,7 +290,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 			}
 			$englishWord = $alphabet->English;
 			 $display .=  "</div>";
-			$display .=  "<div id=vernacularcol><a href=\"/?s=" . trim($alphabet->Vernacular)  . "&search=Search&tax=-1&partialsearch=1\">" . $alphabet->Vernacular . "</a></div>";
+			$display .=  "<div id=vernacularcol><a href=\"?s=" . trim($alphabet->Vernacular)  . "&search=Search&tax=-1&partialsearch=1\">" . $alphabet->Vernacular . "</a></div>";
 		$display .=  "</div>";
 		$display .=  "<div style=clear:both></div>";
 		
