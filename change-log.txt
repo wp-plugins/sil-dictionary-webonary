@@ -1,3 +1,4 @@
+v. 3.3.0 16 December 2013 removed index.php from link for converting FLEx links
 v. 3.2.9 16 December 2013 only create audio button if audio field isn't empty
 v. 3.2.8 16 December 2013 link to audio now also works for single hosted sites
 v. 3.2.7 10 December 2013 fixed some more wp_prepare problems
