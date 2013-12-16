@@ -776,6 +776,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function convert_fieldworks_audio_to_wordpress ($entry) {
 		global $wpdb;
 
+		$upload_dir = wp_upload_dir();
+		
 		// audio example:
 		//<a class="audioButton" href="/files/audio/sprache.mp3"></a>
 
@@ -787,7 +789,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($this->dom->createTextNode(""));
 			$newelement->setAttribute("class", "audioButton");
-			$newelement->setAttribute("href", "/files/audio/" . str_replace("\\", "/", trim($audio->textContent)));
+			$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audio->textContent)));
 			$parent = $audio->parentNode;	
 			$parent->replaceChild($newelement, $audio);			
 									
