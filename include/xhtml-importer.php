@@ -254,11 +254,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$arrFieldQueries[1] = $querystart . '[@class = "headword-sub"]';
 		$arrFieldQueries[2] = $querystart . '[contains(@class, "LexemeForm")]';
 		//$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]|//*[@class = "definition-minor"]';
-		$arrFieldQueries[3] = $querystart . '[starts-with(@class,"definition")]';
+		$arrFieldQueries[3] = $querystart . '[starts-with(@class,"definition")]|' . $querystart . '[starts-with(@class,"LexSense")]';
 		//$arrFieldQueries[4] = $querystart . '[@class = "definition-sub"]';
 		$arrFieldQueries[4] = $querystart . '[starts-with(@class,"definition-sub")]';
 		$arrFieldQueries[5] = $querystart . '[@class = "example"]';
-		$arrFieldQueries[6] = $querystart . '[@class = "translation"]';
+		$arrFieldQueries[6] = $querystart . '[starts-with(@class,"translation")]';
 		$arrFieldQueries[7] = $querystart . '[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]';
 		$arrFieldQueries[8] = $querystart . '[@class = "variantref-form"]';
 		$arrFieldQueries[9] = $querystart . '[@class = "variantref-form-sub"]';
