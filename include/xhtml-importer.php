@@ -204,13 +204,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						echo '<input type="submit" class="button" name="btnIndex" value="Index Search Strings"/>';
 						if(isset($_POST['chkConvertToLinks']))
 						{
-							echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
+							echo '<input type="hidden" name="chkConvertToLinks" value=' . $_POST['chkConvertToLinks'] .'></input>';
 							echo '<input type="hidden" name="filetype" value="configured"></input>';
 						}
 					echo '</form>';	
 				echo '</p>';
 			}
-			if($_GET['step'] == 2 && isset($_POST['chkConvertToLinks']))
+			if($_GET['step'] == 2 && $_POST['chkConvertToLinks'] > 0)
 			{
 				echo '<strong>Next step: </strong>';
 				echo '<p>';
@@ -218,7 +218,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						echo '<input type="submit" class="button" name="btnIndex" value="Convert Links"/>';
 						if(isset($_POST['chkConvertToLinks']))
 						{
-							echo '<input type="hidden" name="chkConvertToLinks" value=1></input>';
+							echo '<input type="hidden" name="chkConvertToLinks" value=' . $_POST['chkConvertToLinks'] . '></input>';
 						}
 					echo '</form>';	
 				echo '</p>';
@@ -320,8 +320,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank"><?php esc_attr_e('Sort Order (usually stem-based view)'); ?></a><BR>				
 			</p>
 			<div id="convertToLinks">
-				<input type="checkbox" name="chkConvertToLinks"> <?php esc_attr_e('Convert items into search links (semantic domains always convert to links).'); ?></input><br>
+				<select name="chkConvertToLinks">
+					<option value="0"><?php echo esc_attr_e('Don\'t convert items into search links.'); ?></option>
+					<option value="1"><?php echo esc_attr_e('Only convert headwords into search links.'); ?></option>
+					<option value="2"><?php echo esc_attr_e('Convert all items into search links.'); ?></option>
+				</select>
+				<?php esc_attr_e('(semantic domains always convert to links).'); ?>
+				<br>
+				<?php /* 
 				<input type="checkbox" name="chkShowDebug"> <?php esc_attr_e('Display debug messages'); ?></input>
+				*/ ?>
 			</div>
 			<p class="submit">
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
@@ -913,7 +921,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$sql = "UPDATE $wpdb->posts SET pinged = 'linksconverted' WHERE ID = " . $post_id;
 		$wpdb->query( $sql );
 		
-		$arrFieldQueries = $this->getArrFieldQueries(true);
+		$arrAllQueries = $this->getArrFieldQueries(true);
+		
+		if($_POST['chkConvertToLinks'] == 1)
+		{
+			$arrFieldQueries[0] = $arrAllQueries[0];
+			$arrFieldQueries[1] = $arrAllQueries[1];
+		}
+		else 
+		{
+			$arrFieldQueries = $arrAllQueries;
+		}
 		
 		foreach($arrFieldQueries as $fieldQuery)
 		{			
@@ -984,7 +1002,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $entry->saveXML( $entry );
 						
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $entry_xml . "'" . 
+		" SET post_content = '" . addslashes($entry_xml) . "'" . 
 		" WHERE ID = " . $post_id;
 				
 		$wpdb->query( $sql );
