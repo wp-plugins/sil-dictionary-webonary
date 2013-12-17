@@ -1,3 +1,4 @@
+v. 3.3.3 17 December 2013 audio buttons now work when converting links
 v. 3.3.2 17 December 2013 changed path for converting links to work anywhere
 v. 3.3.1 16 December 2013 reversal index links don't anymore link to root
 v. 3.3.0 16 December 2013 removed index.php from link for converting FLEx links
