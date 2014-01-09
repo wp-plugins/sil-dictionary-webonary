@@ -149,9 +149,15 @@ function user_input() {
 				</p>
 				<h3><?php _e('Settings');?></h3>
 				<p>
-				<span style="color:red">You need to first import your xhtml file before you can select a language code.</span>
-				<p>
-				<?php _e('Vernacular Language Code:'); ?>
+				<?php 
+				if(count($arrLanguageCodes) == 0)
+				{
+				?>
+					<span style="color:red">You need to first import your xhtml file before you can select a language code.</span>
+					<p>
+				<?php
+				} 
+				_e('Vernacular Language Code:'); ?>
 				<select id=vernacularLanguagecode name="languagecode" onchange="getLanguageName('vernacularLanguagecode', 'vernacularName');">
 					<option value=""></option>
 					<?php 

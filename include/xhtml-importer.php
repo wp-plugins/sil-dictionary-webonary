@@ -1002,7 +1002,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $entry->saveXML( $entry );
 						
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . addslashes($entry_xml) . "'" . 
+		" SET post_content = '" . $entry_xml . "'" . 
 		" WHERE ID = " . $post_id;
 				
 		$wpdb->query( $sql );
