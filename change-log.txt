@@ -1,3 +1,5 @@
+v. 3.3.7 09 January 2014 removed warning "You need to first import your xhtml file before you can select a language code." for when language codes exist
+v. 3.3.6 09 January 2014 removed "addslashes" for converting links
 v. 3.3.5 17 December 2013 added some fields to $arrFieldQueries
 v. 3.3.4 17 December 2013 new option for only converting headwords to links
 v. 3.3.3 17 December 2013 audio buttons now work when converting links
