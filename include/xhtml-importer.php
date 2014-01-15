@@ -902,8 +902,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$sql = $sql . "') " .
 					" WHERE ID = " . $id;
 					
-	
-					echo $sql . "<br>";
 					$wpdb->query( $sql );
 	
 					$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
@@ -1002,7 +1000,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $entry->saveXML( $entry );
 						
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $entry_xml . "'" . 
+		" SET post_content = '" . addslashes(stripslashes($entry_xml)) . "'" . 
 		" WHERE ID = " . $post_id;
 				
 		$wpdb->query( $sql );
@@ -1034,7 +1032,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		$newelement = $doc->createElement('a');
 		$newelement->appendChild($doc->createTextNode(addslashes($field->textContent)));		
-		$newelement->setAttribute("href", "/?s=&partialsearch=1&tax=" . $termid);
+		$newelement->setAttribute("href", "?s=&partialsearch=1&tax=" . $termid);
 		$newelement->setAttribute("class", $field->getAttribute("class"));
 		$parent = $field->parentNode;			
 		$parent->replaceChild($newelement, $field);
@@ -1042,7 +1040,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $doc->saveXML( $entry );
 		
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . $entry_xml . "'" . 
+		" SET post_content = '" . addslashes($entry_xml) . "'" . 
 		" WHERE ID = " . $post_id;
 		 		
 		$wpdb->query( $sql );
