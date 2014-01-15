@@ -465,7 +465,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$subid = 1;
 			$entry_counter = 1;
 			$entries_count = count($arrPosts);
-			
+						
 			foreach($arrPosts as $post)
 			{
 				$subentry = false;
@@ -486,7 +486,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$arrFieldQueries = $this->getArrFieldQueries();
 				
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
-				
+								
 				if(isset($headword) && $post->post_parent == 0)
 				{
 					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
@@ -750,32 +750,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "<strong>Step 1 of 2: Importing Post Entries</strong><br>" );
 			} // foreach ( $headwords as $headword )
 
-			/*
-			if(isset($_POST['chkConvertToLinks']))
-			{
-				$arrFieldQueries = $this->getArrFieldQueries();
-				$x = 0;
-				foreach($arrFieldQueries as $fieldQuery)
-				{			
-					if (!preg_match("/sense-crossref/i", $fieldQuery))
-					{
-						$fields = $this->dom_xpath->query($fieldQuery, $entry);
-					
-						foreach($fields as $field)
-						{
-							$this->convert_fields_to_links($post_id, $entry, $field);
-						}
-					}
-				}
-			}
-			*/
+			$this->convert_fieldworks_links_to_wordpress($post_id, $entry_xml);
+			
 			$entry_counter++;
 		} // foreach ($entries as $entry){
 
+		/*
 		if($entries->length > 0)
 		{
 			$this->convert_fieldworks_links_to_wordpress();
 		}
+		*/
 	}
 
 	//-----------------------------------------------------------------------------//
@@ -850,68 +835,83 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @global $wpdb
 	 */
 
-	function convert_fieldworks_links_to_wordpress () {
+	function convert_fieldworks_links_to_wordpress ($id, $entry_xml) {
 		global $wpdb;
 
 		// link example:
 		//		<a href="#hvo14216">
 		
-		$links = $this->dom_xpath->query('//xhtml:a');
+		
+		$doc = new DomDocument();
+		$doc->preserveWhiteSpace = false;
+		$doc->loadXML($entry_xml);
+					
+		$xpath = new DOMXPath($doc);
+				
+		$links = $xpath->query('//a');
+								
+		//$links = $this->dom_xpath->query('//xhtml:a');
 		$totalLinks = $links->length;
 		$linkcount = 1;
-		foreach ( $links as $link ) {
-
-			// Get the target hvo link to replace
-			$href = $link->getAttribute( "href" );
-			$hvo = substr($href, 4);
-
-			// Now get the cross reference. Should only be one, but written to
-			// handle more if they come along.
-			$cross_refs = $this->dom_xpath->query( './/xhtml:span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
-			
-			//$cross_refs = $this->dom_xpath->query( './xhtml:span[@class="sense-crossref"]', $link );
-			foreach ( $cross_refs as $cross_ref ) {
-
-				$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
-				foreach($sensenumbers as $sensenumber)
-				{
-					$sensenumber->parentNode->removeChild($sensenumber);
-				}
-							
-				// Get the WordPress post ID for the link.
-				$flexid = str_replace("#", "", $href);				
-				$post_id = (string) $this->get_post_id( $flexid );
-
-				// Now replace the link to hvo wherever it appears with a link to
-				// WordPress ID The update command should look like this:
-				// UPDATE `nuosu`.`wp_posts` SET post_content =
-				//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
-				//if ( empty( $post_id ) )
-					//$post_id = 'id-not-found';
-				$sql = "UPDATE $wpdb->posts SET post_content = ";
-				$sql = $sql . "REPLACE(post_content, 'href=";
-				$sql = $sql . '"' . $href . '"';
-				$sql = $sql . "', 'href=";
-				$sql = $sql . '"';
-				if ( empty( $post_id ) )
-				{
-					$sql = $sql . "?s=" . $link->textContent . "&amp;partialsearch=1";
-				}
-				else 
-				{
-					$sql = $sql . "?p=" . $post_id;
-				}
-				$sql = $sql . '"';
-				$sql = $sql . "');";
-											
-				$wpdb->query( $sql );
-
-				$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
+		if($totalLinks > 0)
+		{
+			foreach ( $links as $link ) {
+	
+				// Get the target hvo link to replace
+				$href = $link->getAttribute( "href" );
+				$hvo = substr($href, 4);
+	
+				// Now get the cross reference. Should only be one, but written to
+				// handle more if they come along.
+				$cross_refs = $xpath->query( '//span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
+				//$cross_refs = $this->dom_xpath->query( './/xhtml:span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
 				
-			} // foreach ( $cross_refs as $cross_ref )
-			$linkcount++;
-		} // foreach ( $links as $link )
-		
+				foreach ( $cross_refs as $cross_ref ) {
+	
+					$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $cross_ref);
+					//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
+					foreach($sensenumbers as $sensenumber)
+					{
+						$sensenumber->parentNode->removeChild($sensenumber);
+					}
+								
+					// Get the WordPress post ID for the link.
+					$flexid = str_replace("#", "", $href);				
+					$post_id = (string) $this->get_post_id( $flexid );
+	
+					// Now replace the link to hvo wherever it appears with a link to
+					// WordPress ID The update command should look like this:
+					// UPDATE `nuosu`.`wp_posts` SET post_content =
+					//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
+					//if ( empty( $post_id ) )
+						//$post_id = 'id-not-found';
+					$sql = "UPDATE $wpdb->posts SET post_content = ";
+					$sql = $sql . "REPLACE(post_content, 'href=";
+					$sql = $sql . '"' . $href . '"';
+					$sql = $sql . "', 'href=";
+					$sql = $sql . '"';
+					if ( empty( $post_id ) )
+					{
+						$sql = $sql . "?s=" . $link->textContent . "&amp;partialsearch=1";
+					}
+					else 
+					{
+						$sql = $sql . "?p=" . $post_id;
+					}
+					$sql = $sql . '"';
+					$sql = $sql . "') " .
+					" WHERE ID = " . $id;
+					
+	
+					echo $sql . "<br>";
+					$wpdb->query( $sql );
+	
+					$this->import_xhtml_show_progress($linkcount, $totalLinks, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
+					
+				} // foreach ( $cross_refs as $cross_ref )
+				$linkcount++;
+			} // foreach ( $links as $link )
+		}
 	} // function convert_fieldworks_links_to_wordpress()
 
 	function convert_fields_to_links($post_id, $entry, $xpath) {
