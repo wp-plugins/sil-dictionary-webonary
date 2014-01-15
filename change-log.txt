@@ -1,3 +1,4 @@
+v. 3.4.1 15 January 2014 fixed linecounter
 v. 3.4.0 15 January 2014 fixed a mistake I made in v. 3.3.8 with converting links
 v. 3.3.9 15 January 2014 fixed problem with slashes (converting semantic domains and converting links)
 v. 3.3.8 15 January 2014 made conversion of FLEx links faster
