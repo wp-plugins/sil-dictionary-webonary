@@ -838,7 +838,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//		<a href="#hvo14216">
 		
 		$arrPosts = $this->get_posts();
-		
+
+		$linkcount = 0;
 		foreach($arrPosts as $post)
 		{
 		
@@ -852,7 +853,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 									
 			//$links = $this->dom_xpath->query('//xhtml:a');
 			$totalLinks = $links->length;
-			$linkcount = 0;
 			if($totalLinks > 0)
 			{
 				foreach ( $links as $link ) {
