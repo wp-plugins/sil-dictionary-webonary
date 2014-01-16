@@ -839,7 +839,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		$arrPosts = $this->get_posts();
 
-		$linkcount = 0;
+		$entrycount = 0;
 		foreach($arrPosts as $post)
 		{
 		
@@ -892,7 +892,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$sql = $sql . '"';
 						if ( empty( $post_id ) )
 						{
-							$sql = $sql . "?s=" . $link->textContent . "&amp;partialsearch=1";
+							$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
 						}
 						else 
 						{
@@ -905,9 +905,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$wpdb->query( $sql );
 						
 					} // foreach ( $cross_refs as $cross_ref )
-					$linkcount++;
 				} // foreach ( $links as $link )
-				$this->import_xhtml_show_progress($linkcount, $linkcount, "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
+				$entrycount++;
+				$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
 			}
 		} //foreach $arrPosts as $post
 	} // function convert_fieldworks_links_to_wordpress()
