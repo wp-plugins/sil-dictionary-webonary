@@ -906,9 +906,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						
 					} // foreach ( $cross_refs as $cross_ref )
 				} // foreach ( $links as $link )
-				$entrycount++;
-				$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
 			}
+			$entrycount++;
+			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
 		} //foreach $arrPosts as $post
 	} // function convert_fieldworks_links_to_wordpress()
 
