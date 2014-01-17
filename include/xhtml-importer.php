@@ -812,6 +812,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$newelement = $this->dom->createElement('a');
 			$newelement->appendChild($newimage);
+			$newelement->setAttribute("class", "image");
 			$newelement->setAttribute("href",  $upload_dir['baseurl'] . "/images/original/" . $pic);
 			$parent = $image->parentNode;	
 			$parent->replaceChild($newelement, $image);
@@ -856,55 +857,57 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			if($totalLinks > 0)
 			{
 				foreach ( $links as $link ) {
-		
-					// Get the target hvo link to replace
-					$href = $link->getAttribute( "href" );
-					$hvo = substr($href, 4);
-		
-					// Now get the cross reference. Should only be one, but written to
-					// handle more if they come along.
-					$cross_refs = $xpath->query( '//span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
-					//$cross_refs = $this->dom_xpath->query( './/xhtml:span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
-					
-					foreach ( $cross_refs as $cross_ref ) {
-		
-						$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $cross_ref);
-						//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
-						foreach($sensenumbers as $sensenumber)
-						{
-							$sensenumber->parentNode->removeChild($sensenumber);
-						}
-									
-						// Get the WordPress post ID for the link.
-						$flexid = str_replace("#", "", $href);				
-						$post_id = (string) $this->get_post_id( $flexid );
-		
-						// Now replace the link to hvo wherever it appears with a link to
-						// WordPress ID The update command should look like this:
-						// UPDATE `nuosu`.`wp_posts` SET post_content =
-						//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
-						//if ( empty( $post_id ) )
-							//$post_id = 'id-not-found';
-						$sql = "UPDATE $wpdb->posts SET post_content = ";
-						$sql = $sql . "REPLACE(post_content, 'href=";
-						$sql = $sql . '"' . $href . '"';
-						$sql = $sql . "', 'href=";
-						$sql = $sql . '"';
-						if ( empty( $post_id ) )
-						{
-							$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
-						}
-						else 
-						{
-							$sql = $sql . "?p=" . $post_id;
-						}
-						$sql = $sql . '"';
-						$sql = $sql . "') " .
-						" WHERE ID = " . $post->ID;
+					if(strtolower($link->getAttribute("class")) != "audiobutton" && strtolower($link->getAttribute("class")) != "image")
+					{
+						// Get the target hvo link to replace
+						$href = $link->getAttribute( "href" );
+						$hvo = substr($href, 4);
+			
+						// Now get the cross reference. Should only be one, but written to
+						// handle more if they come along.
+						$cross_refs = $xpath->query( '//span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
+						//$cross_refs = $this->dom_xpath->query( './/xhtml:span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
 						
-						$wpdb->query( $sql );
+						foreach ( $cross_refs as $cross_ref ) {
+			
+							$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $cross_ref);
+							//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
+							foreach($sensenumbers as $sensenumber)
+							{
+								$sensenumber->parentNode->removeChild($sensenumber);
+							}
+										
+							// Get the WordPress post ID for the link.
+							$flexid = str_replace("#", "", $href);				
+							$post_id = (string) $this->get_post_id( $flexid );
+			
+							// Now replace the link to hvo wherever it appears with a link to
+							// WordPress ID The update command should look like this:
+							// UPDATE `nuosu`.`wp_posts` SET post_content =
+							//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
+							//if ( empty( $post_id ) )
+								//$post_id = 'id-not-found';
+							$sql = "UPDATE $wpdb->posts SET post_content = ";
+							$sql = $sql . "REPLACE(post_content, 'href=";
+							$sql = $sql . '"' . $href . '"';
+							$sql = $sql . "', 'href=";
+							$sql = $sql . '"';
+							if ( empty( $post_id ) )
+							{
+								$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
+							}
+							else 
+							{
+								$sql = $sql . "?p=" . $post_id;
+							}
+							$sql = $sql . '"';
+							$sql = $sql . "') " .
+							" WHERE ID = " . $post->ID;
 						
-					} // foreach ( $cross_refs as $cross_ref )
+							$wpdb->query( $sql );
+							
+						} // foreach ( $cross_refs as $cross_ref )
+					}
 				} // foreach ( $links as $link )
 			}
 			$entrycount++;
