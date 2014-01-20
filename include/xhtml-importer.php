@@ -777,16 +777,23 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					
 			if(strlen(trim($audio->textContent)) > 0)
 			{
-				$newimage = $this->dom->createElement('img');
-				$newimage->setAttribute("src", get_bloginfo('wpurl') . "/wp-content/plugins/sil-dictionary-webonary/audiolibs/img/blank.gif");
-				
-				$newelement = $this->dom->createElement('a');
-				//$newelement->appendChild($this->dom->createTextNode(""));
-				$newelement->appendChild($newimage);
-				$newelement->setAttribute("class", "audioButton");
-				$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audio->textContent)));
+				$audiofiles = explode(";", $audio->textContent);
+				$spanelement = $this->dom->createElement('span');
+				foreach($audiofiles as $audiofile)
+				{
+					$newimage = $this->dom->createElement('img');
+					$newimage->setAttribute("src", get_bloginfo('wpurl') . "/wp-content/plugins/sil-dictionary-webonary/audiolibs/img/blank.gif");
+					
+					$newelement = $this->dom->createElement('a');
+					//$newelement->appendChild($this->dom->createTextNode(""));
+					$newelement->appendChild($newimage);
+					$newelement->setAttribute("class", "audioButton");
+					$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audiofile)));
+					
+					$spanelement->appendChild($newelement);
+				}
 				$parent = $audio->parentNode;	
-				$parent->replaceChild($newelement, $audio);			
+				$parent->replaceChild($spanelement, $audio);
 			}									
 		} // foreach ( $audios as $audio )
 		return $entry;
