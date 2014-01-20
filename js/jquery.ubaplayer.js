@@ -22,7 +22,7 @@
 		flashAudioPlayerPath: "/wp-content/plugins/sil-dictionary-webonary/audiolibs/swf/player.swf",
 		flashExtension: ".mp3",
 		flashObjectID: "audioPlayer",
-		loadingClass: "",
+		loadingClass: "loading",
 		//loadingClass: "loading",
 		loop: false,
 		playerContainer: "player",
