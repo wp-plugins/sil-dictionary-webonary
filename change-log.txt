@@ -1,3 +1,4 @@
+v. 3.4.5 20 January 2014 if there are multiple audio files per entry, you can now split them with a semicolon
 v. 3.4.4 17 January 2014 fixed links for audio files and images (got messed up in v. 3.3.8) 
 v. 3.4.3 16 January 2014 use entrycounter instead of linkcounter
 v. 3.4.2 16 January 2014 added addslashes for href (convert_fieldworks_links_to_wordpress)
