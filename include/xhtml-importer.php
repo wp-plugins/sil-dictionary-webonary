@@ -781,6 +781,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$spanelement = $this->dom->createElement('span');
 				foreach($audiofiles as $audiofile)
 				{
+					$filename = $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audiofile));
+					if (!file_exists($filename)) 
+					{
+						echo "file " . $filename . " doesn't exist<br>";
+					}
+					
 					$newimage = $this->dom->createElement('img');
 					$newimage->setAttribute("src", get_bloginfo('wpurl') . "/wp-content/plugins/sil-dictionary-webonary/audiolibs/img/blank.gif");
 					
@@ -788,7 +794,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//$newelement->appendChild($this->dom->createTextNode(""));
 					$newelement->appendChild($newimage);
 					$newelement->setAttribute("class", "audioButton");
-					$newelement->setAttribute("href", $upload_dir['baseurl'] . "/audio/" . str_replace("\\", "/", trim($audiofile)));
+					$newelement->setAttribute("href", $filename);
 					
 					$spanelement->appendChild($newelement);
 				}
