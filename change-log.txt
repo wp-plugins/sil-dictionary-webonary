@@ -1,3 +1,4 @@
+v. 3.4.7 21 January 2014 importer prints a message if an audio file doesn't exist
 v. 3.4.6 20 January 2014 trying if adding "loading" class to ubaPlayer still causes issues
 v. 3.4.5 20 January 2014 if there are multiple audio files per entry, you can now split them with a semicolon
 v. 3.4.4 17 January 2014 fixed links for audio files and images (got messed up in v. 3.3.8) 
