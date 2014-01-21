@@ -782,10 +782,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				foreach($audiofiles as $audiofile)
 				{
 					
-					$filename = $upload_dir['path'] . "/audio/" . str_replace("\\", "/", trim($audiofile));
-					if (!file_exists($filename)) 
+					$filename = "/audio/" . str_replace("\\", "/", trim($audiofile));
+					if (!file_exists($upload_dir['path'] . $filename)) 
 					{
-						echo "file " . $filename . " doesn't exist<br>";
+						echo "file " .  $upload_dir['baseurl'] . $filename . " doesn't exist<br>";
 					}
 					
 					$newimage = $this->dom->createElement('img');
@@ -795,7 +795,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//$newelement->appendChild($this->dom->createTextNode(""));
 					$newelement->appendChild($newimage);
 					$newelement->setAttribute("class", "audioButton");
-					$newelement->setAttribute("href", "/audio/" . str_replace("\\", "/", trim($audiofile)));
+					$newelement->setAttribute("href",  $upload_dir['baseurl'] . $filename);
 					
 					$spanelement->appendChild($newelement);
 				}
