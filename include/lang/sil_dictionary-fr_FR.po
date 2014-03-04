@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: SIL Dictionary v1.2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-11-13 09:28+0800\n"
+"PO-Revision-Date: 2014-03-04 13:42+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -241,7 +241,7 @@ msgstr ""
 # @ sil_dictionary
 #: include/infrastructure.php:236 include/searchform_func.php:47
 msgid "All Languages"
-msgstr ""
+msgstr "Toutes les langues"
 
 # @ default
 #: include/infrastructure.php:237
