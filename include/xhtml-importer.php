@@ -1230,13 +1230,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function get_post_id( $flexid ) {
 		global $wpdb;
-
-		return $wpdb->get_var( "
-			SELECT id
+		
+		$sql = "SELECT id
 			FROM $wpdb->posts
-			WHERE post_name = '%s'	collate utf8_bin AND post_status = 'publish'",
-			trim($flexid) );	
-			
+			WHERE post_name = '" . trim($flexid) . "'	collate utf8_bin AND post_status = 'publish'";
+		
+		$post_id = $wpdb->get_var($sql);
+		
+		return $post_id;
 	}
 	
 	function get_post_id_bytitle( $headword, $langcode, &$subid, $isLangCode = false ) {
