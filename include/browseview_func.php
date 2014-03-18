@@ -15,7 +15,8 @@ function ajaxsearch()
 
 	if(count($arrPosts) == 0)
 	{
-		$display .= "No entries exist for '" . $searchquery . "'."; 
+		//$display .= "No entries exist for '" . $searchquery . "'."; 
+		$display .= __('No entries exist for', 'sil_dictionary') . ' "' . $searchquery . '"';
 	}
 	else
 	{
@@ -385,7 +386,7 @@ function vernacularalphabet_func( $atts )
 	
 	if(count($arrPosts) == 0)
 	{
-		$display .= "No entries exist starting with this letter."; 
+		$display .= __('No entries exist starting with this letter.', 'sil_dictionary'); 
 	}
 	foreach($arrPosts as $mypost)
 	{
