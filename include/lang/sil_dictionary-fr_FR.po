@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: SIL Dictionary v1.2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-18 19:58+0100\n"
-"PO-Revision-Date: 2014-03-18 19:58+0100\n"
+"PO-Revision-Date: 2014-03-25 13:34+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -501,7 +501,7 @@ msgstr ""
 # @ sil_dictionary
 #: include/searchform_func.php:27
 msgid "Search"
-msgstr "Recherche"
+msgstr "Rechercher"
 
 #: include/searchform_func.php:87
 msgid "Found in Semantic Domains:"
