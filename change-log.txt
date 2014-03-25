@@ -1,3 +1,4 @@
+v. 3.5.3 25 March 2014 modified French word "Rechercher"
 v. 3.5.2 18 March 2014 added language entry "No entries exist for.." in browseview
 v. 3.5.1 06 March 2014 fixed error in function get_post_id (for getting crossreferences)
 v. 3.5.0 04 March 2014 updated French language file
