@@ -350,7 +350,7 @@ function vernacularalphabet_func( $atts )
 		$chosenLetter = stripslashes($_GET['letter']); 
 	}
 	else {
-		$chosenLetter = $alphas[0]; 
+		$chosenLetter = stripslashes($alphas[0]); 
 	}
 		
 	
