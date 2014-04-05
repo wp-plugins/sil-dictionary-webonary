@@ -149,6 +149,17 @@ function user_input() {
 				</p>
 				<h3><?php _e('Settings');?></h3>
 				<p>
+				<?php _e('Publication status:'); ?>
+				<select name=publicationStatus>
+					<option value=0><?php _e('no status set'); ?></option>
+					<option value=1 <?php selected(get_option('publicationStatus'), 1); ?>><?php _e('Rough draft'); ?></option>
+					<option value=2 <?php selected(get_option('publicationStatus'), 2); ?>><?php _e('Self-reviewed draft'); ?></option>
+					<option value=3 <?php selected(get_option('publicationStatus'), 3); ?>><?php _e('Community-reviewed draft'); ?></option>
+					<option value=4 <?php selected(get_option('publicationStatus'), 4); ?>><?php _e('Consultant approved'); ?></option>
+					<option value=5 <?php selected(get_option('publicationStatus'), 5); ?>><?php _e('Finished (no formal publication)'); ?></option>
+					<option value=6 <?php selected(get_option('publicationStatus'), 6); ?>><?php _e('Formally published'); ?></option>
+				</select>
+				<p>
 				<?php 
 				if(count($arrLanguageCodes) == 0)
 				{
@@ -257,6 +268,7 @@ function run_user_action() {
         clean_out_dictionary_data();
     }
     if ( ! empty( $_POST['save_settings'])) {
+    	update_option("publicationStatus", $_POST['publicationStatus']);
     	update_option("include_partial_words", $_POST['include_partial_words']);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
