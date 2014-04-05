@@ -1,3 +1,4 @@
+v. 3.5.5 05 April 2014 option to set publication status
 v. 3.5.4 29 March 2014 added stripslashes for browseview so that glottal stop works even if no letter was chosen
 v. 3.5.3 25 March 2014 modified French word "Rechercher"
 v. 3.5.2 18 March 2014 added language entry "No entries exist for.." in browseview
