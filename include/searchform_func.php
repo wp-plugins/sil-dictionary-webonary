@@ -124,7 +124,7 @@ function add_footer()
 	{
 		$publicationStatus = get_option('publicationStatus');
 		if(is_front_page() && $publicationStatus > 0) {?>
-		<div align=center><img src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/images/status/DictStage<?php echo $publicationStatus; ?>.png" style="padding: 5px;"></div>
+		<div align=center><img src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/images/status/DictStage<?php echo $publicationStatus; ?>.png" style="padding: 5px; max-width: 100%;"></div>
 	<?php 
 		}
 	}
