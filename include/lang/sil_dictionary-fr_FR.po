@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: SIL Dictionary v1.2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-18 19:58+0100\n"
-"PO-Revision-Date: 2014-03-25 13:34+0100\n"
+"PO-Revision-Date: 2014-04-21 10:12-0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -130,11 +130,13 @@ msgstr ""
 #: include/dictionary-search.php:157
 msgid "Because of the brevity of your search term, partial search was omitted."
 msgstr ""
+"Parce que votre terme de recherche est court, on a omis la recherche de mots "
+"partiels."
 
 # @ sil_dictionary
 #: include/dictionary-search.php:159
 msgid "Click here to include searching through partial words."
-msgstr ""
+msgstr "Cliquer ici pour inclure la recherche de mots partiels."
 
 # @ sil_dicitonary
 # @ sil_dictionary
@@ -361,7 +363,7 @@ msgstr ""
 # @ sil_dictionary
 #: include/infrastructure.php:390 include/searchform_func.php:72
 msgid "All Parts of Speech"
-msgstr "Toutes catégories grammaticales"
+msgstr "Toutes les catégories grammaticales"
 
 # @ default
 #: include/infrastructure.php:391
