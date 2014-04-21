@@ -1,3 +1,4 @@
+v. 3.5.8 21 April 2014 importer now imports the semantic domain numbers as slug. Will also import other languages than English (L2)
 v. 3.5.7 11 April 2014 made status image responsive
 v. 3.5.6 05 April 2014 added status images
 v. 3.5.5 05 April 2014 option to set publication status
