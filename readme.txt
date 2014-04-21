@@ -3,7 +3,7 @@ sil-dictionary webonary
 Contributors: Steve Miller, Philip Perry, SIL International
 Tags: search, dictionary, multilingual, bilingual, ISO 639, language, font
 Requires at least: 3.0
-Tested up to: 3.8
+Tested up to: 3.9
 Stable tag: 1.3.7
 
 == Description ==
