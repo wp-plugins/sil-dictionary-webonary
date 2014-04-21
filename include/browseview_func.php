@@ -5,10 +5,12 @@ function ajaxsearch()
 	$languagecode = get_option('languagecode');
 	
 	$display = "";
-	
-	if(strlen($_REQUEST["semdomain"]) > 0)
+	$postsperpage = 25;
+		
+	if(strlen($_REQUEST["semdomain"]) > 0 || strlen($_REQUEST["semnumber"]) > 0)
 	{
-		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&showposts=100");
+		$semnumber = rtrim(str_replace(".", "-", $_REQUEST["semnumber"]), "-");
+		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&semnumber=" . $semnumber . "&posts_per_page=" . $postsperpage . "&paged=" . $_REQUEST['pagenr']);
 		//print_r($wpdb->queries);
 		$searchquery = $_REQUEST["semdomain"];				
 	}
@@ -31,6 +33,10 @@ function ajaxsearch()
 		}
 	}
 		
+	global $wp_query;		
+	$totalEntries = $wp_query->found_posts;
+	$display .= displayPagenumbers($semnumber, $totalEntries, $postsperpage, $languagecode, "semnumber", $_REQUEST['pagenr']);
+	
 	echo $display;
 	die();
 }
@@ -47,11 +53,11 @@ function categories_func( $atts )
 	</style>
 
 	<script>
-	function displayEntry(word)
+	function displayEntry(word, number, page)
 	{
 		jQuery.ajax({
      		url: '<?php echo admin_url('admin-ajax.php'); ?>',
-     		data : {action: "getAjaxsearch", semdomain : word}, 		
+     		data : {action: "getAjaxsearch", semdomain : word, semnumber: number, pagenr : page}, 		
      		type:'POST',
      		dataType: 'html',
      		success: function(output_string){
@@ -104,17 +110,25 @@ function displayAlphabet($alphas, $languagecode)
 	
 }
 
-function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $languagecode)
+function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $languagecode, $requestname = null, $currentPage = null)
 {
 ?>
 	<link rel="stylesheet" href="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/wp-page-numbers/classic/wp-page-numbers.css" />
 	
 <?php
-	$currentPage = $_GET['pagenr'];
-	if(!isset($currentPage))
+	if(!isset($requestname))
 	{
-		$currentPage = 1;
-	} 	
+		$requestname = "letter";
+	}
+	 
+	if(!$currentPage)
+	{
+		$currentPage = $_GET['pagenr'];
+		if(!isset($currentPage))
+		{
+			$currentPage = 1;
+		}
+	}
 	$totalPages = round($totalEntries / $entriesPerPage, 0);
 	if(($totalEntries / $entriesPerPage) > $totalPages)
 	{
@@ -126,19 +140,33 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 		$display .= "<div  id='wp_page_numbers'><ul>";
 		$nextpage = "&gt;";
 		$prevpage = "&lt;";
-		$url = "?letter=" . $chosenLetter . "&key=" . $languagecode . "&totalEntries=" . $totalEntries;
+		$url = "?" . $requestname . "=" . $chosenLetter . "&key=" . $languagecode . "&totalEntries=" . $totalEntries;
 
 		$limit_pages = 10;
 		$display .= "<li class=page_info>" . gettext("Page") . " " . $currentPage . " " . gettext("of") . " " . $totalPages . "</li>";	
 		if( $totalPages > 1 && $currentPage > 1 )
 		{
-			$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage - 1) . "\">" .$prevpage . "</a></li>";
+			if($requestname == "semnumber")
+			{
+				$display .= "<li><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . ($currentPage - 1) . ");\">" . $prevpage . "</a></li> ";
+			}
+			else 
+			{
+				$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage - 1) . "\">" .$prevpage . "</a></li>";
+			}
 		}
 
 		$start = 1;
 		if($currentPage > ($limit_pages - 5))
 		{
-			$display .= "<li><a href=\"" . $url . "&pagenr=" . 1 . "\">" . 1 . "</a></li> ";
+			if($requestname == "semnumber")
+			{
+				$display .= "<li " . $class . "><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', 1);\">" . 1 . "</a></li> ";
+			}
+			else
+			{
+				$display .= "<li><a href=\"" . $url . "&pagenr=" . 1 . "\">" . 1 . "</a></li> ";
+			}
 			$display .= "<li class=space>...</li>";
 			$start = $currentPage - 5;
 			if($currentPage == 6)
@@ -150,11 +178,18 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 		for($page = $start; $page <= $totalPages; $page++)
 		{
 			$class = "";
-			if($_GET['pagenr'] == $page || ($page == 1 && !isset($_GET['pagenr'])))
+			if($currentPage == $page || ($page == 1 && !isset($currentPage)))
 			{
 				$class="class=active_page";
 			}
-			$display .= "<li " . $class . "><a href=\"" . $url . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
+			if($requestname == "semnumber")
+			{
+				$display .= "<li " . $class . "><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . $page . ");\">" . $page . "</a></li> ";
+			}
+			else 
+			{
+				$display .= "<li " . $class . "><a href=\"" . $url . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
+			}
 			$minusPages = 5;
 			if($currentPage < 5)
 			{
@@ -169,7 +204,14 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 		}
 		if( $currentPage != "" && $currentPage < $totalPages)
 		{
-			$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage + 1) . "\">" .$nextpage . "</a></li>";
+			if($requestname == "semnumber")
+			{
+				$display .= "<li><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . ($currentPage + 1) . ");\">" . $nextpage . "</a></li> ";
+			}
+			else 
+			{
+				$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage + 1) . "\">" .$nextpage . "</a></li>";
+			}
 		}
 		$display .= "</ul></div>";
 		$display .= "</div></div>";
