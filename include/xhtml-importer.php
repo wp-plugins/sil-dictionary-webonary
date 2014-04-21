@@ -1048,7 +1048,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 
 		$newelement = $doc->createElement('a');
-		$newelement->appendChild($doc->createTextNode(addslashes($field->textContent)));		
+		$newelement->appendChild($doc->createTextNode(addslashes(trim($field->textContent))));		
 		$newelement->setAttribute("href", "?s=&partialsearch=1&tax=" . $termid);
 		$newelement->setAttribute("class", $field->getAttribute("class"));
 		$parent = $field->parentNode;			
@@ -1059,7 +1059,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$sql = "UPDATE $wpdb->posts " .
 		" SET post_content = '" . addslashes($entry_xml) . "'" . 
 		" WHERE ID = " . $post_id;
-		 		
+				 		
 		$wpdb->query( $sql );
 		
 		return $entry;
@@ -1316,74 +1316,86 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function import_xhtml_semantic_domain( $doc, $post_id, $subentry, $convertToLinks) {
 
+		global $wpdb;
 		$xpath = new DOMXPath($doc);
 		
 		if($convertToLinks == true)
 		{
-			$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
+			//$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
 		}
 		else
 		{
 			if($subentry)
 			{
-				$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
+				$semantic_domains = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
 			}
 			else
 			{
-				$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]');
+				//$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
+				$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]');
 			}
 		}
 
 		$i = 0;
-		foreach ( $semantic_domain_terms as $field ) {
-			$semantic_domain_language = $field->getAttribute("lang");
-			$domain_name = str_replace("]", "", $field->textContent);
-			$domain_class = $field->getAttribute("class");
-						
-			$arrTerm = wp_insert_term(
-				$domain_name,
-				$this->semantic_domains_taxonomy,
-				array(
-					'description' => trim($domain_name),
-					'slug' => $domain_name 
-				));		
-													
-			$termid = 0;
-			if(term_exists($domain_name, $this->semantic_domains_taxonomy))
+		foreach ( $semantic_domains as $semantic_domain ) {
+			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
+			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]');
+			
+			$sc = 0;
+			foreach($sd_names as $sd_name)
 			{
-				$myTerm = term_exists($domain_name, $this->semantic_domains_taxonomy);
-				$termid = $myTerm['term_id'];
-			}
-			else
-			{	
-				if (array_key_exists('term_id', $arrTerm))
+				//echo $sd_numbers->item($sc)->textContent . " " . $sd_name->textContent . " " . $sd_name->getAttribute("lang") . "<br>";
+				$semantic_domain_language = $sd_name->getAttribute("lang");
+				$domain_name = str_replace("]", "", $sd_name->textContent);
+				$domain_class = $sd_name->getAttribute("class");
+							
+				$arrTerm = wp_insert_term(
+					$domain_name,
+					$this->semantic_domains_taxonomy,
+					array(
+						'description' => trim($domain_name),
+						'slug' => $sd_numbers->item($sc)->textContent 
+					));		
+														
+				$termid = 0;
+				if(term_exists($domain_name, $this->semantic_domains_taxonomy))
 				{
-					$termid = $arrTerm['term_id'];
-					$terms[$i] = $termid; 
-					$i++;
+					$myTerm = term_exists($domain_name, $this->semantic_domains_taxonomy);
+					$termid = $myTerm['term_id'];
 				}
-			}
-
-			if($convertToLinks == true)
-			{
-				$this->convert_semantic_domains_to_links($post_id, $doc, $field, $termid);			
-			}
-			else
-			{
-				$x = 0;
-				/*
-				//Load semantic domain into search table
-				$isDuplicate = $this->get_duplicate($post_id, $field->textContent, ($this->semantic_domain_relevance - $x), $semantic_domain_language);
-				if(!$isDuplicate)
+				else
+				{	
+					if (array_key_exists('term_id', $arrTerm))
+					{
+						$termid = $arrTerm['term_id'];
+						$terms[$i] = $termid; 
+						$i++;
+					}
+				}
+					
+				$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);
+				
+				$wpdb->query( "INSERT INTO $wpdb->term_relationships (object_id, term_taxonomy_id) VALUES (" . $post_id . ", " . $termid . ") ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" );
+				/*			
+				if($convertToLinks == true)
 				{
-					$this->import_xhtml_search_string($post_id, $field, ($this->semantic_domain_relevance - $x));
+					$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);			
+				}
+				else
+				{
+					$x = 0;
+					wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
 				}
 				*/
-				wp_set_object_terms( $post_id, $domain_name, $this->semantic_domains_taxonomy, true );
-			}
 				$arrTerm = null;
+				
+				$sc++;
+			}
 		}
 
+		$sql = $wpdb->prepare("UPDATE $wpdb->term_taxonomy SET COUNT = 1 WHERE taxonomy = 'sil_semantic_domains'");
+		$wpdb->query( $sql );
+		
 	}
 
 	//-----------------------------------------------------------------------------//
