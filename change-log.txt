@@ -1,3 +1,4 @@
+v. 3.6.1 24 April 2014 forgot to change sql-statement for the previous change
 v. 3.6.0 21 April 2014 semantic domains are now searched by numbers instead of name
 v. 3.5.9 21 April 2014 added more French translations
 v. 3.5.8 21 April 2014 importer now imports the semantic domain numbers as slug. Will also import other languages than English (L2)
