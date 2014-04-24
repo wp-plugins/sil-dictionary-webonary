@@ -139,7 +139,7 @@ function sil_dictionary_custom_join($join) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
 		if(get_option("hasSemDomainNumbers") == 1) {
-			$join .= " INNER JOIN wp_7_terms ON wp_7_term_relationships.term_taxonomy_id = wp_7_terms.term_id ";
+			$join .= " INNER JOIN $wpdb->terms ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->terms.term_id ";
 		}
 	}
 	return $join;
