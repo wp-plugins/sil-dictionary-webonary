@@ -1319,28 +1319,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 		$xpath = new DOMXPath($doc);
 		
-		if($convertToLinks == true)
+		if($subentry)
 		{
-			//$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]//span[@class = "semantic-domain-name"]|//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
+			$semantic_domains = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
 		}
 		else
 		{
-			if($subentry)
-			{
-				$semantic_domains = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
-			}
-			else
-			{
-				//$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
-				$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]');
-			}
+			//$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
+			$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]');
 		}
 
 		$i = 0;
 		foreach ( $semantic_domains as $semantic_domain ) {
-			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
-			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]');
-			
+			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]', $semantic_domain);
+			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]', $semantic_domain);
+						
 			$sc = 0;
 			foreach($sd_names as $sd_name)
 			{
@@ -1357,13 +1350,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						'slug' => $sd_numbers->item($sc)->textContent 
 					));		
 														
-				$termid = 0;
-				if(term_exists($domain_name, $this->semantic_domains_taxonomy))
-				{
-					$myTerm = term_exists($domain_name, $this->semantic_domains_taxonomy);
-					$termid = $myTerm['term_id'];
-				}
-				else
+					$termid = $wpdb->get_var( "
+						SELECT term_id
+						FROM $wpdb->terms
+						WHERE slug = '" . str_replace(".", "-", $sd_numbers->item($sc)->textContent) . "'");	
+					
+				if($termid == NULL || $termid == 0)	
 				{	
 					if (array_key_exists('term_id', $arrTerm))
 					{
