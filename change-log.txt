@@ -1,3 +1,4 @@
+v. 3.6.3 30 April 2014 removed $wpdb->prepare that was causing problems with missing second argument
 v. 3.6.2 25 April 2014 fixed problem that would not find termid for semantic domains in Chinese 
 v. 3.6.1 24 April 2014 forgot to change sql-statement for the previous change
 v. 3.6.0 21 April 2014 semantic domains are now searched by numbers instead of name
