@@ -1387,8 +1387,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		update_option("hasSemDomainNumbers", 1);
 
-		$sql = $wpdb->prepare("UPDATE $wpdb->term_taxonomy SET COUNT = 1 WHERE taxonomy = 'sil_semantic_domains'");
-		$wpdb->query( $sql );
+		$sql = $wpdb->query("UPDATE $wpdb->term_taxonomy SET COUNT = 1 WHERE taxonomy = 'sil_semantic_domains'");
 		
 	}
 
