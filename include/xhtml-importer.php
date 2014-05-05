@@ -1332,7 +1332,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$i = 0;
 		foreach ( $semantic_domains as $semantic_domain ) {
 			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]', $semantic_domain);
-			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]', $semantic_domain);
+			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]//span', $semantic_domain);
 						
 			$sc = 0;
 			foreach($sd_names as $sd_name)
@@ -1353,8 +1353,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$termid = $wpdb->get_var( "
 						SELECT term_id
 						FROM $wpdb->terms
-						WHERE slug = '" . str_replace(".", "-", $sd_numbers->item($sc)->textContent) . "'");	
-					
+						WHERE slug = '" . str_replace(".", "-", $sd_numbers->item($sc)->textContent) . "'");
+
 				if($termid == NULL || $termid == 0)	
 				{	
 					if (array_key_exists('term_id', $arrTerm))
@@ -1364,7 +1364,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$i++;
 					}
 				}
-					
+				
 				$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);
 				
 				$wpdb->query( "INSERT INTO $wpdb->term_relationships (object_id, term_taxonomy_id) VALUES (" . $post_id . ", " . $termid . ") ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" );
