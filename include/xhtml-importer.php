@@ -1405,7 +1405,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
-
+								
 			if(strlen(trim($entry->textContent)) == 0)
 			{
 				$entry_counter++;
@@ -1425,9 +1425,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$reversal_language = $reversals->item(0)->getAttribute( "lang" );
 			$reversal_text = $reversals->item(0)->textContent;
 			
-			//$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]', $entry );
-			$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]|./xhtml:span[@class = "senses"]/xhtml:span[starts-with(@class, "headref")]', $entry );
-					
+			//$headwords = $this->dom_xpath->query('./xhtml:span[@class = "senses"]/xhtml:span[@class = "sense"]/xhtml:span[@class = "headword"]|./xhtml:span[@class = "senses"]/xhtml:span[starts-with(@class, "headref")]', $entry );
+			$headwords = $this->dom_xpath->query('.//xhtml:span[@class = "headword"]|.//xhtml:span[starts-with(@class, "headref")]', $entry );
+			
 			foreach ( $headwords as $headword ) {
 				
 				$entry = $this->convert_homographs($entry, "Homograph-Number");
@@ -1440,7 +1440,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 												
 				$headword_text = trim($headword->textContent);		
-
+				
 				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
 				
 				if ( $post_id != NULL ) {
