@@ -1,3 +1,4 @@
+v. 3.6.5 9 May 2014 headword for reversal index no longer needs to be under class "senses"
 v. 3.6.4 5 May 2014 fixed import and search problem with semantic domains
 v. 3.6.3 30 April 2014 removed $wpdb->prepare that was causing problems with missing second argument
 v. 3.6.2 25 April 2014 fixed problem that would not find termid for semantic domains in Chinese 
