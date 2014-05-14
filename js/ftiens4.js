@@ -192,13 +192,13 @@ function drawFolder(insertAtObj)
 
   if (insertAtObj == null)
   {
-	  if (supportsDeferral) {
+	  //if (supportsDeferral) {
 		  doc.write("<div id=domRoot></div>") //transition between regular flow HTML, and node-insert DOM DHTML
 		  insertAtObj = getElById("domRoot")
 		  insertAtObj.insertAdjacentHTML("beforeEnd", docW)
-	  }
-	  else
-		  doc.write(docW)
+	 // }
+	  //else
+		//  doc.write(docW)
   }
   else
   {
@@ -297,8 +297,8 @@ function linkFolderHTML(isTextLink)
 
   if (this.hreference) 
   { 
-	//searchlink = "?s=&partialsearch=1&semdomain=" + this.desc.replace(/[0-9]|[.]/g, '').trim();
-	  searchlink = "#";
+	searchlink = "?semdomain=" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "&semnumber=" + this.desc.match(/\d[.]/g).join(''); // + "&nodeid=" + this.id; 
+	  //searchlink = "#";
 	if (USEFRAMES)
 	  docW = docW + "<a class=categorylink onclick=\"displayEntry('" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "', '" + this.desc.match(/\d[.]/g).join('') + "');\" href='" + searchlink + "' "
 	else
@@ -1061,7 +1061,7 @@ var USEFRAMES = 1;
 var USEICONS = 1;
 var WRAPTEXT = 0;
 var PERSERVESTATE = 0; //backward compatibility
-var PRESERVESTATE = 0;
+var PRESERVESTATE = 1;
 var ICONPATH = '';
 var HIGHLIGHT = 0;
 var HIGHLIGHT_COLOR = 'white';
