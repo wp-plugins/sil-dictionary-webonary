@@ -1,79 +1,23 @@
-<?php
-function ajaxsearch()
-{
-	global $wpdb;
-	$languagecode = get_option('languagecode');
-	
-	$display = "";
-	$postsperpage = 25;
-		
-	if(strlen($_REQUEST["semdomain"]) > 0 || strlen($_REQUEST["semnumber"]) > 0)
-	{
-		$semnumber = rtrim(str_replace(".", "-", $_REQUEST["semnumber"]), "-");
-		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&semnumber=" . $semnumber . "&posts_per_page=" . $postsperpage . "&paged=" . $_REQUEST['pagenr']);
-		//print_r($wpdb->queries);
-		$searchquery = $_REQUEST["semdomain"];				
-	}
-
-	if(count($arrPosts) == 0)
-	{
-		//$display .= "No entries exist for '" . $searchquery . "'."; 
-		$display .= __('No entries exist for', 'sil_dictionary') . ' "' . $searchquery . '"';
-	}
-	else
-	{
-		foreach($arrPosts as $mypost)
-		{
-			$display .= "<div class=post>" . $mypost->post_content . "</div>";
-			/*
-			if( comments_open($mypost->ID) ) {
-				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
-			}
-			*/			
-		}
-	}
-		
-	global $wp_query;		
-	$totalEntries = $wp_query->found_posts;
-	$display .= displayPagenumbers($semnumber, $totalEntries, $postsperpage, $languagecode, "semnumber", $_REQUEST['pagenr']);
-	
-	echo $display;
-	die();
-}
-
-add_action( 'wp_ajax_getAjaxsearch', 'ajaxsearch' );
-add_action( 'wp_ajax_nopriv_getAjaxsearch', 'ajaxsearch' );
-
+<?
 function categories_func( $atts ) 
 {
+	$display = "";
+	
+	$postsperpage = 25;
 ?>	
 	<style>
 	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold;}
 	   a.categorylink {text-decoration: none; color: navy; font-size: 15px;}
+	   #domRoot {
+	   	float:left; width:250px; margin-left: 20px;
+	   }
+	   #searchresults { 
+			width:70%; 
+			min-width: 270px;
+			text-align:left; 
+			float: right;
+		}	   
 	</style>
-
-	<script>
-	function displayEntry(word, number, page)
-	{
-		jQuery.ajax({
-     		url: '<?php echo admin_url('admin-ajax.php'); ?>',
-     		data : {action: "getAjaxsearch", semdomain : word, semnumber: number, pagenr : page}, 		
-     		type:'POST',
-     		dataType: 'html',
-     		success: function(output_string){
-        		jQuery('#searchresult').html(output_string);
-        		//jQuery('.subentries').hide("fast");
-			var elems = document.getElementsByClassName('subentries'), i;
-			var x = 0;
-		    for (i in elems) {
-		    	document.getElementsByClassName("subentries")[x].style.display = 'none';
-		    	x++;
-		    }        		
-     		}     		
-	 })
-	}	
-	</script>
-	
 	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/ua.js" type="text/javascript"></script>
 	
 	<!-- Infrastructure code for the tree -->
@@ -84,8 +28,34 @@ function categories_func( $atts )
 	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes.js" type="text/javascript"></script>
 
 	<!-- Build the browser's objects and display default view of the tree. -->
-	<script language="JavaScript">initializeDocument()</script>
-<?php 	
+	<script language="JavaScript">
+		initializeDocument();
+	</script>
+<?php
+	$display .= "<div id=searchresults>";
+	
+	$semnumber = rtrim(str_replace(".", "-", $_REQUEST["semnumber"]), "-");
+	$arrPosts = null;
+	if(isset($_REQUEST["semnumber"]))
+	{
+		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&semnumber=" . $semnumber . "&posts_per_page=" . $postsperpage . "&paged=" . $_REQUEST['pagenr']);
+	}
+?>	
+<?php
+	foreach($arrPosts as $mypost)
+	{
+			$display .= "<div class=post>" . $mypost->post_content . "</div>";
+	}
+	
+	global $wp_query;
+	$totalEntries = $wp_query->found_posts;
+	$display .= displayPagenumbers($semnumber, $totalEntries, $postsperpage,  $_REQUEST["semdomain"] , "semnumber", $_REQUEST['pagenr']);
+
+	$display .= "</div>";
+	
+ 	wp_reset_query();
+	return $display;
+	
 }
 add_shortcode( 'categories', 'categories_func' );
 
@@ -184,7 +154,7 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 			}
 			if($requestname == "semnumber")
 			{
-				$display .= "<li " . $class . "><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . $page . ");\">" . $page . "</a></li> ";
+				$display .= "<li " . $class . "><a href=\"?semdomain=" . $languagecode . "&semnumber=" . $chosenLetter . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
 			}
 			else 
 			{
