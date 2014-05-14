@@ -45,7 +45,10 @@ function categories_func( $atts )
 <?php
 	if(count($arrPosts) == 0)
 	{
-		$display .= __('No entries exist for', 'sil_dictionary') . ' "' . $_REQUEST["semdomain"] . '"';
+		if(strlen(trim($_REQUEST["semdomain"])) > 0)
+		{
+			$display .= __('No entries exist for', 'sil_dictionary') . ' "' . $_REQUEST["semdomain"] . '"';
+		}
 	}
 	else
 	{
