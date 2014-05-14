@@ -9,13 +9,14 @@ function categories_func( $atts )
 	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold;}
 	   a.categorylink {text-decoration: none; color: navy; font-size: 15px;}
 	   #domRoot {
-	   	float:left; width:250px; margin-left: 20px;
+	   	float:left; width:250px; margin-left: 20px; margin-top: 5px;
 	   }
 	   #searchresults { 
 			width:70%; 
 			min-width: 270px;
 			text-align:left; 
 			float: right;
+			margin-top: 20px;
 		}	   
 	</style>
 	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/ua.js" type="text/javascript"></script>
@@ -42,9 +43,16 @@ function categories_func( $atts )
 	}
 ?>	
 <?php
-	foreach($arrPosts as $mypost)
+	if(count($arrPosts) == 0)
 	{
-			$display .= "<div class=post>" . $mypost->post_content . "</div>";
+		$display .= __('No entries exist for', 'sil_dictionary') . ' "' . $_REQUEST["semdomain"] . '"';
+	}
+	else
+	{
+		foreach($arrPosts as $mypost)
+		{
+				$display .= "<div class=post>" . $mypost->post_content . "</div>";
+		}
 	}
 	
 	global $wp_query;
