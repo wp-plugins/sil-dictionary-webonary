@@ -1,3 +1,4 @@
+v. 3.6.9 16 May 2014 changed blank.gif in audiolibs to just be 1 Pixel big. Bigger image caused problems
 v. 3.6.8 14 May 2014 message about no entries now doesn't show if nothing was selected
 v. 3.6.7 14 May 2014 added "no entries exist" message for categories browse view
 v. 3.6.6 14 May 2014 changed category view to load posts static instead of with ajax, as this caused problems with listening to audio files
