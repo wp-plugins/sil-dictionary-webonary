@@ -1,4 +1,5 @@
-v. 3.7.1 16 May 2014 also added margin-right -3px to audioButton
+v. 3.7.2 16 May 2014 removed margin-left again, as it was too much left on some pages 
+v. 3.7.1 16 May 2014 also added margin-left -3px to audioButton
 v. 3.7.0 16 May 2014 added margin-right to audioButton
 v. 3.6.9 16 May 2014 changed blank.gif in audiolibs to just be 1 Pixel big. Bigger image caused problems
 v. 3.6.8 14 May 2014 message about no entries now doesn't show if nothing was selected
