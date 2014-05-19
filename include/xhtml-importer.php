@@ -317,7 +317,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			<p>
 				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/> <?php esc_attr_e('Configured Dictionary'); ?><BR>
 				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /> <?php esc_attr_e('Reversal Index'); ?><BR>
-				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank"><?php esc_attr_e('Sort Order (usually stem-based view)'); ?></a><BR>				
+				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> *<?php esc_attr_e('Sort Order'); ?> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank">only if sort order is different than configured view</a><BR>				
 			</p>
 			<div id="convertToLinks">
 				<select name="chkConvertToLinks">
@@ -461,8 +461,22 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		if ( $search_table_exists ) {
 			$arrPosts = $this->get_posts();
-			
+						
 			$subid = 1;
+			$sortorder = $wpdb->get_var( "
+			SELECT sortorder
+			FROM $this->search_table_name
+			WHERE relevance >= 95 ORDER BY sortorder DESC LIMIT 0, 1");
+						
+			if($sortorder == null || $sortorder == 0)
+			{
+				$sortorder = 1;
+			}
+			else
+			{
+				$sortorder++;
+			}
+			
 			$entry_counter = 1;
 			$entries_count = count($arrPosts);
 						
@@ -470,7 +484,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$subentry = false;
 				if ( $post->ID ){
+					$sortorder = $wpdb->get_var( "SELECT sortorder FROM $this->search_table_name WHERE relevance >= 95 AND post_id = " . $post->ID . " AND sortorder <> 0");
+								
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
+					
 					$wpdb->query( $sql );
 					//set as indexed
 					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
@@ -486,7 +503,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$arrFieldQueries = $this->getArrFieldQueries();
 				
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
-								
+				
 				if(isset($headword) && $post->post_parent == 0)
 				{
 					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
@@ -517,6 +534,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					$subentry = true;
 				}
+				
+				$headword_text = trim($headword->textContent);	
+				
+				//this is used for the browse view sort order
+				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $sortorder . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
+				$wpdb->query( $sql );
+				
+				//this is used for the search sort order
+				$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $sortorder . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin AND menu_order = 0";
+				$wpdb->query( $sql );
+				
 			
 				/*
 				 * Load semantic domains
@@ -534,6 +562,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$subid++;
 				$entry_counter++;
+				$sortorder++;
 			}
 		}
 	}
@@ -737,6 +766,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					'post_name' => $flexid,
 					'comment_status' => get_option('default_comment_status')
 				);
+				
 				$post_id = wp_insert_post( $post );
 				
 				//print_r($wpdb->queries);
@@ -926,6 +956,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			$entrycount++;
 			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
+			
 		} //foreach $arrPosts as $post
 	} // function convert_fieldworks_links_to_wordpress()
 
@@ -1079,7 +1110,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		<SCRIPT type="text/javascript">//<![CDATA[
 		d = document.getElementById("flushme");
 		info = "<?php echo $msg; ?>";
-		<?php 
+		<?php
 		if($entries_count >= 1)
 		{
 		?>
@@ -1161,7 +1192,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, $search_string, $relevance, $subid );
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
-						
+
 			$wpdb->query( $sql );
 			
 		//this replaces the special apostroph with the standard apostroph
@@ -1216,7 +1247,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
 			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id(); 
 		//using pinged field for not yet indexed
-		$sql .= " AND pinged = '" . $index . "'";
+		$sql .= " AND post_status = 'publish' AND pinged = '" . $index . "'";
 		
 		
 		return $wpdb->get_results($sql);
@@ -1476,11 +1507,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$headword_text = trim($entry->textContent);	
 
 			//this is used for the browse view sort order
-			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . $headword_text . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
+			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
 			$wpdb->query( $sql );
 			
 			//this is used for the search sort order
-			$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $entry_counter . " WHERE post_title = '" . $headword_text . "' collate utf8_bin";
+			$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $entry_counter . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin";
 			$wpdb->query( $sql );
 
 			/*
