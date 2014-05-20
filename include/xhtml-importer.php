@@ -112,8 +112,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				?>
 				<DIV ID="flushme">no data</DIV>
 				<?php
+				
 				$result = $this->import_xhtml($xhtml_file);
-
+				
 				$this->goodbye($xhtml_file, $css_file);
 				break;
 			/*
@@ -484,10 +485,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$subentry = false;
 				if ( $post->ID ){
-					$sortorder = $wpdb->get_var( "SELECT sortorder FROM $this->search_table_name WHERE relevance >= 95 AND post_id = " . $post->ID . " AND sortorder <> 0");
+					$oldSortorder = $wpdb->get_var( "SELECT sortorder FROM $this->search_table_name WHERE relevance >= 95 AND post_id = " . $post->ID . " AND sortorder <> 0");
+					
+					if(isset($oldSortorder))
+					{
+						$sortorder = $oldSortorder;
+					}
 								
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
-					
+										
 					$wpdb->query( $sql );
 					//set as indexed
 					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
@@ -694,7 +700,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
-
+		
 		if($entries->length == 0) 
 		{				
 			echo "<div style=color:red>ERROR: No headwords found.</div><br>";
@@ -748,31 +754,35 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 								
 				//$post_id = $this->get_post_id( $flexid );
-				$post_id = $this->get_post_id_bytitle( $headword_text, $headword_language, $subid, true);
+				//$post_id = $this->get_post_id_bytitle( $headword_text, $headword_language, $subid, true);
+				$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "'");
 				$post_id_exists = $post_id != NULL;
 
+				//$post_id = wp_insert_post( $post );
 				
-				
-				// If the ID is not null, but has a value, wp_insert_post will
-				// update the record instead of adding a new record. When updating,
-				// it resets the post_modified and post_modified_gmt fields.
-				
-				$post = array(
-					'ID' => $post_id,
-					'post_title' => $headword_text, // has headword and homograph number
-					'post_content' =>  $entry_xml,
-					'post_status' => 'publish',			
-					'post_parent' => $post_parent,	
-					'post_name' => $flexid,
-					'comment_status' => get_option('default_comment_status')
-				);
-				
-				$post_id = wp_insert_post( $post );
+				if($post_id == NULL)
+				{
+					$sql = $wpdb->prepare(		
+					"INSERT INTO ". $wpdb->posts . " (post_title, post_content, post_status, post_parent, post_name, comment_status)
+					VALUES ('%s', '%s', 'publish', %d, %d, '%s')",
+					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
+					
+					$wpdb->query( $sql );
+
+					$post_id = mysql_insert_id();
+					
+					wp_set_object_terms( $post_id, "webonary", 'category' );
+				}
+				else
+				{
+					$sql = $wpdb->prepare(
+					"UPDATE " . $wpdb->posts . " SET post_title = '%s', post_content = '%s', post_status = 'publish', pinged='', post_parent=%d, post_name=%d, comment_status='%s' WHERE ID = %d", 
+					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status'), $post_id);
+
+					$wpdb->query( $sql );
+				}
 				
 				//print_r($wpdb->queries);
-				//echo "<hr>";
-				
-				wp_set_object_terms( $post_id, "webonary", 'category' );
 				
 				/*
 				 * Show progresss to the user.
@@ -1191,6 +1201,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, $search_string, $relevance, $subid );
+			
 			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
 
 			$wpdb->query( $sql );
@@ -1248,8 +1259,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id(); 
 		//using pinged field for not yet indexed
 		$sql .= " AND post_status = 'publish' AND pinged = '" . $index . "'";
-		
-		
+				
 		return $wpdb->get_results($sql);
 	}	
 		
@@ -1287,6 +1297,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$sql .= " AND language_code <> '" . $langcode . "'";
 		}
+		
+		echo $sql . "<br>";
 			
 		$row = $wpdb->get_row( $sql );
 		
