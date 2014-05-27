@@ -116,6 +116,24 @@ function add_header()
 
 add_action('wp_head', 'add_header');
 
+function getDictStageImage($publicationStatus, $language)
+{
+	if($language == "en")
+	{
+		$language = "";
+	}
+	$DictStage = "/wp-content/plugins/sil-dictionary-webonary/images/status/DictStage" . $publicationStatus . $language . ".png";
+
+	if(file_exists(ABSPATH . $DictStage))
+	{
+		echo $DictStage;
+	}
+	else
+	{
+		getDictStageImage($publicationStatus, "");
+	}
+}
+
 function add_footer()
 {
 ?>
@@ -123,8 +141,10 @@ function add_footer()
 	if(get_option('publicationStatus'))
 	{
 		$publicationStatus = get_option('publicationStatus');
-		if(is_front_page() && $publicationStatus > 0) {?>
-		<div align=center><img src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/images/status/DictStage<?php echo $publicationStatus; ?>.png" style="padding: 5px; max-width: 100%;"></div>
+		if(is_front_page() && $publicationStatus > 0) {			
+		?>
+		
+		<div align=center><img src="<?php getDictStageImage($publicationStatus, qtrans_getLanguage()); ?>" style="padding: 5px; max-width: 100%;"></div>
 	<?php 
 		}
 	}
