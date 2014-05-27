@@ -1,3 +1,4 @@
+v. 3.7.6 27 May 2014 added DictStat images for Nepali + changed searchform_func.php
 v. 3.7.5 20 May 2014 added Nepali translations
 v. 3.7.4 20 May 2014 changed sql statement for importing of post entries, as mqTranslate plugin caused problems on updating
 v. 3.7.3 19 May 2014 sortorder now gets set at the same time as entries are imported
