@@ -860,12 +860,14 @@ function setInitialLayout() {
 function renderAllTree(nodeObj, parent) {
   var i=0;
   nodeObj.renderOb(parent)
-  if (supportsDeferral)
+  //first option works with only one div domRoot 
+  //if (supportsDeferral)
     for (i=nodeObj.nChildren-1; i>=0; i--) 
       renderAllTree(nodeObj.children[i], nodeObj.navObj)
-  else
+  /* else
     for (i=0 ; i < nodeObj.nChildren; i++) 
       renderAllTree(nodeObj.children[i], null)
+   */
 }
 
 function hideWholeTree(nodeObj, hideThisOne, nodeObjMove) {
@@ -1151,7 +1153,7 @@ function initializeDocument()
     if (browserVersion != 0 && !STARTALLOPEN)
       hideWholeTree(foldersTree, false, 0)
   }
-
+  
   setInitialLayout()
 
   if (PRESERVESTATE && GetCookie('highlightedTreeviewLink')!=null  && GetCookie('highlightedTreeviewLink')!="") {
