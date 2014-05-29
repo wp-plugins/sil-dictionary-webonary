@@ -141,10 +141,15 @@ function add_footer()
 	if(get_option('publicationStatus'))
 	{
 		$publicationStatus = get_option('publicationStatus');
-		if(is_front_page() && $publicationStatus > 0) {			
+		if(is_front_page() && $publicationStatus > 0) {
+
+			$language = "";
+			if (function_exists('qtrans_getLanguage')) {
+				$language = qtrans_getLanguage();
+			}
 		?>
 		
-		<div align=center><img src="<?php getDictStageImage($publicationStatus, qtrans_getLanguage()); ?>" style="padding: 5px; max-width: 100%;"></div>
+		<div align=center><img src="<?php getDictStageImage($publicationStatus, $language); ?>" style="padding: 5px; max-width: 100%;"></div>
 	<?php 
 		}
 	}
