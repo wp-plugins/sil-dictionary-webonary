@@ -17,11 +17,11 @@
 // don't load directly
 if ( ! defined('ABSPATH') )
 	die( '-1' );
-
+/*
 // Check to make sure we can even load an importer.
 if ( ! defined( 'WP_LOAD_IMPORTERS' ) )
     return;
-
+*/
 // Include the WordPress Importer.
 require_once ABSPATH . 'wp-admin/includes/import.php';
 
@@ -41,7 +41,9 @@ if ( ! class_exists( 'WP_Importer' ) )
  * Importer class
  */
 class sil_pathway_xhtml_Import extends WP_Importer {
-
+	
+	public $api;
+	
 	/*
 	 * Table and taxonomy attributes
 	 */
@@ -146,7 +148,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$doc->loadXML($post->post_content);
 					$xpath = new DOMXPath($doc);
 
-					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Converting Links</strong><br>");
+					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "Converting Links");
 				
 					$this->convert_fields_to_links($post->ID, $doc, $xpath);
 
@@ -239,9 +241,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @since 3.0
 	 */
 
-	function getArrFieldQueries()
+	function getArrFieldQueries($step = 0)
 	{
-		if($_GET['step'] >= 2)
+		if($_GET['step'] >= 2 || $step >= 2)
 		{
 			$querystart = "//span";
 		}
@@ -499,21 +501,26 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
 					$wpdb->query( $sql );
 				}
-				
+							
 				$doc = new DomDocument();
 				$doc->preserveWhiteSpace = false;
 				$doc->loadXML($post->post_content);
 				
 				$xpath = new DOMXPath($doc);
+				$xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 
-				$arrFieldQueries = $this->getArrFieldQueries();
+				if($this->api)
+				{
+					$step = 2;
+				}
+				$arrFieldQueries = $this->getArrFieldQueries($step);
 				
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
-				
+												
+				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "Step 2 of 2: Indexing Search Strings");
+								
 				if(isset($headword) && $post->post_parent == 0)
-				{
-					$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "<strong>Step 2 of 2: Indexing Search Strings</strong><br>");
-				
+				{				
 					//import headword
 					$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
 					//sub headwords
@@ -578,16 +585,30 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 *
 	 * @return <type>
 	 */
-	function import_xhtml( $xhtml_file ) {
+	function import_xhtml( $xhtml_file, $api = false ) {
 		global $wpdb;
-
-		// Some of these variables could eventually become user options.		
-		$xhtml_file = realpath($xhtml_file);
+		
+		$this->api = $api;
+		
+		// Some of these variables could eventually become user options.
 		$this->dom = new DOMDocument('1.0', 'utf-8');
-		$ret_val = $this->dom->load($xhtml_file);
+		if($api)
+		{	
+			$this->dom->preserveWhiteSpace = false;
+			$this->dom->loadXML($xhtml_file);
+		}
+		else 
+		{
+			$xhtml_file = realpath($xhtml_file);
+			
+			$ret_val = $this->dom->load($xhtml_file);
+		}
+
 		$this->dom_xpath = new DOMXPath($this->dom);
 		$this->dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
+		
 		/*
+		 * 
 		 * Load the Writing Systems (Languages)
 		 */
 		if ( taxonomy_exists( $this->writing_system_taxonomy ) )
@@ -595,7 +616,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		/*
 		 * Import
 		 */
-		if ( $_POST['filetype'] == 'configured') {
+		if ( $_POST['filetype'] == 'configured' || $api == true) {
 			//  Make sure we're not working on a reversal file.
 			$reversals = $this->dom_xpath->query( '(//xhtml:span[contains(@class, "reversal-form")])[1]' );
 			if ( $reversals->length > 0 )
@@ -605,12 +626,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			foreach($arrFieldQueries as $fieldQuery)
 			{			
 				$fields = $this->dom_xpath->query($fieldQuery);
-				//echo $fieldQuery . " " . $fields->length . "<br>";
 				if($fields->length == 0 && isset($_POST['chkShowDebug']))
 				{
 					echo "No entries found for the query " . $fieldQuery . "<br>";
 				}
-			}						
+			}
 			$this->import_xhtml_entries();
 		}
 		elseif ( $_POST['filetype'] == 'reversal')
@@ -787,7 +807,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				/*
 				 * Show progresss to the user.
 				 */
-				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "<strong>Step 1 of 2: Importing Post Entries</strong><br>" );
+				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing Post Entries" );
 			} // foreach ( $headwords as $headword )
 			
 			$entry_counter++;
@@ -965,7 +985,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				} // foreach ( $links as $link )
 			}
 			$entrycount++;
-			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "<strong>Step 1 of 2: Please wait... converting FLEx links for Wordpress.</strong><br>");
+			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "Step 1 of 2: Please wait... converting FLEx links for Wordpress.");
 			
 		} //foreach $arrPosts as $post
 	} // function convert_fieldworks_links_to_wordpress()
@@ -1100,7 +1120,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$sql = "UPDATE $wpdb->posts " .
 		" SET post_content = '" . addslashes($entry_xml) . "'" . 
 		" WHERE ID = " . $post_id;
-				 		
+						 		
 		$wpdb->query( $sql );
 		
 		return $entry;
@@ -1116,24 +1136,35 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 	function import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, $msg = "" ) {		
 		flush();
-		?>
-		<SCRIPT type="text/javascript">//<![CDATA[
-		d = document.getElementById("flushme");
-		info = "<?php echo $msg; ?>";
-		<?php
-		if($entries_count >= 1)
+		if($this->api)
+		{
+			if($entry_counter == 1)
+			{
+				echo $msg . "\n";
+			}
+			echo $entry_counter . " of " . $entries_count . " entries: " . $headword_text . "\n";
+		}
+		else 
 		{
 		?>
-			info += "<?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
-		<?php 
-		}
-		?>
-		//info += "<br>";
-		//info += "Memory Usage: <?php echo memory_get_usage() . " bytes"; ?>";
-		
-		d.innerHTML = info;
-		//]]></SCRIPT>
-		<?php		
+			<SCRIPT type="text/javascript">//<![CDATA[
+			d = document.getElementById("flushme");
+			info = "<strong><?php echo $msg; ?></strong><br>";
+			<?php
+			if($entries_count >= 1)
+			{
+			?>
+				info += "<?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+			<?php 
+			}
+			?>
+			//info += "<br>";
+			//info += "Memory Usage: <?php echo memory_get_usage() . " bytes"; ?>";
+			
+			d.innerHTML = info;
+			//]]></SCRIPT>
+		<?php	
+		}	
 	}
 
 	//-----------------------------------------------------------------------------//
@@ -1154,6 +1185,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//$fields = $this->dom_xpath->query( $query, $entry );
 
 		$xpath = new DOMXPath($doc);
+		$xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 				
 		$fields = $xpath->query($query);
 		
@@ -1383,6 +1415,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//echo $sd_numbers->item($sc)->textContent . " " . $sd_name->textContent . " " . $sd_name->getAttribute("lang") . "<br>";
 				$semantic_domain_language = $sd_name->getAttribute("lang");
 				$domain_name = str_replace("]", "", $sd_name->textContent);
+				$sd_number_text = str_replace("[", "", $sd_numbers->item($sc)->textContent);
 				$domain_class = $sd_name->getAttribute("class");
 							
 				$arrTerm = wp_insert_term(
@@ -1390,14 +1423,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$this->semantic_domains_taxonomy,
 					array(
 						'description' => trim($domain_name),
-						'slug' => $sd_numbers->item($sc)->textContent 
+						'slug' => $sd_number_text 
 					));		
 														
 					$termid = $wpdb->get_var( "
 						SELECT term_id
 						FROM $wpdb->terms
-						WHERE slug = '" . str_replace(".", "-", $sd_numbers->item($sc)->textContent) . "'");
-
+						WHERE slug = '" . str_replace(".", "-", $sd_number_text) . "'");
+					
 				if($termid == NULL || $termid == 0)	
 				{	
 					if (array_key_exists('term_id', $arrTerm))
@@ -1410,7 +1443,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);
 				
-				$wpdb->query( "INSERT INTO $wpdb->term_relationships (object_id, term_taxonomy_id) VALUES (" . $post_id . ", " . $termid . ") ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" );
+				if(isset($termid))
+				{
+					$wpdb->query( "INSERT INTO $wpdb->term_relationships (object_id, term_taxonomy_id) VALUES (" . $post_id . ", " . $termid . ") ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" );
+				}
 				/*			
 				if($convertToLinks == true)
 				{
