@@ -752,7 +752,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$headword_text = $headword->textContent;
 				
 				$flexid = $entry->getAttribute("id");
-				
+								
 				if(strlen(trim($flexid)) == 0)
 				{
 					$flexid = $headword_text;
@@ -784,7 +784,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					$sql = $wpdb->prepare(		
 					"INSERT INTO ". $wpdb->posts . " (post_title, post_content, post_status, post_parent, post_name, comment_status)
-					VALUES ('%s', '%s', 'publish', %d, %d, '%s')",
+					VALUES ('%s', '%s', 'publish', %d, '%s', '%s')",
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
 					
 					$wpdb->query( $sql );
@@ -796,7 +796,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				else
 				{
 					$sql = $wpdb->prepare(
-					"UPDATE " . $wpdb->posts . " SET post_title = '%s', post_content = '%s', post_status = 'publish', pinged='', post_parent=%d, post_name=%d, comment_status='%s' WHERE ID = %d", 
+					"UPDATE " . $wpdb->posts . " SET post_title = '%s', post_content = '%s', post_status = 'publish', pinged='', post_parent=%d, post_name='%s', comment_status='%s' WHERE ID = %d", 
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status'), $post_id);
 
 					$wpdb->query( $sql );
