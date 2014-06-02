@@ -9,7 +9,7 @@ Author: SIL International
 Author URI: http://www.sil.org/
 Text Domain: sil_dictionary
 Domain Path: /lang/
-Version: v. 3.7.8
+Version: v. 3.8.0
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
@@ -52,6 +52,8 @@ require_once( dirname( __FILE__ ) . '/include/searchform_func.php' );
 require_once( dirname( __FILE__ ) . '/include/browseview_func.php' );
 // Adds functiionality to save the post_name in comment_type and resync comments
 require_once( dirname( __FILE__ ) . '/include/comments_func.php' );
+// API for FLEx
+require_once( dirname( __FILE__ ) . '/include/api.php' );
 
 /*
  * Infrastructure hooks
