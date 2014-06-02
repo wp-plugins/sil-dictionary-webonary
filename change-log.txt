@@ -1,3 +1,4 @@
+v. 3.8.1 02 June 2014 importing post_name mistanly was inserted as number instead of a string
 v. 3.8.0 02 June 2014 added a first version of the FLEx API & fixed some bugs I found 
 v. 3.7.8 28 Mai 2014 fixed problem with DictStat image not displaying
 v. 3.7.7 28 Mai 2014 fixed problem with not showing category browse view correctly in Chrome (in file ftiens4.js)
