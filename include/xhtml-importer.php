@@ -1329,9 +1329,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$sql .= " AND language_code <> '" . $langcode . "'";
 		}
-		
-		echo $sql . "<br>";
-			
+					
 		$row = $wpdb->get_row( $sql );
 		
 		$postid = 0;
