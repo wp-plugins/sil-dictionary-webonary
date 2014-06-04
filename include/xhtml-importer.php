@@ -240,7 +240,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 *
 	 * @since 3.0
 	 */
-
 	function getArrFieldQueries($step = 0)
 	{
 		if($_GET['step'] >= 2 || $step >= 2)
@@ -758,7 +757,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$flexid = $headword_text;
 				}
 
-				$entry_xml = $this->dom->saveXML($entry );	
+				$entry_xml = $this->dom->saveXML($entry, LIBXML_NOEMPTYTAG);	
 				
 				$entry_xml = str_replace("'","&#39;",$entry_xml);
 				
@@ -786,7 +785,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					"INSERT INTO ". $wpdb->posts . " (post_title, post_content, post_status, post_parent, post_name, comment_status)
 					VALUES ('%s', '%s', 'publish', %d, '%s', '%s')",
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
-					
+										
 					$wpdb->query( $sql );
 
 					$post_id = mysql_insert_id();
