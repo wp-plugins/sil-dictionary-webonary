@@ -776,7 +776,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 								
 				//$post_id = $this->get_post_id( $flexid );
 				//$post_id = $this->get_post_id_bytitle( $headword_text, $headword_language, $subid, true);
-				$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "'");
+				$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "' collate utf8_bin");
 				$post_id_exists = $post_id != NULL;
 
 				//$post_id = wp_insert_post( $post );
