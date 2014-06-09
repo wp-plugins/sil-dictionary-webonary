@@ -759,7 +759,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$entry_xml = $this->dom->saveXML($entry, LIBXML_NOEMPTYTAG);	
 				
-				$entry_xml = str_replace("'","&#39;",$entry_xml);
+				$entry_xml = addslashes($entry_xml);
+				$entry_xml = stripslashes($entry_xml);
+				//$entry_xml = str_replace("'","&#39;",$entry_xml);
 				
 				$post_parent = 0;
 				if (!preg_match("/class=\"entry\"/i", $entry_xml) && !preg_match("/class=\"headword-minor\"/i", $entry_xml))
@@ -787,9 +789,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
 										
 					$wpdb->query( $sql );
-
-					$post_id = mysql_insert_id();
 					
+					$post_id = mysql_insert_id();
+					if($post_id == 0)
+					{
+						$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "'");
+					}					
+						
 					wp_set_object_terms( $post_id, "webonary", 'category' );
 				}
 				else

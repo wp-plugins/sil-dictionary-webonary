@@ -129,8 +129,8 @@ function sil_dictionary_custom_join($join) {
 				" (SELECT post_id, language_code, MAX(relevance) AS relevance, search_strings, sortorder " .
 				"FROM " . $search_table_name .
 				$subquery_where .
-				"GROUP BY post_id, language_code, search_strings " .
-				"ORDER BY relevance DESC) ";
+				" GROUP BY post_id, language_code, search_strings " .
+				" ORDER BY relevance DESC) ";
 		
 			$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
 		//}
