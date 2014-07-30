@@ -1,3 +1,4 @@
+v. 3.8.7 30 July 2014 added a note about the theme in the wordpress.org installation section
 v. 3.8.6 09 June 2014 added collate utf8_bin when searching if post exists before inserting
 v. 3.8.5 09 June 2014 another server doesn't handle quotes like webonary.org. Fixed this + alternative for finding last inserted id
 v. 3.8.4 04 June 2014 added LIBXML_NOEMPTYTAG to save_xml, so that empty tags get closed

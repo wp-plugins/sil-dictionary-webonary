@@ -40,6 +40,7 @@ Installation Instructions:
 
 1. Download the plugin and unzip it.
 2. Go to the Plugins page in your WordPress Administration area, find the plugin, and click 'Activate'.
+3. We highly recommend you use our customized theme "Webonary zeeDisplay" which you can download here: http://www.webonary.org/files/webonary-zeedisplay.zip 
 	
 == Known Issues ==
 
@@ -48,11 +49,11 @@ Installation Instructions:
 	max_execution_time
 	
 == Frequently Asked Questions ==
-For FAQ's please see http://software.webonary.org
+For FAQ's please see http://www.webonary.org
 
 == Screenshots ==
 
 == Support ==
 
 Language Software Development, SIL International
-http://software.webonary.org
+http://www.webonary.org
