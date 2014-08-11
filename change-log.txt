@@ -1,3 +1,4 @@
+v. 3.8.9 11 August 2014 fixed apostrophe problem for semantic domains
 v. 3.8.8 11 August 2014 added French semantic domains
 v. 3.8.7 30 July 2014 added a note about the theme in the wordpress.org installation section
 v. 3.8.6 09 June 2014 added collate utf8_bin when searching if post exists before inserting
