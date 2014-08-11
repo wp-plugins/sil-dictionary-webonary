@@ -38,7 +38,7 @@
 function Folder(folderDescription, hreference) //constructor 
 { 
   //constant data 
-  this.desc = folderDescription; 
+  this.desc = folderDescription
   this.hreference = hreference;
   this.id = -1;
   this.navObj = 0;
@@ -297,10 +297,10 @@ function linkFolderHTML(isTextLink)
 
   if (this.hreference) 
   { 
-	searchlink = "?semdomain=" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "&semnumber=" + this.desc.match(/\d[.]/g).join(''); // + "&nodeid=" + this.id; 
+	searchlink = "?semdomain=" + this.desc.replace(/'/g, '&lsquo;').replace(/[0-9]|[.]/g, '').trim() + "&semnumber=" + this.desc.match(/\d[.]/g).join(''); // + "&nodeid=" + this.id; 
 	  //searchlink = "#";
 	if (USEFRAMES)
-	  docW = docW + "<a class=categorylink onclick=\"displayEntry('" + this.desc.replace(/[0-9]|[.]/g, '').trim() + "', '" + this.desc.match(/\d[.]/g).join('') + "');\" href='" + searchlink + "' "
+	  docW = docW + "<a class=categorylink onclick=\"displayEntry('" + this.desc.replace(/'/g, '\'').replace(/[0-9]|[.]/g, '').trim() + "', '" + this.desc.match(/\d[.]/g).join('') + "');\" href='" + searchlink + "' "
 	else
 	  docW = docW + "<a href='" + this.hreference + "' TARGET=_top "
         
