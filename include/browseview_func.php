@@ -4,6 +4,13 @@ function categories_func( $atts )
 	$display = "";
 	
 	$postsperpage = 25;
+	
+	$qTransLang = "en";
+	
+	if(qtrans_getLanguage() != "en")
+	{
+		$qTransLang = qtrans_getLanguage();
+	}
 ?>	
 	<style>
 	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold;}
@@ -26,7 +33,7 @@ function categories_func( $atts )
 
 	<!-- Execution of the code that actually builds the specific tree.
      The variable foldersTree creates its structure with calls to gFld, insFld, and insDoc -->
-	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes.js" type="text/javascript"></script>
+	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes_<?php echo $qTransLang; ?>.js" type="text/javascript"></script>
 
 	<!-- Build the browser's objects and display default view of the tree. -->
 	<script language="JavaScript">
