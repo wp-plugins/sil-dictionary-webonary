@@ -1,3 +1,4 @@
+v. 3.9.0 15 August 2014 changed publication status images (color) 
 v. 3.8.9 11 August 2014 fixed apostrophe problem for semantic domains
 v. 3.8.8 11 August 2014 added French semantic domains
 v. 3.8.7 30 July 2014 added a note about the theme in the wordpress.org installation section
