@@ -305,14 +305,14 @@ function reversalindex($display, $chosenLetter, $langcode)
 	}
 	$arrAlphabet = getReversalEntries($chosenLetter, $page, $langcode);
 	
-	$display .=  "<div align=center>";
+	$display .=  "<div align=center id=searchresults>";
 	$display .= "<h1>" . $chosenLetter . "</h1><br>";
 
 	$background = "even";
 	$count = 0;
 	foreach($arrAlphabet as $alphabet)
 	{
-		$display .=  "<div id=searchresult class=" . $background . ">";	
+		$display .=  "<div id=searchresult class=" . $background . " style=\"clear:both;\">";	
 			$display .=  "<div id=englishcol>";
 
 			if($alphabet->English != $englishWord) 
@@ -323,7 +323,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 			 $display .=  "</div>";
 			$display .=  "<div id=vernacularcol><a href=\"?s=" . trim($alphabet->Vernacular)  . "&search=Search&tax=-1&partialsearch=1\">" . $alphabet->Vernacular . "</a></div>";
 		$display .=  "</div>";
-		$display .=  "<div style=clear:both></div>";
+		//$display .=  "<div style=clear:both></div>";
 		
 		if($background == "even")
 		{
@@ -350,6 +350,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 		$totalEntries = $_GET['totalEntries'];
 	}
 
+	$display .=  "<div style=clear:both></div>";
 	$display .= displayPagenumbers($chosenLetter, $totalEntries, 50, $languagecode);
 
 	$display .=  "</div><br>";
