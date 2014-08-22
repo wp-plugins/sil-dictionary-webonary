@@ -1,3 +1,4 @@
+v. 3.9.3 22 August 2014 fixed category bug if qTranslate wasn't enabled and updated French semantic domain translations
 v. 3.9.2 21 August 2014 added id "searchresults" to reversal browse view 
 v. 3.9.1 19 August 2014 added French publication status images
 v. 3.9.0 15 August 2014 changed publication status images (color) 
