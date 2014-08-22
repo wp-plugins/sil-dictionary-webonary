@@ -7,9 +7,12 @@ function categories_func( $atts )
 	
 	$qTransLang = "en";
 	
-	if(qtrans_getLanguage() != "en")
+	if (function_exists('qtrans_init'))
 	{
-		$qTransLang = qtrans_getLanguage();
+		if(qtrans_getLanguage() != "en")
+		{
+			$qTransLang = qtrans_getLanguage();
+		}
 	}
 ?>	
 	<style>
