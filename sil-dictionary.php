@@ -1,15 +1,15 @@
 <?php
 
 /*
-Plugin Name: SIL Dictionary
-Plugin URI: http://software.webonary.org
+Plugin Name: Webonary (SIL Dictionary)
+Plugin URI: http://www.webonary.org
 Description: Webonary gives language groups the ability to put their bilingual or multilingual dictionaries on the web with a minimum of technical help.
 The SIL Dictionary plugin has several components. It includes a dashboard, an import for XHTML (export from Fieldworks Language Explorer), and multilingual dictionary search.
 Author: SIL International
 Author URI: http://www.sil.org/
 Text Domain: sil_dictionary
 Domain Path: /lang/
-Version: v. 3.9.3
+Version: v. 3.9.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
