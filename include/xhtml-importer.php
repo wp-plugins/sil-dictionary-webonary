@@ -1433,7 +1433,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						SELECT term_id
 						FROM $wpdb->terms
 						WHERE slug = '" . str_replace(".", "-", $sd_number_text) . "'");
-					
+										
 				if($termid == NULL || $termid == 0)	
 				{	
 					if (array_key_exists('term_id', $arrTerm))

@@ -260,12 +260,14 @@ add_shortcode( 'reversalindex2', 'reversalalphabet_func' );
 
 function reversalalphabet_func($atts)
 {
+	$alphas = explode(",",  get_option('reversal2_alphabet'));
+	
 	if(isset($_GET['letter']))
 	{
 		$chosenLetter = stripslashes($_GET['letter']); 
 	}
 	else {
-		$chosenLetter = "a"; 
+		$chosenLetter = stripslashes($alphas[0]); 
 	}
 		
 	$alphas = explode(",",  get_option('reversal2_alphabet'));
