@@ -162,6 +162,13 @@ function user_input() {
 					<option value=6 <?php selected(get_option('publicationStatus'), 6); ?>><?php _e('Formally published'); ?></option>
 				</select>
 				<p>
+				<b><?php _e('Search Options:'); ?></b>
+				<p>
+				<input name="include_partial_words" type="checkbox" value="1"
+							<?php checked('1', get_option('include_partial_words')); ?> />
+							<?php _e('Always include searching through partial words.'); ?>
+				<p>
+				<h3>Browse Views</h3>
 				<?php 
 				if(count($arrLanguageCodes) == 0)
 				{
@@ -189,7 +196,7 @@ function user_input() {
 				<p>			
 				<b><?php _e('Reversal Indexes:'); ?></b>
 				<p>
-				<?php _e('Main reversal index code (usually English):'); ?>
+				<?php _e('Main reversal index code:'); ?>
 				<select id=reversalLangcode name="reversal_langcode" onchange="getLanguageName('reversalLangcode', 'reversalName');">
 					<option value=""></option>
 					<?php
@@ -202,6 +209,31 @@ function user_input() {
 				</select>
 				<?php _e('Language Name:'); ?> <input id=reversalName type="text" name="txtReversalName" value="<?php echo $arrLanguageCodes[$k]->name; ?>">
 				<p>
+				<?php 
+				if(strlen(trim(stripslashes(get_option('reversal1_alphabet')))) == 0)
+				{
+					$reversal1alphabet = "";
+					$alphas = range('a', 'z');
+					$i = 1;
+					foreach($alphas as $letter)
+					{
+						$reversal1alphabet .= $letter;
+						if($i != count($alphas))
+						{
+							$reversal1alphabet .= ",";
+						}
+						$i++;
+					} 
+				}
+				else
+				{
+					$reversal1alphabet = stripslashes(get_option('reversal1_alphabet'));
+				}
+				?>
+				<?php _e('Main Reversal Index Alphabet:'); ?>
+				<input name="reversal1_alphabet" type="text" size=50 value="<?php echo $reversal1alphabet; ?>" />
+				<?php _e('(Letters seperated by comma)'); ?>
+				<hr>
 				 <i><?php _e('If you have a second reversal index, enter the information here:'); ?></i>
 				 <p>
 				<?php _e('Secondary reversal index code:'); ?>
@@ -220,12 +252,6 @@ function user_input() {
 				<?php _e('Secondary Reversal Index Alphabet:'); ?>
 				<input name="reversal2_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('reversal2_alphabet')); ?>" />
 				<?php _e('(Letters seperated by comma)'); ?>
-				<p>
-				<b><?php _e('Search Options:'); ?></b>
-				<p>
-				<input name="include_partial_words" type="checkbox" value="1"
-							<?php checked('1', get_option('include_partial_words')); ?> />
-							<?php _e('Always include searching through partial words.'); ?>
 				<p>
 				<input type="submit" name="save_settings" value="<?php _e('Save', 'sil_dictionary'); ?>">
 				</p>
@@ -275,6 +301,7 @@ function run_user_action() {
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
     	update_option("reversal_langcode", $_POST['reversal_langcode']);
+    	update_option("reversal1_alphabet", $_POST['reversal1_alphabet']);
     	update_option("reversal2_alphabet", $_POST['reversal2_alphabet']);
     	update_option("reversal2_langcode", $_POST['reversal2_langcode']);
     	

@@ -210,27 +210,34 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 	return $display;
 }
 
-function englishalphabet_func( $atts ) {
+function englishalphabet_func( $atts, $content, $tag ) {
 	
-	$languagecode = "en";
-	
-	if(isset($_GET['letter']))
+	if(strlen(trim(get_option('reversal1_alphabet'))) == 0)
 	{
-		$chosenLetter = $_GET['letter']; 
+		$languagecode = "en";
+		
+		if(isset($_GET['letter']))
+		{
+			$chosenLetter = $_GET['letter']; 
+		}
+		else {
+			$chosenLetter = "a"; 
+		}
+		
+		$alphas = range('a', 'z');
+		$display = displayAlphabet($alphas, $languagecode);
+		
+		$display = reversalindex($display, $chosenLetter, $languagecode);
 	}
-	else {
-		$chosenLetter = "a"; 
-	}
-	
-	$alphas = range('a', 'z');
-	$display = displayAlphabet($alphas, $languagecode);
-	
-	$display = reversalindex($display, $chosenLetter, $languagecode);
+	else
+	{
+		$display = reversalalphabet_func(null, "", "reversalindex1");
+	} 
 		
  return $display;
 }
 
-add_shortcode( 'englishalphabet', 'englishalphabet_func' );
+add_shortcode( 'englishalphabet', 'englishalphabet_func');
  
 function getReversalEntries($letter, $page, $reversalLangcode)
 {
@@ -256,11 +263,18 @@ function getReversalEntries($letter, $page, $reversalLangcode)
 	return $arrAlphabet;
 }
 
+add_shortcode( 'reversalindex1', 'reversalalphabet_func' );
 add_shortcode( 'reversalindex2', 'reversalalphabet_func' );
 
-function reversalalphabet_func($atts)
+function reversalalphabet_func($atts, $content, $tag)
 {
-	$alphas = explode(",",  get_option('reversal2_alphabet'));
+	$reversalnr = 1;
+	if($tag != "reversalindex1")
+	{
+		$reversalnr = 2;
+	}
+	
+	$alphas = explode(",",  get_option('reversal'. $reversalnr . '_alphabet'));
 	
 	if(isset($_GET['letter']))
 	{
@@ -270,10 +284,10 @@ function reversalalphabet_func($atts)
 		$chosenLetter = stripslashes($alphas[0]); 
 	}
 		
-	$alphas = explode(",",  get_option('reversal2_alphabet'));
-	$display = displayAlphabet($alphas, get_option('reversal2_langcode'));
+	$alphas = explode(",",  get_option('reversal' . $reversalnr . '_alphabet'));
+	$display = displayAlphabet($alphas, get_option('reversal' . $reversalnr . '_langcode'));
 	
-	$display = reversalindex($display, $chosenLetter, get_option('reversal2_langcode'));
+	$display = reversalindex($display, $chosenLetter, get_option('reversal' . $reversalnr . '_langcode'));
 		
 	return $display;
 } 
