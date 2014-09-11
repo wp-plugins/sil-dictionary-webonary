@@ -1,4 +1,5 @@
-v. 3.9.4 25 Agust 2014 renamed plugin name to Webonary
+v. 3.9.5 11 September 2014 fixed issue of letters starting with a (even if a doesn't exist) in reversal view
+v. 3.9.4 25 August 2014 renamed plugin name to Webonary
 v. 3.9.3 22 August 2014 fixed category bug if qTranslate wasn't enabled and updated French semantic domain translations
 v. 3.9.2 21 August 2014 added id "searchresults" to reversal browse view 
 v. 3.9.1 19 August 2014 added French publication status images
