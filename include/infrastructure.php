@@ -22,12 +22,14 @@ if ( ! defined('ABSPATH') )
 * Set up the SIL Dictionary in WordPress Dashboard Tools
  */
 function add_admin_menu() {
+	add_menu_page( "Webonary", "Webonary", true, "webonary", "sil_dictionary_main",  get_bloginfo('wpurl') . "/wp-content/plugins/sil-dictionary-webonary/images/webonary-icon.png", 76 );
+	
     add_management_page(
-		__( 'SIL Dictionary', 'sil_dictionary' ), // page title
-        __( 'SIL Dictionary', 'sil_dictionary' ), // menu title
+		__( 'SIL Dictionary', 'sil_old_menu' ), // page title
+        __( 'SIL Dictionary', 'sil_old_menu' ), // menu title
 		SIL_DICTIONARY_USER_CAPABILITY, // user capability needed to run the menu
         __FILE__, // slug name
-		'sil_dictionary_main' ); // callback function
+		'sil_old_menu' ); // callback function
 }
 
 function ajaxlanguage()
@@ -80,6 +82,9 @@ function sil_dictionary_main() {
 	user_input();
 }
 
+function sil_old_menu() {
+	echo "<p>The menu name has been renamed to 'Webonary' and can now be found between Tools and Settings.<br><a href=\"admin.php?page=webonary\">Click here</a> to access the Webonary settings.</p>";
+}
 //---------------------------------------------------------------------------//
 
 /**
@@ -112,35 +117,32 @@ function user_input() {
 	<div class="wrap">
 		<div id="icon-tools" class="icon32"></div>
 		<form method="post" action="">
-			<h2><?php _e( 'SIL Dictionary', 'sil_dictionary' ); ?></h2>
+			<h2><?php _e( 'Webonary', 'webonary' ); ?></h2>
 			<?php
 			/*
 			 * Standard UI
 			 */
 			if ( empty( $_POST['delete_data'] ) ) {
 				?>
-				<p><?php _e('SIL Dictionary provides the admininstration tools and framework for using WordPress for dictionaries.', 'sil_dictionary'); ?></p>
+				<?php _e('Webonary provides the admininstration tools and framework for using WordPress for dictionaries.<br>See <a href="http://www.webonary.org/support" target="_blank">Webonary Support</a> for help.', 'sil_dictionary'); ?>
 				<h3><?php _e( 'Import Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('You can find the <a href="admin.php?import=pathway-xhtml">SIL FLEX XHTML importer</a> by clicking on Import under the Tools menu.', 'sil_dictionary'); ?></p>
+				<p><?php _e('Each dictionary entry is stored in a "post." You will find the entries in the Posts menu.', 'sil_dictionary'); ?></p>
 
-				<h3><?php _e( 'Edit Data', 'sil_dictionary' ); ?></h3>
-				<p><?php _e('Each dictionary entry is stored in a "post." Individual entries can be added, edited, and deleted by going to the Posts menu and selecting the Posts menu item.', 'sil_dictionary'); ?></p>
-				<p><?php _e('You can edit also lists. For example, to edit your list of languages, go to Posts and select Language.', 'sil_dictionary'); ?></p>
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
-				<p><?php _e('Lists are kept unless you check the following:'); ?></p>
-				<p>
+				<p><?php _e('Lists are kept unless you check the following:'); ?><br>
 					<label for="delete_taxonomies">
 						<input name="delete_taxonomies" type="checkbox" id="delete_taxonomies" value="1"
 							<?php checked('1', get_option('delete_taxonomies')); ?> />
-						<?php _e('Delete lists such as Part of Speech?') ?><br>
+						<?php _e('Delete lists such as Part of Speech?') ?>
+						<?php /*
 						<input name="delete_allposts" type="checkbox" id="delete_allposts" value="1"
 							<?php checked('1', get_option('delete_allposts')); ?> />
-						<?php _e('Delete all posts, including the ones not in category "webonary" (legacy function)') ?><br>
-					</label><br />					 
+						<?php _e('Delete all posts, including the ones not in category "webonary" (legacy function)') */ ?>
+					</label>					 
 					<label for="delete_pages">
 						<!--<input name="delete_pages" type="checkbox" id="delete_pages" value="1"
 							<?php checked('1', get_option('delete_pages')); ?> />-->
-						<?php _e('Go to "Pages" if you want to delete a page you created.') ?><br>
 					</label><br />					 
 					<?php _e('Are you sure you want to delete the dictionary data?', 'sil_dictionary'); ?>
 					<input type="submit" name="delete_data" value="<?php _e('Delete', 'sil_dictionary'); ?>">
