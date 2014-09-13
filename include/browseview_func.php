@@ -12,6 +12,10 @@ function categories_func( $atts )
 		if(qtrans_getLanguage() != "en")
 		{
 			$qTransLang = qtrans_getLanguage();
+			if(!file_exists($_SERVER['DOCUMENT_ROOT'] . "/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes_" . $qTransLang . ".js"))
+			{
+				$qTransLang = "en";
+			}
 		}
 	}
 ?>	

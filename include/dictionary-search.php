@@ -227,7 +227,7 @@ function sil_dictionary_custom_order_by($orderby) {
 	{
 		$orderby .= "menu_order ASC, post_title ASC";
 	}
-
+	
 	return $orderby;
 }
 
