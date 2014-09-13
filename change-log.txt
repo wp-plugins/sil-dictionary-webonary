@@ -1,3 +1,4 @@
+v. 3.9.8 13 September 2014 fixed problem with trying to load non-existent categoryNodes.js
 v. 3.9.7 11 September 2014 added reversalindex1 to browser settings (this replaces shortcode englishalphabet)
 v. 3.9.6 11 September 2014 added Webonary settings page to top-level menu	
 v. 3.9.5 11 September 2014 fixed issue of letters starting with a (even if a doesn't exist) in reversal view
