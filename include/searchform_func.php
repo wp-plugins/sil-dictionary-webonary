@@ -11,6 +11,7 @@ function searchform_init() {
 }
 
 function webonary_searchform() {
+	global $wpdb;
 ?>
 		 <form name="searchform" id="searchform" method="get" action="<?php bloginfo('url'); ?>">		 
 			<div class="normalSearch">
@@ -79,8 +80,11 @@ function webonary_searchform() {
 		<?php 
 		if(strlen(trim($_GET['s'])) > 0)
 		{
-			$sem_domains = get_terms( 'sil_semantic_domains', 'name__like=' .  trim($_GET['s']) .''); 		
-			if(count($sem_domains) > 0)
+			//$sem_domains = get_terms( 'sil_semantic_domains', 'name__like=' .  trim($_GET['s']) .'');
+			$query = "SELECT t.*, tt.* FROM " . $wpdb->terms . " AS t INNER JOIN " . $wpdb->term_taxonomy . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('sil_semantic_domains') AND t.name LIKE '%" . trim($_GET['s']) . "%' AND tt.count > 0 GROUP BY t.name ORDER BY t.name ASC";
+    		$sem_domains = $wpdb->get_results( $query );
+    		
+			if(count($sem_domains) > 0 && count($sem_domains) <= 10)
 			{
 				echo "<p>&nbsp;</p>";
 				echo "<strong>";
