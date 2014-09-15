@@ -1,3 +1,4 @@
+v. 4.0.0 15 September 2014 "Found in Semantic Domains" results now get grouped.
 v. 3.9.9 14 September 2014 added semantic domains for Nepali
 v. 3.9.8 13 September 2014 fixed problem with trying to load non-existent categoryNodes.js
 v. 3.9.7 11 September 2014 added reversalindex1 to browser settings (this replaces shortcode englishalphabet)
