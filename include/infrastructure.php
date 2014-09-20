@@ -197,12 +197,12 @@ function user_input() {
 				<b><?php _e('Reversal Indexes:'); ?></b>
 				<p>
 				<?php _e('Main reversal index code:'); ?>
-				<select id=reversalLangcode name="reversal_langcode" onchange="getLanguageName('reversalLangcode', 'reversalName');">
+				<select id=reversalLangcode name="reversal1_langcode" onchange="getLanguageName('reversalLangcode', 'reversalName');">
 					<option value=""></option>
 					<?php
 						$x = 0;
 						foreach($arrLanguageCodes as $languagecode) {?>
-						<option value="<?php echo $languagecode->language_code; ?>" <?php if(get_option('reversal_langcode') == $languagecode->language_code) { $k = $x; ?>selected<?php }?>><?php echo $languagecode->language_code; ?></option>
+						<option value="<?php echo $languagecode->language_code; ?>" <?php if(get_option('reversal1_langcode') == $languagecode->language_code) { $k = $x; ?>selected<?php }?>><?php echo $languagecode->language_code; ?></option>
 					<?php
 						$x++; 
 						} ?>
@@ -300,7 +300,7 @@ function run_user_action() {
     	update_option("include_partial_words", $_POST['include_partial_words']);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
-    	update_option("reversal_langcode", $_POST['reversal_langcode']);
+    	update_option("reversal1_langcode", $_POST['reversal1_langcode']);
     	update_option("reversal1_alphabet", $_POST['reversal1_alphabet']);
     	update_option("reversal2_alphabet", $_POST['reversal2_alphabet']);
     	update_option("reversal2_langcode", $_POST['reversal2_langcode']);
