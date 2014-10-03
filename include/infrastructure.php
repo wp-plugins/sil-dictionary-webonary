@@ -598,6 +598,8 @@ function set_options () {
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
 	
+	/*
+	 * setting the upload_path to blogs.dir will cause problems with newer versions of Wordpress and is unnessary
 	if ( is_multisite() )
 	{
 		$sql = "UPDATE " . $wpdb->prefix . "options " .
@@ -606,6 +608,7 @@ function set_options () {
 				
 		dbDelta( $sql );
 	}	
+	*/
 }
 
 function set_field_sortorder() {
