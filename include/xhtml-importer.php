@@ -104,7 +104,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$result = $this->upload_files('xhtml');
 				if (is_wp_error( $result ))
 					echo $result->get_error_message();
-				$xhtml_file = $result['file'];			
+				$xhtml_file = $result['file'];
 
 				// Get the CSS file
 				$result = $this->upload_files('css');
@@ -128,15 +128,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<?php
 				$this->index_searchstrings();
 				
-				$xhtml_file = $result['file'];	
+				$xhtml_file = $result['file'];
 				
 				$this->goodbye($xhtml_file, $css_file);
-				break;				
+				break;
 			case 3 :
 				?>
 				<DIV ID="flushme">converting links...</DIV>
-				<?php 
-				$arrPosts = $this->get_posts("indexed");			
+				<?php
+				$arrPosts = $this->get_posts("indexed");
 
 				$entry_counter = 1;
 				$entries_count = count($arrPosts);
@@ -159,7 +159,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				echo '<p>&nbsp;</p>';
 				echo '<p>After importing, go to <strong>Tools - <a href="../wp-admin/tools.php?page=sil-dictionary-webonary/include/infrastructure.php">SIL Dictionary</a></strong> to configure more settings.</p>';
 			?>
-			<?php	
+			<?php
 				break;
 			}
 			$this->footer();
@@ -183,7 +183,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	/**
 	 * Finish up.
 	 */
-	function goodbye($xhtml_file, $css_file){		
+	function goodbye($xhtml_file, $css_file){
 		
 		global $wpdb;
 
@@ -210,7 +210,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							echo '<input type="hidden" name="chkConvertToLinks" value=' . $_POST['chkConvertToLinks'] .'></input>';
 							echo '<input type="hidden" name="filetype" value="configured"></input>';
 						}
-					echo '</form>';	
+					echo '</form>';
 				echo '</p>';
 			}
 			if($_GET['step'] == 2 && $_POST['chkConvertToLinks'] > 0)
@@ -223,9 +223,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						{
 							echo '<input type="hidden" name="chkConvertToLinks" value=' . $_POST['chkConvertToLinks'] . '></input>';
 						}
-					echo '</form>';	
+					echo '</form>';
 				echo '</p>';
-			}				
+			}
 		}
 		else
 		{
@@ -246,7 +246,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$querystart = "//span";
 		}
-		else 
+		else
 		{
 			$querystart = ".//xhtml:span";
 		}
@@ -293,10 +293,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				document.getElementById("uploadCSS").style.visibility = 'visible';
 				document.getElementById("convertToLinks").style.visibility = 'visible';
 			}
-			function toggleReversal() {			    
-			    document.getElementById("uploadCSS").style.visibility = 'hidden';		   
+			function toggleReversal() {
+			    document.getElementById("uploadCSS").style.visibility = 'hidden';
 			    document.getElementById("convertToLinks").style.visibility = 'hidden';
-			}			
+			}
 			</script>
 			<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr(
 				wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=1", 'import-upload')); ?>">
@@ -319,7 +319,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			<p>
 				<input type="radio" name="filetype" value="configured" onChange="toggleConfigured();" CHECKED/> <?php esc_attr_e('Configured Dictionary'); ?><BR>
 				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /> <?php esc_attr_e('Reversal Index'); ?><BR>
-				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> *<?php esc_attr_e('Sort Order'); ?> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank">only if sort order is different than configured view</a><BR>				
+				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> *<?php esc_attr_e('Sort Order'); ?> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank">only if sort order is different than configured view</a><BR>
 			</p>
 			<div id="convertToLinks">
 				<select name="chkConvertToLinks">
@@ -329,7 +329,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				</select>
 				<?php esc_attr_e('(semantic domains always convert to links).'); ?>
 				<br>
-				<?php /* 
+				<?php /*
 				<input type="checkbox" name="chkShowDebug"> <?php esc_attr_e('Display debug messages'); ?></input>
 				*/ ?>
 			</div>
@@ -392,8 +392,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			return $file;
 
 		$url = $file['url'];
-		$type = $file['type'];				
-		$file = addslashes( $file['file'] );				
+		$type = $file['type'];
+		$file = addslashes( $file['file'] );
 		$filename = basename( $file );
 		
 		$info = pathinfo($file);
@@ -403,30 +403,30 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$upload_dir = wp_upload_dir();
 			//$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], get_bloginfo('template_directory'));
-			//$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $upload_dir['baseurl']);			
+			//$target_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $upload_dir['baseurl']);
 			//$target_path = $target_path . "/imported-with-xhtml.css";
 			$target_path = $upload_dir['path'] . "/imported-with-xhtml.css";
 			
 			//$from_path = $_SERVER['DOCUMENT_ROOT'] . "/wordpress/wp-content/uploads/" . date("Y") . "/" . date("m") . "/" . $filename;
 			//$from_path = str_replace('http://' . $_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'], $url);
 			
-			$from_path = $upload_dir['path'] . "/" . $filename;			
+			$from_path = $upload_dir['path'] . "/" . $filename;
 			
 			/*
 			if(file_exists($target_path))
-			{				
-				_e('The file imported-with-xhtml.css already exists in your upload folder. If you want to replace it, you have to delete it manually before you import a new file.');									
+			{
+				_e('The file imported-with-xhtml.css already exists in your upload folder. If you want to replace it, you have to delete it manually before you import a new file.');
 			}
 			*/
-			error_reporting(E_ALL);	
-			if(copy($from_path, $target_path)) {				
-			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css');			
+			error_reporting(E_ALL);
+			if(copy($from_path, $target_path)) {
+			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css');
 			} else{
-			    _e('There was an error uploading the file, please try again!');	
+			    _e('There was an error uploading the file, please try again!');
 			    echo "<br>";
 			    echo "From Path: " . $from_path . "<br>";
-			    echo "Target Path: " . $target_path;			    				    
-			}				
+			    echo "Target Path: " . $target_path;
+			}
 		}
 		
 		// Construct the object array
@@ -453,9 +453,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	//-----------------------------------------------------------------------------//
 
-	function index_searchstrings()
+	function index_searchstrings($api = false)
 	{
 		global $wpdb;
+		$this->api = $api;
 		
 		$search_table_exists = $wpdb->get_var( "show tables like '$this->search_table_name'" ) == $this->search_table_name;
 		$pos_taxonomy_exists = taxonomy_exists( $this->pos_taxonomy );
@@ -519,7 +520,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $post->post_title, "Step 2 of 2: Indexing Search Strings");
 								
 				if(isset($headword) && $post->post_parent == 0)
-				{				
+				{
 					//import headword
 					$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
 					//sub headwords
@@ -535,7 +536,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					//Translation of example sentences
 					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[6], $this->example_sentences_relevance);
 					//custom fields
-					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[7], $this->custom_field_relevance);					
+					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[7], $this->custom_field_relevance);
 					//variant forms
 					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[8], $this->variant_form_relevance);
 					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[9], $this->variant_form_relevance);
@@ -547,7 +548,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$subentry = true;
 				}
 				
-				$headword_text = trim($headword->textContent);	
+				$headword_text = trim($headword->textContent);
 				
 				//this is used for the browse view sort order
 				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $sortorder . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
@@ -592,11 +593,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// Some of these variables could eventually become user options.
 		$this->dom = new DOMDocument('1.0', 'utf-8');
 		if($api)
-		{	
+		{
 			$this->dom->preserveWhiteSpace = false;
 			$this->dom->loadXML($xhtml_file);
 		}
-		else 
+		else
 		{
 			$xhtml_file = realpath($xhtml_file);
 			
@@ -607,7 +608,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$this->dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 		
 		/*
-		 * 
+		 *
 		 * Load the Writing Systems (Languages)
 		 */
 		if ( taxonomy_exists( $this->writing_system_taxonomy ) )
@@ -623,7 +624,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			//inform the user about which fields are available
 			$arrFieldQueries = $this->getArrFieldQueries();
 			foreach($arrFieldQueries as $fieldQuery)
-			{			
+			{
 				$fields = $this->dom_xpath->query($fieldQuery);
 				if($fields->length == 0 && isset($_POST['chkShowDebug']))
 				{
@@ -720,8 +721,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
 		
-		if($entries->length == 0) 
-		{				
+		if($entries->length == 0)
+		{
 			echo "<div style=color:red>ERROR: No headwords found.</div><br>";
 			return;
 		}
@@ -757,7 +758,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$flexid = $headword_text;
 				}
 
-				$entry_xml = $this->dom->saveXML($entry, LIBXML_NOEMPTYTAG);	
+				$entry_xml = $this->dom->saveXML($entry, LIBXML_NOEMPTYTAG);
 				
 				$entry_xml = addslashes($entry_xml);
 				$entry_xml = stripslashes($entry_xml);
@@ -783,7 +784,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				
 				if($post_id == NULL)
 				{
-					$sql = $wpdb->prepare(		
+					$sql = $wpdb->prepare(
 					"INSERT INTO ". $wpdb->posts . " (post_title, post_content, post_status, post_parent, post_name, comment_status)
 					VALUES ('%s', '%s', 'publish', %d, '%s', '%s')",
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
@@ -794,14 +795,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					if($post_id == 0)
 					{
 						$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "'");
-					}					
+					}
 						
 					wp_set_object_terms( $post_id, "webonary", 'category' );
 				}
 				else
 				{
 					$sql = $wpdb->prepare(
-					"UPDATE " . $wpdb->posts . " SET post_title = '%s', post_content = '%s', post_status = 'publish', pinged='', post_parent=%d, post_name='%s', comment_status='%s' WHERE ID = %d", 
+					"UPDATE " . $wpdb->posts . " SET post_title = '%s', post_content = '%s', post_status = 'publish', pinged='', post_parent=%d, post_name='%s', comment_status='%s' WHERE ID = %d",
 					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status'), $post_id);
 
 					$wpdb->query( $sql );
@@ -848,7 +849,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					
 					$filename = "/audio/" . str_replace("\\", "/", trim($audiofile));
-					if (!file_exists($upload_dir['path'] . $filename)) 
+					if (!file_exists($upload_dir['path'] . $filename))
 					{
 						echo "file " .  $upload_dir['baseurl'] . $filename . " doesn't exist<br>";
 					}
@@ -864,9 +865,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					
 					$spanelement->appendChild($newelement);
 				}
-				$parent = $audio->parentNode;	
+				$parent = $audio->parentNode;
 				$parent->replaceChild($spanelement, $audio);
-			}									
+			}
 		} // foreach ( $audios as $audio )
 		return $entry;
 	}
@@ -882,7 +883,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		foreach ( $images as $image ) {
 			
 			$src = $image->getAttribute( "src" );
-			$upload_dir = wp_upload_dir();			
+			$upload_dir = wp_upload_dir();
 			$replaced_src = str_ireplace("pictures/", $upload_dir['baseurl'] . "/images/thumbnail/", $src);
 			$pic = str_ireplace("pictures/", "", $src);
 			
@@ -893,7 +894,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$newelement->appendChild($newimage);
 			$newelement->setAttribute("class", "image");
 			$newelement->setAttribute("href",  $upload_dir['baseurl'] . "/images/original/" . $pic);
-			$parent = $image->parentNode;	
+			$parent = $image->parentNode;
 			$parent->replaceChild($newelement, $image);
 						
 			//error_log("IMAGE: " . $replaced_src);
@@ -950,14 +951,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						foreach ( $cross_refs as $cross_ref ) {
 			
 							$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $cross_ref);
-							//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);			
+							//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);
 							foreach($sensenumbers as $sensenumber)
 							{
 								$sensenumber->parentNode->removeChild($sensenumber);
 							}
 										
 							// Get the WordPress post ID for the link.
-							$flexid = str_replace("#", "", $href);				
+							$flexid = str_replace("#", "", $href);
 							$post_id = (string) $this->get_post_id( $flexid );
 			
 							// Now replace the link to hvo wherever it appears with a link to
@@ -975,7 +976,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							{
 								$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
 							}
-							else 
+							else
 							{
 								$sql = $sql . "?p=" . $post_id;
 							}
@@ -1009,16 +1010,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$arrFieldQueries[0] = $arrAllQueries[0];
 			$arrFieldQueries[1] = $arrAllQueries[1];
 		}
-		else 
+		else
 		{
 			$arrFieldQueries = $arrAllQueries;
 		}
 		
 		foreach($arrFieldQueries as $fieldQuery)
-		{			
+		{
 			if (!preg_match("/sense-crossref/i", $fieldQuery))
 			{
-				$fields = $xpath->query($fieldQuery);							
+				$fields = $xpath->query($fieldQuery);
 			
 				foreach($fields as $field)
 				{
@@ -1027,7 +1028,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					if(is_numeric(substr($searchstring, (strlen($searchstring) - 1), 1)))
 					{
 						$searchstring = substr($searchstring, 0, (strlen($searchstring) - 1));
-					}		
+					}
 							
 					if($field->getAttribute("class") == "definition" || $field->getAttribute("class") == "definition-sub")
 					{
@@ -1039,7 +1040,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							{
 								$newField = $xpath->query('//span[@class="definition-sub"]/node()[not(@class = "Emphasized_Text")]');
 							}
-							else 
+							else
 							{
 								$newField = $xpath->query('//span[@class="definition"]/node()[not(@class = "Emphasized_Text")]');
 							}
@@ -1047,7 +1048,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							$field = $newField->item(0);
 							$searchstring = $field->textContent;
 						}
-					}				
+					}
 
 					//if($Emphasized_Text->length == 0)
 					if($field->getAttribute("class") != "partofspeech")
@@ -1068,13 +1069,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$newelement->setAttribute("lang", $field->getAttribute("lang"));
 						/*
 						if($Emphasized_Text->length > 0)
-						{							
+						{
 							$Emphasized_Text->item(0)->insertBefore($newelement);
-							$newelement = $Emphasized_Text->item(0);				
+							$newelement = $Emphasized_Text->item(0);
 						}
 						*/
-						$parent = $field->parentNode;	
-						$parent->replaceChild($newelement, $field);		
+						$parent = $field->parentNode;
+						$parent->replaceChild($newelement, $field);
 					}
 				}
 			}
@@ -1083,11 +1084,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$entry_xml = $entry->saveXML( $entry );
 						
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . addslashes(stripslashes($entry_xml)) . "'" . 
+		" SET post_content = '" . addslashes(stripslashes($entry_xml)) . "'" .
 		" WHERE ID = " . $post_id;
 				
 		$wpdb->query( $sql );
-	}	
+	}
 	         
 	function convert_homographs($entry, $classname)
 	{
@@ -1104,8 +1105,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			// fetch and replace the old element
 			//$oldNode = $dom->getElementById('old_div');
-			$parent = $homograph->parentNode;	
-			$parent->replaceChild($newNode, $homograph);	
+			$parent = $homograph->parentNode;
+			$parent->replaceChild($newNode, $homograph);
 		}
 		
 		return $entry;
@@ -1114,16 +1115,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		global $wpdb;
 
 		$newelement = $doc->createElement('a');
-		$newelement->appendChild($doc->createTextNode(addslashes(trim($field->textContent))));		
+		$newelement->appendChild($doc->createTextNode(addslashes(trim($field->textContent))));
 		$newelement->setAttribute("href", "?s=&partialsearch=1&tax=" . $termid);
 		$newelement->setAttribute("class", $field->getAttribute("class"));
-		$parent = $field->parentNode;			
+		$parent = $field->parentNode;
 		$parent->replaceChild($newelement, $field);
 		
 		$entry_xml = $doc->saveXML( $entry );
 		
 		$sql = "UPDATE $wpdb->posts " .
-		" SET post_content = '" . addslashes($entry_xml) . "'" . 
+		" SET post_content = '" . addslashes($entry_xml) . "'" .
 		" WHERE ID = " . $post_id;
 						 		
 		$wpdb->query( $sql );
@@ -1139,37 +1140,42 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $entries_count = total number of entries
 	 * @param <type> $headword_text = text of the headword
 	 */
-	function import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, $msg = "" ) {		
-		flush();
-		if($this->api)
+	function import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, $msg = "" ) {
+		
+		//only display every 10 entries or if last entry
+		if($entry_counter % 25 == 0 || $entry_counter == $entries_count)
 		{
-			if($entry_counter == 1)
+			flush();
+			if($this->api)
 			{
-				echo $msg . "\n";
+				if($entry_counter == 1)
+				{
+					echo $msg . "\n";
+				}
+				echo $entry_counter . " of " . $entries_count . " entries: " . $headword_text . "\n";
 			}
-			echo $entry_counter . " of " . $entries_count . " entries: " . $headword_text . "\n";
-		}
-		else 
-		{
-		?>
-			<SCRIPT type="text/javascript">//<![CDATA[
-			d = document.getElementById("flushme");
-			info = "<strong><?php echo $msg; ?></strong><br>";
+			else
+			{
+			?>
+				<SCRIPT type="text/javascript">//<![CDATA[
+				d = document.getElementById("flushme");
+				info = "<strong><?php echo $msg; ?></strong><br>";
+				<?php
+				if($entries_count >= 1)
+				{
+				?>
+					info += "<?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
+				<?php
+				}
+				?>
+				//info += "<br>";
+				//info += "Memory Usage: <?php echo memory_get_usage() . " bytes"; ?>";
+				
+				d.innerHTML = info;
+				//]]></SCRIPT>
 			<?php
-			if($entries_count >= 1)
-			{
-			?>
-				info += "<?php echo $entry_counter; ?> of <?php echo $entries_count; ?> entries: <?php  echo $headword_text; ?>";
-			<?php 
 			}
-			?>
-			//info += "<br>";
-			//info += "Memory Usage: <?php echo memory_get_usage() . " bytes"; ?>";
-			
-			d.innerHTML = info;
-			//]]></SCRIPT>
-		<?php	
-		}	
+		}
 	}
 
 	//-----------------------------------------------------------------------------//
@@ -1179,7 +1185,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $entry = XHTML of the dictionary entry
 	 * @param <type> $post_id = ID of the WordPress post.
 	 * @param <type> $query = the xhtml query
-	 * @param <type> $relevance = weighted importance of this particular string for search results 
+	 * @param <type> $relevance = weighted importance of this particular string for search results
 	 */
 	function import_xhtml_search( $doc, $post_id, $query, $relevance, $subid = 0 ) {
 
@@ -1201,9 +1207,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$subid++;
 			}
-		}				
+		}
 				
-	}	
+	}
 
 	//-----------------------------------------------------------------------------//
 
@@ -1233,13 +1239,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// to make use of the ON DUPLICATE KEY feature of MySQL.
 
 		// $wdbt->prepare likes to add single quotes around string replacements,
-		// and that's why I concatenated the table name.			
-		$sql = $wpdb->prepare(		
+		// and that's why I concatenated the table name.
+		$sql = $wpdb->prepare(
 			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 			VALUES (%d, '%s', '%s', %d, %d)",
 			$post_id, $language_code, trim($search_string), $relevance, $subid );
 			
-			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",			
+			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",
 
 			$wpdb->query( $sql );
 			
@@ -1261,7 +1267,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	$catid = $wpdb->get_var( "
 		SELECT term_id
 		FROM $wpdb->terms
-		WHERE name LIKE 'webonary'");	
+		WHERE name LIKE 'webonary'");
 	
 	return $catid;
 	}
@@ -1274,8 +1280,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$duplicatePostId = $wpdb->get_var( "
 			SELECT post_id
 			FROM $this->search_table_name
-			WHERE post_id = " . $postid . " AND search_strings = '" . addslashes($searchstring) . 
-			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'");	
+			WHERE post_id = " . $postid . " AND search_strings = '" . addslashes($searchstring) .
+			"' AND relevance = ". $relevance . " AND language_code = '" . $lang . "'");
 		
 		if($duplicatePostId == $postid)
 		{
@@ -1293,12 +1299,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$sql = "SELECT ID, post_title, post_content, post_parent
 			FROM $wpdb->posts
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
-			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id(); 
+			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id();
 		//using pinged field for not yet indexed
 		$sql .= " AND post_status = 'publish' AND pinged = '" . $index . "'";
 				
 		return $wpdb->get_results($sql);
-	}	
+	}
 		
 	/**
 	 * Utility function return the post ID given a headword.
@@ -1328,9 +1334,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			WHERE search_strings = '" . addslashes(trim($headword)) . "' collate utf8_bin AND relevance >= 95";
 		if($isLangCode)
 		{
-			$sql .= " AND language_code = '" . $langcode . "'";			
+			$sql .= " AND language_code = '" . $langcode . "'";
 		}
-		else 
+		else
 		{
 			$sql .= " AND language_code <> '" . $langcode . "'";
 		}
@@ -1344,7 +1350,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$postid = $row->post_id;
 		}
 		return $postid;
-	}	
+	}
 
 	//-----------------------------------------------------------------------------//
 
@@ -1377,7 +1383,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				)
 			);
 			
-			wp_set_object_terms( $post_id, $pos_name, $this->pos_taxonomy, true);			
+			wp_set_object_terms( $post_id, $pos_name, $this->pos_taxonomy, true);
 		}
 	}
 
@@ -1399,7 +1405,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		if($subentry)
 		{
-			$semantic_domains = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');			
+			$semantic_domains = $xpath->query('//span[@class = "semantic-domains-sub"]//span[@class = "semantic-domain-name-sub"]');
 		}
 		else
 		{
@@ -1426,20 +1432,20 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$this->semantic_domains_taxonomy,
 					array(
 						'description' => trim($domain_name),
-						'slug' => $sd_number_text 
-					));		
+						'slug' => $sd_number_text
+					));
 														
 					$termid = $wpdb->get_var( "
 						SELECT term_id
 						FROM $wpdb->terms
 						WHERE slug = '" . str_replace(".", "-", $sd_number_text) . "'");
 										
-				if($termid == NULL || $termid == 0)	
-				{	
+				if($termid == NULL || $termid == 0)
+				{
 					if (array_key_exists('term_id', $arrTerm))
 					{
 						$termid = $arrTerm['term_id'];
-						$terms[$i] = $termid; 
+						$terms[$i] = $termid;
 						$i++;
 					}
 				}
@@ -1450,10 +1456,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					$wpdb->query( "INSERT INTO $wpdb->term_relationships (object_id, term_taxonomy_id) VALUES (" . $post_id . ", " . $termid . ") ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" );
 				}
-				/*			
+				/*
 				if($convertToLinks == true)
 				{
-					$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);			
+					$this->convert_semantic_domains_to_links($post_id, $doc, $sd_name, $termid);
 				}
 				else
 				{
@@ -1491,7 +1497,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			if(strlen(trim($entry->textContent)) == 0)
 			{
 				$entry_counter++;
-				continue;	
+				continue;
 			}
 			/*
 			 * Show progresss to the user.
@@ -1515,13 +1521,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$entry = $this->convert_homographs($entry, "Homograph-Number");
 				
 				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
-				$sensereferences = $this->dom_xpath->query('//xhtml:span[@class="Sense-Reference-Number"]', $headword);			
+				$sensereferences = $this->dom_xpath->query('//xhtml:span[@class="Sense-Reference-Number"]', $headword);
 				foreach($sensereferences as $sensereference)
 				{
 					$sensereference->parentNode->removeChild($sensereference);
 				}
 												
-				$headword_text = trim($headword->textContent);		
+				$headword_text = trim($headword->textContent);
 				
 				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
 				
@@ -1531,7 +1537,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				else
 				{
 					echo "PostId for '" . $headword_text . "' not found.<br>";
-				} 
+				}
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry )
@@ -1555,7 +1561,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$entry = $this->convert_homographs($entry, "xhomographnumber");
 						
-			$headword_text = trim($entry->textContent);	
+			$headword_text = trim($entry->textContent);
 
 			//this is used for the browse view sort order
 			$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $entry_counter . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95" ;
@@ -1567,7 +1573,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			/*
 			 * Show progresss to the user.
-			 */			
+			 */
 			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
 
 			$entry_counter++;
