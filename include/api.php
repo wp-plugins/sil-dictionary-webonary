@@ -30,6 +30,10 @@ class Webonary_API_MyType {
 			$fileConfigured = $zipPath . "/configured.xhtml";
 			$xhtmlConfigured = file_get_contents($fileConfigured);
 
+			//moving style sheet file
+			copy($zipPath . "/imported-with-xhtml.css", $uploadPath . "/imported-with-xhtml.css");
+			echo "Moved imported-with-xhtml.css to " . $uploadPath . "\n";
+			
 			$import = new sil_pathway_xhtml_Import();
 			$import->import_xhtml($xhtmlConfigured, true);
 			$import->index_searchstrings();
