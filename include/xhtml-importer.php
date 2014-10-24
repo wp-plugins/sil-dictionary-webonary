@@ -147,7 +147,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
 				echo '<p>&nbsp;</p>';
-				echo '<p>After importing, go to <strong>Tools - <a href="../wp-admin/tools.php?page=sil-dictionary-webonary/include/infrastructure.php">SIL Dictionary</a></strong> to configure more settings.</p>';
+				echo '<p>After importing, go to <strong><a href="../wp-admin/admin.php?page=webonary">Webonary</a></strong> to configure more settings.</p>';
 			?>
 			<?php
 				break;
@@ -164,15 +164,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		echo '<div class="narrow">';
 		echo '<p>' . __( 'Howdy! This importer allows you to import SIL FLEX XHTML data into your WordPress site.',
 				'sil_dictionary' ) . '</p>';
-		/*
 		?>
-		<p style="max-width: 500px; border-style:solid; border-width: 1px; border-color: red; padding: 5px;">
+		<div style="max-width: 600px; border-style:solid; border-width: 1px; border-color: red; padding: 5px;">
 		<strong>Import Status:</strong> <?php echo $this->get_import_status(); ?><br>
 		<?php
+		/*
 		If you believe the import has timed out, click here: <input type="button" name="btnIndexSearchStrings" value="Index Search Strings">
 		*/
 		?>
-		</p>
+		</div>
 		<?php
 	}
 
@@ -343,12 +343,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				*/ ?>
 			</div>
 			<p>
-			<input type="hidden" name="chkShowProgress" value="0">
-			<?php
-			/*
 			<input type="checkbox" name="chkShowProgress"> <?php echo esc_attr_e('Check to show import progress in browser (slower). Keep unchecked to run import in the background.'); ?>
-			*/
-			?>
 			<p>
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
 			</p>
@@ -615,13 +610,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$filetype = $_POST['filetype'];
 		}
 
-		update_option("importStatus", $filetype);
-
 		if($xhtml_file == null)
 		{
 			echo "<div style=color:red>ERROR: XHTML file empty. Try uploading again.</div><br>";
 			return;
 		}
+		else
+		{
+			update_option("importStatus", $filetype);
+		}
+					
 
 		// Some of these variables could eventually become user options.
 		$this->dom = new DOMDocument('1.0', 'utf-8');
@@ -649,6 +647,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		/*
 		 * Import
 		 */
+		if($this->api == false && $this->verbose == false)
+		{
+			echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
+			flush();
+		}
+			
 		if ( $filetype== 'configured') {
 			//  Make sure we're not working on a reversal file.
 			$reversals = $this->dom_xpath->query( '(//xhtml:span[contains(@class, "reversal-form")])[1]' );
@@ -664,17 +668,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					echo "No entries found for the query " . $fieldQuery . "<br>";
 				}
 			}
-			if($this->api == false && $this->verbose == false)
-			{
-				echo "You can now close the browser window.<br>";
-				flush();
-			}
 			$this->import_xhtml_entries();
 		}
 		elseif ( $filetype == 'reversal')
 			$this->import_xhtml_reversal_indexes();
 		elseif ( $filetype == 'stem')
 			$this->import_xhtml_stem_indexes();
+			
 		return;
 	} // function import_xhtml($xhtml_file)
 
@@ -1422,51 +1422,61 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 
 			$importFinished = false;
-			if(get_option("importStatus") == "convertlinks")
+			if($countIndexed == get_option("totalConfiguredEntries") || $countLinksConverted == get_option("totalConfiguredEntries"))
 			{
-				if($countLinksConverted == get_option("totalConfiguredEntries"))
-				{
-					$importFinished = true;
-				}
-			}
-			else
-			{
-				if($countIndexed == get_option("totalConfiguredEntries"))
-				{
-					//it might not be finished if user wants to convert links
-					//$importFinished = true;
-				}
+				$importFinished = true;
 			}
 
 			if($importFinished)
 			{
-				$status = "Number of entries: " . get_option("totalConfiguredEntries"). "<br>";
 				if($posts->post_date != NULL)
 				{
-					$status .= "Last import was at " . $posts->post_date . " (server time)";
+					$status = "Last import of configured xhtml was at " . $posts->post_date . " (server time)";
 				}
 			}
 			else
 			{
-				$status = "Importing... ";
+				$status = "Importing... <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a>";
 				//$status .= " You will receive an email when the import has completed.";
 				$status .= "<br>";
 
 				if(get_option("importStatus") == "indexing")
 				{
-					$status .= "Indexing " . $countIndexed . " of " . get_option("totalConfiguredEntries") . " entries<br>";
+					$status .= "Indexing " . $countIndexed . " of " . get_option("totalConfiguredEntries") . " entries";
 				}
 				elseif(get_option("importStatus") == "convertlinks")
 				{
-					$status .= "Converting Links " . $countLinksConverted . " of " . get_option("totalConfiguredEntries") . " entries<br>";
+					$status .= "Converting Links " . $countLinksConverted . " of " . get_option("totalConfiguredEntries") . " entries";
 				}
 				elseif(get_option("importStatus") == "configured")
 				{
-					$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported<br>";
+					$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported";
 				}
 			}
 
+			$sql = " SELECT language_code, COUNT(language_code) AS totalIndexed " .
+					" FROM " . $this->search_table_name .
+					" WHERE relevance >= 95 " .
+					" GROUP BY language_code";
+						
+			$arrIndexed = $wpdb->get_results($sql);
 
+			if(count($arrIndexed) > 0 && ($countIndexed == get_option("totalConfiguredEntries") || $countLinksConverted == get_option("totalConfiguredEntries")))
+			{
+				$status .= "<br>";
+				$status .= "<div style=\"float: left;\">";
+					$status .= "<strong>Number of indexed entries (by language code):</strong><br>";
+				$status .= "</div>";
+				$status .= "<div style=\"min-width:50px; float: left; margin-left: 5px;\">";
+				foreach($arrIndexed as $indexed)
+				{
+					$status .= "<div style=\"clear:both;\"><div style=\"text-align:right; float:left; width:70%;\"><nobr>" . $indexed->language_code . ":</nobr></div><div style=\"text-align:right; float:left; width:30%;\">&nbsp;". $indexed->totalIndexed . "</div></div>";
+				}
+				$status .= "</div>";
+				$status .= "<br style=\"clear:both;\">";
+				$status .= "After importing, go to <strong><a href=\"../wp-admin/admin.php?page=webonary\">Webonary</a></strong> to configure more settings.";
+			}
+			
 			return $status;
 		}
 		else
@@ -1474,7 +1484,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			return "No entries have been imported yet.";
 		}
 
-		/*
 		$sql = "SELECT post_date, pinged FROM " . $wpdb->prefix . "posts ".
 		" WHERE post_type IN ('post', 'revision') AND ".
 		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .") ".
@@ -1482,9 +1491,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" ORDER BY post_date DESC";
 
 		$arrIndexed = $wpdb->get_results($sql);
-		*/
 
-		/*
 		if(count($arrPosts) > 0 || count($arrIndexed) > 0)
 		{
 			if(count($arrIndexed) == get_option("totalConfiguredEntries"))
@@ -1520,7 +1527,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			return "No entries have been imported yet.";
 		}
-		*/
 	}
 
 	function get_posts($index = ""){
