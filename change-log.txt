@@ -1,3 +1,5 @@
+v. 4.0.9 24 October 2014 will automatically set language code during import
+v. 4.0.8 24 October 2014 API test
 v. 4.0.7 10 October 2014 added authentication to API
 v. 4.0.6 10 October 2014 now only displaying every 25 entry on during import. Will imporve performance.
 v. 4.0.5 9 October 2014 updated api.php to move css file into appropriate directory
