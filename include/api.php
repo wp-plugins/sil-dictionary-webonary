@@ -53,11 +53,11 @@ class Webonary_API_MyType {
 				if(file_exists($zipPath . "/files"))
 				{
 					//first delete any existing files
-					$this->recursiveRemoveDir($uploadPath . "/files/images/thumbnail");
-					$this->recursiveRemoveDir($uploadPath . "/files/images/original");
-					$this->recursiveRemoveDir($uploadPath . "/files/audio");
+					$this->recursiveRemoveDir($uploadPath . "/images/thumbnail");
+					$this->recursiveRemoveDir($uploadPath . "/images/original");
+					$this->recursiveRemoveDir($uploadPath . "/audio");
 					//then copy everything under files
-					$this->rcopy($zipPath . "/files", $uploadPath . "/files");
+					$this->recursiveCopy($zipPath . "/files", $uploadPath);
 				}
 			}
 
@@ -113,6 +113,7 @@ class Webonary_API_MyType {
 	{
 		$overrides = array( 'test_form' => false, 'test_type' => false );
 		$file = wp_handle_upload($zipfile, $overrides);
+
 		if (isset( $file['error']))
 		{
 			echo "Error: Upload failed: " . $file['error'] . "\n";
@@ -157,13 +158,13 @@ class Webonary_API_MyType {
     }
 
 	// Function to Copy folders and files
-    function rcopy($src, $dst) {
+    function recursiveCopy($src, $dst) {
         if (is_dir ( $src )) {
             mkdir ( $dst );
             $files = scandir ( $src );
             foreach ( $files as $file )
                 if ($file != "." && $file != "..")
-                    $this->rcopy ( "$src/$file", "$dst/$file" );
+                    $this->recursiveCopy ( "$src/$file", "$dst/$file" );
         } else if (file_exists ( $src ))
             copy ( $src, $dst );
     }
