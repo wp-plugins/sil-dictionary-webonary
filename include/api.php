@@ -17,67 +17,158 @@ class Webonary_API_MyType {
         return $routes;
     }
 
-	public function import($_headers){
-
-		$authenticated = $this->authenticate();
+	public function import($_headers)
+	{
+		$authenticated = $this->verifyAdminPrivileges();
 
 		if($authenticated){
 
 			$arrDirectory = wp_upload_dir();
 			$uploadPath = $arrDirectory['path'];
 
-			$unzipped = $this->unzip($_FILES['file'], $uploadPath);
+			$zipPath = $uploadPath . "/" . str_replace(".zip", "", $_FILES['file']['name']);
+			$unzipped = $this->unzip($_FILES['file'], $uploadPath, $zipPath);
+
+			//program can be closed now, the import will run in the background
+			flush();
 
 			if($unzipped)
 			{
-				$zipPath = $uploadPath . "/" . str_replace(".zip", "", $_FILES['file']['name']);
 				$fileConfigured = $zipPath . "/configured.xhtml";
 				$xhtmlConfigured = file_get_contents($fileConfigured);
 
+				$fileReversal1= $zipPath . "/reversal1.xhtml";
+				$xhtmlReversal1 = file_get_contents($fileReversal1);
+
+				$fileReversal2= $zipPath . "/reversal2.xhtml";
+				$xhtmlReversal2 = file_get_contents($fileReversal2);
+
 				//moving style sheet file
-				copy($zipPath . "/imported-with-xhtml.css", $uploadPath . "/imported-with-xhtml.css");
-				echo "Moved imported-with-xhtml.css to " . $uploadPath . "\n";
+				if(file_exists($zipPath . "/configured.css"))
+				{
+					copy($zipPath . "/configured.css", $uploadPath . "/imported-with-xhtml.css");
+					error_log("Renamed configured.css to " . $uploadPath . "/imported-with-xhtml.css");
+				}
+				//copy folder files (which includes audio and image folders and files)
+				if(file_exists($zipPath . "/files"))
+				{
+					//first delete any existing files
+					$this->recursiveRemoveDir($uploadPath . "/files/images/thumbnail");
+					$this->recursiveRemoveDir($uploadPath . "/files/images/original");
+					$this->recursiveRemoveDir($uploadPath . "/files/audio");
+					//then copy everything under files
+					$this->rcopy($zipPath . "/files", $uploadPath . "/files");
+				}
 			}
 
-			$import = new sil_pathway_xhtml_Import();
 			if(isset($xhtmlConfigured))
 			{
-				$import->import_xhtml($xhtmlConfigured, true);
-			}
-			$import->index_searchstrings();
+				//we first delete all existing posts (in category Webonary)
+				remove_entries();
+				//deletes data that comes with the posts, but gets stored separately (e.g. "parts of speech")
+				clean_out_dictionary_data();
 
-		}else{$rettr = "authentication failed";}
-		return array('returnedData'=>$rettr);
+				$import = new sil_pathway_xhtml_Import();
+
+				//If $verbose is true, it will display progress, but can't run import in the background
+				$verbose = false;
+				$import->import_xhtml($xhtmlConfigured, true, $verbose, "configured");
+
+				if($verbose)
+				{
+					echo "Indexing search strings\n";
+				}
+				$import->index_searchstrings($verbose);
+				$import->convert_fields_to_links();
+			}
+
+			if(isset($xhtmlReversal1))
+			{
+				$import->import_xhtml($xhtmlReversal1, true, $verbose, "reversal");
+			}
+
+			if(isset($xhtmlReversal2))
+			{
+				$import->import_xhtml($xhtmlReversal2, true, $verbose, "reversal");
+			}
+
+			if(file_exists($zipPath))
+			{
+				//deletes the extracted zip folder
+				$this->recursiveRemoveDir($zipPath);
+			}
+			return "import completed";
+		}
+		else
+		{
+			echo "authentication failed\n";
+			flush();
+		}
+
+		return;
 	}
 
-	public function unzip($zipfile, $uploadPath)
+	// Receive upload. Unzip it to uploadPath. Remove upload file.
+	public function unzip($zipfile, $uploadPath, $zipPath)
 	{
 		$overrides = array( 'test_form' => false, 'test_type' => false );
 		$file = wp_handle_upload($zipfile, $overrides);
+		if (isset( $file['error']))
+		{
+			echo "Error: Upload failed: " . $file['error'] . "\n";
+			unlink($uploadPath . "/" . $zipfile['name']);
+			return false;
+		}
+
+		echo "Upload successful\n";
 
 		$zip = new ZipArchive;
 		$res = $zip->open($uploadPath . "/" . $zipfile['name']);
-		if ($res === TRUE) {
-		  $unzip_success = $zip->extractTo($uploadPath);
-		  $zip->close();
-		  if($unzip_success)
-		  {
-			echo "zip file extracted successfully\n";
-		  }
-		  else
-		  {
-			echo "couldn't extract zip file to " . $uploadPath;
-		  }
-		} else {
-		  echo $zipfile['name'] . " isn't a valid zip file\n";
-		  return false;
+		if ($res === FALSE)
+		{
+			echo "Error: " . $zipfile['name'] . " isn't a valid zip file\n";
+			unlink($uploadPath . "/" . $zipfile['name']);
+			return false;
 		}
 
+		$unzip_success = $zip->extractTo($zipPath);
+		$zip->close();
+		if(!$unzip_success)
+		{
+			echo "Error: couldn't extract zip file to " . $uploadPath;
+			unlink($uploadPath . "/" . $zipfile['name']);
+			return false;
+		}
+
+		echo "zip file extracted successfully\n";
 		unlink($uploadPath . "/" . $zipfile['name']);
 		return true;
 	}
 
-	public function authenticate()
+	// Function to remove folders and files
+    function recursiveRemoveDir($dir) {
+        if (is_dir($dir)) {
+            $files = scandir($dir);
+            foreach ($files as $file)
+                if ($file != "." && $file != "..") $this->recursiveRemoveDir("$dir/$file");
+            rmdir($dir);
+        }
+        else if (file_exists($dir)) unlink($dir);
+    }
+
+	// Function to Copy folders and files
+    function rcopy($src, $dst) {
+        if (is_dir ( $src )) {
+            mkdir ( $dst );
+            $files = scandir ( $src );
+            foreach ( $files as $file )
+                if ($file != "." && $file != "..")
+                    $this->rcopy ( "$src/$file", "$dst/$file" );
+        } else if (file_exists ( $src ))
+            copy ( $src, $dst );
+    }
+
+	public function verifyAdminPrivileges()
 	{
 		global $wpdb;
 
