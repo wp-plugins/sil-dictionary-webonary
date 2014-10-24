@@ -1,3 +1,4 @@
+v. 4.1.0 24 October 2014 fixed file path in API
 v. 4.0.9 24 October 2014 will automatically set language code during import
 v. 4.0.8 24 October 2014 API test
 v. 4.0.7 10 October 2014 added authentication to API
