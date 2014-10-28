@@ -538,9 +538,14 @@ function register_webstrings_taxonomy () {
  */
 
 function clean_out_dictionary_data () {
-
+	
 	$delete_taxonomies = $_POST['delete_taxonomies'];
 
+	//deletes the xhtml file, if still there because import didn't get completed
+	$import = new sil_pathway_xhtml_Import();
+	$file = $import->get_latest_xhtmlfile();
+	wp_delete_attachment( $file->ID );
+	
 	// Remove all the old dictionary entries.
 	remove_entries();
 
