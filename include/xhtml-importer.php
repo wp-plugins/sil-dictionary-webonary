@@ -1451,7 +1451,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if($posts->post_date != NULL)
 				{
 					$status .= "Last import of configured xhtml was at " . $posts->post_date . " (server time)";
-					if($countLinksConverted < get_option("totalConfiguredEntries"))
+					if($countLinksConverted < $totalImportedPosts)
 					{
 						$status .= "<input type=hidden name=chkConvertToLinks value=1>";
 						$status .= "<br><input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\">";
@@ -1491,7 +1491,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$arrIndexed = $wpdb->get_results($sql);
 
-			if(count($arrIndexed) > 0 && ($countIndexed == get_option("totalConfiguredEntries") || $countLinksConverted == get_option("totalConfiguredEntries")))
+			if(count($arrIndexed) > 0 && ($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts))
 			{
 				$status .= "<br>";
 				$status .= "<div style=\"float: left;\">";
