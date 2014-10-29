@@ -1414,10 +1414,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" ORDER BY post_date DESC";
 
 		$arrPosts = $wpdb->get_results($sql);
-
+		
 		if(count($arrPosts) > 0)
 		{
 			$countIndexed = 0;
+			$totalImportedPosts = count($this->get_posts());
 
 			foreach($arrPosts as $posts)
 			{
@@ -1438,7 +1439,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 
 			$importFinished = false;
-			if($countIndexed == get_option("totalConfiguredEntries") || $countLinksConverted == get_option("totalConfiguredEntries"))
+			if($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts)
 			{
 				$importFinished = true;
 			}

@@ -26,38 +26,38 @@ class Webonary_API_MyType {
 			$arrDirectory = wp_upload_dir();
 			$uploadPath = $arrDirectory['path'];
 
-			$zipPath = $uploadPath . "/" . str_replace(".zip", "", $_FILES['file']['name']);
-			$unzipped = $this->unzip($_FILES['file'], $uploadPath, $zipPath);
+			$destinationPath = $uploadPath . "/" . str_replace(".zip", "", $_FILES['file']['name']);
+			$unzipped = $this->unzip($_FILES['file'], $uploadPath, $destinationPath);
 
 			//program can be closed now, the import will run in the background
 			flush();
 
 			if($unzipped)
 			{
-				$fileConfigured = $zipPath . "/configured.xhtml";
+				$fileConfigured = $destinationPath . "/configured.xhtml";
 				$xhtmlConfigured = file_get_contents($fileConfigured);
 
-				$fileReversal1= $zipPath . "/reversal1.xhtml";
+				$fileReversal1= $destinationPath . "/reversal1.xhtml";
 				$xhtmlReversal1 = file_get_contents($fileReversal1);
 
-				$fileReversal2= $zipPath . "/reversal2.xhtml";
+				$fileReversal2= $destinationPath . "/reversal2.xhtml";
 				$xhtmlReversal2 = file_get_contents($fileReversal2);
 
 				//moving style sheet file
-				if(file_exists($zipPath . "/configured.css"))
+				if(file_exists($destinationPath . "/configured.css"))
 				{
-					copy($zipPath . "/configured.css", $uploadPath . "/imported-with-xhtml.css");
+					copy($destinationPath . "/configured.css", $uploadPath . "/imported-with-xhtml.css");
 					error_log("Renamed configured.css to " . $uploadPath . "/imported-with-xhtml.css");
 				}
 				//copy folder files (which includes audio and image folders and files)
-				if(file_exists($zipPath . "/files"))
+				if(file_exists($destinationPath . "/files"))
 				{
 					//first delete any existing files
 					$this->recursiveRemoveDir($uploadPath . "/images/thumbnail");
 					$this->recursiveRemoveDir($uploadPath . "/images/original");
 					$this->recursiveRemoveDir($uploadPath . "/audio");
 					//then copy everything under files
-					$this->recursiveCopy($zipPath . "/files", $uploadPath);
+					$this->recursiveCopy($destinationPath . "/files", $uploadPath);
 				}
 			}
 
@@ -92,10 +92,10 @@ class Webonary_API_MyType {
 				$import->import_xhtml($xhtmlReversal2, true, $verbose, "reversal");
 			}
 
-			if(file_exists($zipPath))
+			if(file_exists($destinationPath))
 			{
 				//deletes the extracted zip folder
-				$this->recursiveRemoveDir($zipPath);
+				$this->recursiveRemoveDir($destinationPath);
 			}
 			return "import completed";
 		}
@@ -109,7 +109,7 @@ class Webonary_API_MyType {
 	}
 
 	// Receive upload. Unzip it to uploadPath. Remove upload file.
-	public function unzip($zipfile, $uploadPath, $zipPath)
+	public function unzip($zipfile, $uploadPath, $destinationPath)
 	{
 		$overrides = array( 'test_form' => false, 'test_type' => false );
 		$file = wp_handle_upload($zipfile, $overrides);
@@ -132,7 +132,7 @@ class Webonary_API_MyType {
 			return false;
 		}
 
-		$unzip_success = $zip->extractTo($zipPath);
+		$unzip_success = $zip->extractTo($destinationPath);
 		$zip->close();
 		if(!$unzip_success)
 		{
