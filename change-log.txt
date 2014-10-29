@@ -1,3 +1,4 @@
+v. 4.1.3 29 October 2014 made small change to import status
 v. 4.1.2 28 October 2014 added Re-import buttons into the status box, so if import times out, one doesn't have to restart all over.
 v. 4.1.1 24 October 2014 background import is now default, import page now displays import status
 v. 4.1.0 24 October 2014 fixed file path in API
