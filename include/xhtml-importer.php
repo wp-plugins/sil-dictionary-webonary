@@ -275,8 +275,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			global $current_user;
 			get_currentuserinfo();
-
-			//wp_mail( $current_user->user_email, 'Import complete', 'The message' );
+			
+			$message = "The import of the vernacular (configured) xhtml export is completed.\n";
+			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+			wp_mail( $current_user->user_email, 'Import complete', $message);
 		}
 		flush();
 		echo __( 'Finished!', 'sil_dictionary' );
@@ -1443,8 +1445,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			else
 			{
-				$status .= "Importing... <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a>";
-				//$status .= " You will receive an email when the import has completed.";
+				$status .= "Importing... <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a><br>";
+				$status .= " You will receive an email when the import has completed.";
 				$status .= "<br>";
 
 				if(get_option("importStatus") == "indexing")
@@ -1507,35 +1509,20 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		if(count($arrPosts) > 0 || count($arrIndexed) > 0)
 		{
-			/*
-			if(count($arrIndexed) == get_option("totalConfiguredEntries"))
+			if($arrPosts[0]->pinged != "indexed")
 			{
-				$status = "Number of entries: " . count($arrIndexed) . "<br>";
-				if($arrIndexed[0]->post_date != NULL)
+				$entries = count($arrPosts);
+				if(count($arrIndexed) > 0)
 				{
-					$status .= "Last import was at " . $arrIndexed[0]->post_date . " (server time)";
+					$entries = get_option("totalConfiguredEntries") - count($arrIndexed);
 				}
-			}
 
+				$status .= $entries . " of " . get_option("totalConfiguredEntries") . " entries imported (not yet indexed)<br>";
+			}
 			else
 			{
-				$status = "Importing... You will receive an email when the import has completed.<br>";
-			*/
-				if($arrPosts[0]->pinged != "indexed")
-				{
-					$entries = count($arrPosts);
-					if(count($arrIndexed) > 0)
-					{
-						$entries = get_option("totalConfiguredEntries") - count($arrIndexed);
-					}
-
-					$status .= $entries . " of " . get_option("totalConfiguredEntries") . " entries imported (not yet indexed)<br>";
-				}
-				else
-				{
-					$status .= "Indexing " . count($arrIndexed) . " of " . get_option("totalConfiguredEntries") . " entries<br>";
-				}
-			//}
+				$status .= "Indexing " . count($arrIndexed) . " of " . get_option("totalConfiguredEntries") . " entries<br>";
+			}
 			return $status;
 		}
 		else
@@ -1832,6 +1819,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
+		
+		if($this->verbose == false && $this->api == false)
+		{
+			global $current_user;
+			get_currentuserinfo();
+			
+			$message = "The reversal import is completed.\n";
+			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+			wp_mail( $current_user->user_email, 'Reversal Import complete', $message);
+		}
 	}
 
 /**

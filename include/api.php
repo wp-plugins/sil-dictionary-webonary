@@ -19,7 +19,7 @@ class Webonary_API_MyType {
 
 	public function import($_headers)
 	{
-		$authenticated = $this->verifyAdminPrivileges();
+		$authenticated = $this->verifyAdminPrivileges($email);
 
 		if($authenticated){
 
@@ -97,6 +97,11 @@ class Webonary_API_MyType {
 				//deletes the extracted zip folder
 				$this->recursiveRemoveDir($destinationPath);
 			}
+						
+			$message = "The export to Webonary is completed.\n";
+			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+			wp_mail( $email, 'Webonary Export complete', $message);
+			
 			return "import completed";
 		}
 		else
@@ -169,7 +174,7 @@ class Webonary_API_MyType {
             copy ( $src, $dst );
     }
 
-	public function verifyAdminPrivileges()
+	public function verifyAdminPrivileges(&$email = "")
 	{
 		global $wpdb;
 
@@ -186,6 +191,8 @@ class Webonary_API_MyType {
 
 			if($userrole['administrator'] == true)
 			{
+				$user_info = get_userdata($user->ID);
+				$email = $user_info->user_email;
 				return true;
 			}
 			else
