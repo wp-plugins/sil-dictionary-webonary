@@ -13,7 +13,7 @@ function searchform_init() {
 function webonary_searchform() {
 	global $wpdb;
 ?>
-		 <form name="searchform" id="searchform" method="get" action="<?php bloginfo('url'); ?>">		 
+		 <form name="searchform" id="searchform" method="get" action="<?php bloginfo('url'); ?>">
 			<div class="normalSearch">
 				<!-- Search Bar Popups --> <?php !dynamic_sidebar( 'topsearchbar' ); ?><!-- end Search Bar Popups -->
 				<!-- search text box -->
@@ -59,6 +59,7 @@ function webonary_searchform() {
 					}
 					?>
 					</select>
+					<br>
 					<?php
 				}
 	
@@ -68,16 +69,16 @@ function webonary_searchform() {
 				$parts_of_speech = get_terms('sil_parts_of_speech');
 				
 				if($parts_of_speech)
-				{				
+				{
 					wp_dropdown_categories("show_option_none=" .
 						__('All Parts of Speech','sil_dictionary') .
 						"&show_count=1&selected=" . $_GET['tax'] .
 						"&orderby=name&echo=1&name=tax&taxonomy=sil_parts_of_speech");
-				}						
+				}
 				?>
 			</div>
 		</form>
-		<?php 
+		<?php
 		if(strlen(trim($_GET['s'])) > 0)
 		{
 			//$sem_domains = get_terms( 'sil_semantic_domains', 'name__like=' .  trim($_GET['s']) .'');
@@ -96,7 +97,7 @@ function webonary_searchform() {
 				}
 				echo "</ul>";
 			}
-		}	
+		}
 		?>
 <?php
 }
@@ -114,8 +115,8 @@ function add_header()
 				codecs: [{name:"MP3", codec: 'audio/mpeg'}]
 			});
          });
-     </script>		
-<?php 
+     </script>
+<?php
 }
 
 add_action('wp_head', 'add_header');
@@ -141,7 +142,7 @@ function getDictStageImage($publicationStatus, $language)
 function add_footer()
 {
 ?>
-	<?php 
+	<?php
 	if(get_option('publicationStatus'))
 	{
 		$publicationStatus = get_option('publicationStatus');
@@ -154,12 +155,12 @@ function add_footer()
 		?>
 		
 		<div align=center><img src="<?php getDictStageImage($publicationStatus, $language); ?>" style="padding: 5px; max-width: 100%;"></div>
-	<?php 
+	<?php
 		}
 	}
 	?>
 	<div id="ubaPlayer"></div>
-<?php 
+<?php
 }
 
 add_action('wp_footer', 'add_footer');
