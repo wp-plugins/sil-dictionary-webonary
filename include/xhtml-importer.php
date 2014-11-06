@@ -352,8 +352,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			<form enctype="multipart/form-data" id="import-upload-form" method="post" action="<?php echo esc_attr(
 				wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=1", 'import-upload')); ?>">
 			<p>
-				<label for="upload"><?php _e( 'Choose an XHTML file from your computer:' ); ?></label>
-					(<?php printf( __('Maximum size: %s' ), $size ); ?>)
+				<label for="upload"><?php _e( 'Choose an XHTML file from your computer:' ); ?> (<?php printf( __('Maximum size: %s' ), $size ); ?>)
+				<br>
+				<?php _e('**XHTML file must be sorted. Webonary does not resort the entries.**'); ?>
+				</label>
 			</p>
 			<p>
 				<input type="file" id="upload" name="xhtml" size="100" />
