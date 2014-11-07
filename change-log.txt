@@ -1,3 +1,4 @@
+v. 4.1.9 7 November 2014 ubaplayer.js now no longer loads on front page
 v. 4.1.8 6 November 2014 added note about sort order in import dialog
 v. 4.1.7 6 November 2014 added <br>-tag between language and pos-dropdowns
 v. 4.1.6 3 November 2014 sends email when import finished
