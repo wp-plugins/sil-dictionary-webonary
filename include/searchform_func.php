@@ -106,6 +106,7 @@ add_action('init', 'searchform_init');
 
 function add_header()
 {
+	 if(!is_front_page()) {
 ?>
 	<link rel="stylesheet" href="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/audiolibs/css/styles.css" />
 	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/jquery.ubaplayer.js" type="text/javascript"></script>
@@ -117,6 +118,7 @@ function add_header()
          });
      </script>
 <?php
+	 }
 }
 
 add_action('wp_head', 'add_header');
