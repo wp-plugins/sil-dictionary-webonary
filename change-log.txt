@@ -1,3 +1,4 @@
+v. 4.2.2 22 November 2014 pinged 'flexlinks' gets set for all imported posts
 v. 4.2.1 21 November 2014 now only converting FLEx links that haven't been converted yet if importing more than one file.
 v. 4.2.0 21 November 2014 indexing now shows proper number on status page, if importing more than one file. 
 v. 4.1.9 7 November 2014 ubaplayer.js now no longer loads on front page
