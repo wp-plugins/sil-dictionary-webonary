@@ -1,3 +1,5 @@
+v. 4.2.1 21 November 2014 now only converting FLEx links that haven't been converted yet if importing more than one file.
+v. 4.2.0 21 November 2014 indexing now shows proper number on status page, if importing more than one file. 
 v. 4.1.9 7 November 2014 ubaplayer.js now no longer loads on front page
 v. 4.1.8 6 November 2014 added note about sort order in import dialog
 v. 4.1.7 6 November 2014 added <br>-tag between language and pos-dropdowns
