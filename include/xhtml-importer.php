@@ -518,7 +518,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$semantic_domains_taxonomy_exists = taxonomy_exists( $this->semantic_domains_taxonomy );
 
 		if ( $search_table_exists ) {
-			$arrPosts = $this->get_posts();
+			$arrPosts = $this->get_posts('flexlinks');
 
 			$subid = 1;
 			$sortorder = $wpdb->get_var( "
@@ -1043,7 +1043,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
 						//if ( empty( $post_id ) )
 							//$post_id = 'id-not-found';
-						$sql = "UPDATE $wpdb->posts SET pinged = 'flexlinks', post_content = ";
+						$sql = "UPDATE $wpdb->posts SET post_content = ";
 						$sql = $sql . "REPLACE(post_content, 'href=";
 						$sql = $sql . '"' . $href . '"';
 						$sql = $sql . "', 'href=";
@@ -1068,6 +1068,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "Step 1 of 2: Please wait... converting FLEx links for Wordpress.");
 
 		} //foreach $arrPosts as $post
+		
+		//set pinged = flexlinks for all posts
+		$sql = "UPDATE $wpdb->posts
+			   INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
+			   SET pinged = 'flexlinks'
+			   WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id() . "
+			   AND post_status = 'publish' AND pinged = ''";
+		
+		$wpdb->query( $sql );
+		
 	} // function convert_fieldworks_links_to_wordpress()
 
 	function convert_fields_to_links() {
@@ -1565,7 +1575,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id();
 		//using pinged field for not yet indexed
 		$sql .= " AND post_status = 'publish'";
-		if(strlen($index) > 0)
+		if(strlen($index) > 0 && $index != "-")
 		{
 		 $sql .= " AND pinged = '" . $index . "'";
 		}
@@ -1573,7 +1583,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 		 $sql .= " AND pinged = ''";
 		}
-		
+				
 		return $wpdb->get_results($sql);
 	}
 
