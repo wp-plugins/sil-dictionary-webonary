@@ -997,7 +997,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		// link example:
 		//		<a href="#hvo14216">
 
-		$arrPosts = $this->get_posts();
+		$arrPosts = $this->get_posts("-");
 
 		$entrycount = 0;
 		foreach($arrPosts as $post)
@@ -1400,7 +1400,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .") " .
 		" GROUP BY pinged " .
 		" ORDER BY post_date DESC";
-
+		
 		$arrPosts = $wpdb->get_results($sql);
 
 		if(count($arrPosts) > 0)
@@ -1453,7 +1453,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				if(get_option("importStatus") == "indexing")
 				{
-					$status .= "Indexing " . $countIndexed . " of " . get_option("totalConfiguredEntries") . " entries";
+					$status .= "Indexing " . $countIndexed . " of " . $totalImportedPosts . " entries";
 
 					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnReindex\" value=\"Index Search Strings\"/>";
 				}
@@ -1569,6 +1569,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 		 $sql .= " AND pinged = '" . $index . "'";
 		}
+		if($index == "-")
+		{
+		 $sql .= " AND pinged = ''";
+		}
+		
 		return $wpdb->get_results($sql);
 	}
 
