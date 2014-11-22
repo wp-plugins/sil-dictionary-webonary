@@ -521,6 +521,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$arrPosts = $this->get_posts('flexlinks');
 
 			$subid = 1;
+			/*
 			$sortorder = $wpdb->get_var( "
 			SELECT sortorder
 			FROM $this->search_table_name
@@ -534,6 +535,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$sortorder++;
 			}
+			*/
 
 			$entry_counter = 1;
 			$entries_count = count($arrPosts);
@@ -542,12 +544,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$subentry = false;
 				if ( $post->ID ){
+					/*
 					$oldSortorder = $wpdb->get_var( "SELECT sortorder FROM $this->search_table_name WHERE relevance >= 95 AND post_id = " . $post->ID . " AND sortorder <> 0");
 
 					if(isset($oldSortorder))
 					{
 						$sortorder = $oldSortorder;
 					}
+					*/
 
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
 					
@@ -602,15 +606,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$headword_text = trim($headword->textContent);
 
 				//this is used for the browse view sort order
-				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $sortorder . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
+				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $post->menu_order . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
 				$wpdb->query( $sql );
 				
 				//this is used for the search sort order
+				/*
 				$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $sortorder . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin AND menu_order = 0";
 				$wpdb->query( $sql );
-				
-				error_log($sql);
-
+				*/
 				/*
 				 * Load semantic domains
 				 */
@@ -785,6 +788,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
+		
+		$sql = "SELECT menu_order
+			FROM $wpdb->posts
+			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
+			ORDER BY menu_order DESC
+			LIMIT 0,1";
+		
+		$menu_order = $wpdb->get_var($sql);
+		
+		if($menu_order == NULL)
+		{
+			$menu_order = 0;
+		}
 
 		update_option("totalConfiguredEntries", $entries_count);
 
@@ -857,9 +873,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if($post_id == NULL)
 				{
 					$sql = $wpdb->prepare(
-					"INSERT INTO ". $wpdb->posts . " (post_date, post_title, post_content, post_status, post_parent, post_name, comment_status)
-					VALUES (NOW(), '%s', '%s', 'publish', %d, '%s', '%s')",
-					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status') );
+					"INSERT INTO ". $wpdb->posts . " (post_date, post_title, post_content, post_status, post_parent, post_name, comment_status, menu_order)
+					VALUES (NOW(), '%s', '%s', 'publish', %d, '%s', '%s', %d)",
+					trim($headword_text), $entry_xml, $post_parent, $flexid, get_option('default_comment_status'), $menu_order );
 
 					$wpdb->query( $sql );
 
@@ -891,6 +907,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			} // foreach ( $headwords as $headword )
 
 			$entry_counter++;
+			$menu_order++;
 		} // foreach ($entries as $entry){
 
 		if($entries->length > 0)
@@ -1564,7 +1581,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		// @todo: If $headword_text has a double quote in it, this
 		// will probably fail.
-		$sql = "SELECT ID, post_title, post_content, post_parent
+		$sql = "SELECT ID, post_title, post_content, post_parent, menu_order
 			FROM $wpdb->posts
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
 			WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id();
