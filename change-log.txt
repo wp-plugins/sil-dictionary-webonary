@@ -1,3 +1,4 @@
+v. 4.2.4 22 November 2014 testing sortorder (output to error_log)
 v. 4.2.3 22 November 2014 fixed problem of not indexing if timed out (missing step parameter)
 v. 4.2.2 22 November 2014 pinged 'flexlinks' gets set for all imported posts
 v. 4.2.1 21 November 2014 now only converting FLEx links that haven't been converted yet if importing more than one file.
