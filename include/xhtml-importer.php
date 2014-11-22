@@ -550,7 +550,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					}
 
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
-
+					
 					$wpdb->query( $sql );
 					//set as indexed
 					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
@@ -564,13 +564,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$xpath = new DOMXPath($doc);
 				$xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 
-				//if the importer is set to show the progress in the browser,
-				//then the current step gets passed as a post variable by clicking on the "Index Search String" button
-				if(!$this->verbose || $this->api)
-				{
-					$step = 2;
-				}
-				$arrFieldQueries = $this->getArrFieldQueries($step);
+				$arrFieldQueries = $this->getArrFieldQueries(2);
 
 				$headword = $xpath->query($arrFieldQueries[0])->item(0);
 
@@ -610,7 +604,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//this is used for the browse view sort order
 				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $sortorder . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
 				$wpdb->query( $sql );
-
+				
 				//this is used for the search sort order
 				$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $sortorder . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin AND menu_order = 0";
 				$wpdb->query( $sql );
