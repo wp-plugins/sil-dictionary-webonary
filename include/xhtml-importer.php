@@ -608,7 +608,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//this is used for the search sort order
 				$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $sortorder . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin AND menu_order = 0";
 				$wpdb->query( $sql );
-
+				
+				error_log($sql);
 
 				/*
 				 * Load semantic domains
