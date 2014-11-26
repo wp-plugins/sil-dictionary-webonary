@@ -118,6 +118,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			wp_delete_attachment( $file->ID );
 		}
 
+		if(isset($_POST['btnConvertFLExLinks']))
+		{
+		?>
+			<DIV ID="flushme">Converting FLEx links to Webonary links... </DIV>
+		<?php
+			$this->verbose = true;
+			$this->convert_fieldworks_links_to_wordpress($_POST['pinged']);
+		}
+		
 		if(isset($_POST['btnMakeLinks']))
 		{
 		?>
@@ -1003,13 +1012,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @global $wpdb
 	 */
 
-	function convert_fieldworks_links_to_wordpress () {
+	function convert_fieldworks_links_to_wordpress ($pinged = "-") {
 		global $wpdb;
 
 		// link example:
 		//		<a href="#hvo14216">
 
-		$arrPosts = $this->get_posts("-");
+		$arrPosts = $this->get_posts($pinged);
 
 		$entrycount = 0;
 		foreach($arrPosts as $post)
@@ -1049,30 +1058,39 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						$flexid = str_replace("#", "", $href);
 						$post_id = (string) $this->get_post_id( $flexid );
 
-						// Now replace the link to hvo wherever it appears with a link to
-						// WordPress ID The update command should look like this:
-						// UPDATE `nuosu`.`wp_posts` SET post_content =
-						//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
-						//if ( empty( $post_id ) )
-							//$post_id = 'id-not-found';
-						$sql = "UPDATE $wpdb->posts SET post_content = ";
-						$sql = $sql . "REPLACE(post_content, 'href=";
-						$sql = $sql . '"' . $href . '"';
-						$sql = $sql . "', 'href=";
-						$sql = $sql . '"';
-						if ( empty( $post_id ) )
+						if ( empty( $post_id ) && $pinged == "-")
 						{
-							$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
+							//if pinged = "-" that could mean that the xhtml file was split and we import more later
+							//in this case the user can click on the button at the end to convert to a search link later
+							//in which case pinged will be either indexed or linksconverted
 						}
 						else
 						{
-							$sql = $sql . "?p=" . $post_id;
+							// Now replace the link to hvo wherever it appears with a link to
+							// WordPress ID The update command should look like this:
+							// UPDATE `nuosu`.`wp_posts` SET post_content =
+							//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
+							//if ( empty( $post_id ) )
+								//$post_id = 'id-not-found';
+							$sql = "UPDATE $wpdb->posts SET post_content = ";
+							$sql = $sql . "REPLACE(post_content, 'href=";
+							$sql = $sql . '"' . $href . '"';
+							$sql = $sql . "', 'href=";
+							$sql = $sql . '"';
+							if ( empty( $post_id ))
+							{
+								$sql = $sql . "?s=" . addslashes($link->textContent) . "&amp;partialsearch=1";
+							}
+							else
+							{
+								$sql = $sql . "?p=" . $post_id;
+							}
+							$sql = $sql . '"';
+							$sql = $sql . "') " .
+							" WHERE ID = " . $post->ID;
+							
+							$wpdb->query( $sql );
 						}
-						$sql = $sql . '"';
-						$sql = $sql . "') " .
-						" WHERE ID = " . $post->ID;
-
-						$wpdb->query( $sql );
 					}
 				} // foreach ( $links as $link )
 			}
@@ -1167,7 +1185,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 						}
 
 						//if($Emphasized_Text->length == 0)
-						if($field->getAttribute("class") != "partofspeech")
+						if($field->getAttribute("class") != "partofspeech" && !preg_match("/HeadWordRef/i", $field->getAttribute("class")))
 						{
 							//$newelement = $this->dom->createElement('a');
 							$newelement = $entry->createElement('a');
@@ -1460,10 +1478,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if($posts->post_date != NULL)
 				{
 					$status .= "Last import of configured xhtml was at " . $posts->post_date . " (server time)";
+					
+					$status .= "<input type=hidden name=chkConvertFLExLinks value=1>";
+					$status .= "<input type=hidden name=pinged value=\"" . $posts->pinged . "\">";
+					$status .= "<br>";
+					$status .= "<br><input type=\"submit\" name=\"btnConvertFLExLinks\" value=\"Retry converting FLEx links\">&nbsp;&nbsp;&nbsp;";
+					
 					if($countLinksConverted < $totalImportedPosts)
 					{
 						$status .= "<input type=hidden name=chkConvertToLinks value=1>";
-						$status .= "<br><input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\">";
+						$status .= "<input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\">";
 					}
 				}
 			}
@@ -1595,6 +1619,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 		 $sql .= " AND pinged = ''";
 		}
+		$sql .= " ORDER BY menu_order ASC";
 				
 		return $wpdb->get_results($sql);
 	}
