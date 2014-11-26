@@ -1,3 +1,4 @@
+v. 4.2.6 26 November 2014 if one splits the xhtml import, not all FLEx links get converted, so added a button which makes it possible to retry the converting of FLEx links
 v. 4.2.5 22 November 2014 fixed issue with sort order
 v. 4.2.4 22 November 2014 testing sortorder (output to error_log)
 v. 4.2.3 22 November 2014 fixed problem of not indexing if timed out (missing step parameter)
