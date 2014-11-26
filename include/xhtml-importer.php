@@ -1064,6 +1064,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							//in this case the user can click on the button at the end to convert to a search link later
 							//in which case pinged will be either indexed or linksconverted
 						}
+						else if(substr($href, 0,3) == "?p=")
+						{
+							//link has already been converted
+						}
 						else
 						{
 							// Now replace the link to hvo wherever it appears with a link to
