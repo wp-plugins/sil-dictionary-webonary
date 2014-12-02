@@ -192,13 +192,18 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$xhtml_file = $result['file'];
 
 				$this->goodbye($xhtml_file, $css_file);
+				
+				$message = "The import of the vernacular (configured) xhtml export is completed.\n";
+				$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+				wp_mail( $current_user->user_email, 'Import complete', $message);
+				
 				break;
 			case 3 :
 				?>
 				<DIV ID="flushme">converting links...</DIV>
 				<?php
 				$this->convert_fields_to_links();
-
+				
 				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
 				echo '<p>&nbsp;</p>';
 				echo '<p>After importing, go to <strong><a href="../wp-admin/admin.php?page=webonary">Webonary</a></strong> to configure more settings.</p>';
@@ -285,9 +290,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			global $current_user;
 			get_currentuserinfo();
 			
-			$message = "The import of the vernacular (configured) xhtml export is completed.\n";
-			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
-			wp_mail( $current_user->user_email, 'Import complete', $message);
 		}
 		flush();
 		echo __( 'Finished!', 'sil_dictionary' );
@@ -1732,13 +1734,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		else
 		{
 			//$semantic_domain_terms = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]');
-			$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]');
+			$semantic_domains = $xpath->query('//span[@class = "semantic-domains"]|//span[@class = "semanticdomains"]');
 		}
 
 		$i = 0;
 		foreach ( $semantic_domains as $semantic_domain ){
-			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]', $semantic_domain);
-			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]//span', $semantic_domain);
+			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]|//span[@class = "semanticdomains"]//span[starts-with(@class, "name")]', $semantic_domain);
+			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]//span|//span[@class = "semanticdomains"]//span[starts-with(@class, "abbreviation")]', $semantic_domain);
 
 			$sc = 0;
 			foreach($sd_names as $sd_name)

@@ -1,5 +1,5 @@
 <?
-function categories_func( $atts ) 
+function categories_func( $atts )
 {
 	$display = "";
 	
@@ -18,20 +18,20 @@ function categories_func( $atts )
 			}
 		}
 	}
-?>	
+?>
 	<style>
 	   TD {font-size: 9pt; font-family: arial,helvetica; text-decoration: none; font-weight: bold;}
 	   a.categorylink {text-decoration: none; color: navy; font-size: 15px;}
 	   #domRoot {
 	   	float:left; width:250px; margin-left: 20px; margin-top: 5px;
 	   }
-	   #searchresults { 
-			width:70%; 
+	   #searchresults {
+			width:70%;
 			min-width: 270px;
-			text-align:left; 
+			text-align:left;
 			float: right;
 			margin-top: 20px;
-		}	   
+		}
 	</style>
 	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/ua.js" type="text/javascript"></script>
 	
@@ -55,7 +55,7 @@ function categories_func( $atts )
 	{
 		$arrPosts = query_posts("semdomain=" . $_REQUEST["semdomain"] . "&semnumber=" . $semnumber . "&posts_per_page=" . $postsperpage . "&paged=" . $_REQUEST['pagenr']);
 	}
-?>	
+?>
 <?php
 	if(count($arrPosts) == 0)
 	{
@@ -90,9 +90,9 @@ function displayAlphabet($alphas, $languagecode)
 ?>
 	<style type="text/css">
 	.lpTitleLetterCell {min-width:31px; height: 23x; padding-top: 3px; padding-bottom: 2px; text-bottom; text-align:center;background-color: #EEEEEE;cursor:pointer;cursor:hand;border:1px solid silver; float:left; position: relative;}
-	</style>	
-<?php 
-	$display = "<br>"; 
+	</style>
+<?php
+	$display = "<br>";
 	$display .= "<div style=\"text-align:center;\"><div style=\"display:inline-block;\">";
 	foreach($alphas as $letter)
 	{
@@ -138,14 +138,14 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 		$url = "?" . $requestname . "=" . $chosenLetter . "&key=" . $languagecode . "&totalEntries=" . $totalEntries;
 
 		$limit_pages = 10;
-		$display .= "<li class=page_info>" . gettext("Page") . " " . $currentPage . " " . gettext("of") . " " . $totalPages . "</li>";	
+		$display .= "<li class=page_info>" . gettext("Page") . " " . $currentPage . " " . gettext("of") . " " . $totalPages . "</li>";
 		if( $totalPages > 1 && $currentPage > 1 )
 		{
 			if($requestname == "semnumber")
 			{
 				$display .= "<li><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . ($currentPage - 1) . ");\">" . $prevpage . "</a></li> ";
 			}
-			else 
+			else
 			{
 				$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage - 1) . "\">" .$prevpage . "</a></li>";
 			}
@@ -181,7 +181,7 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 			{
 				$display .= "<li " . $class . "><a href=\"?semdomain=" . $languagecode . "&semnumber=" . $chosenLetter . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
 			}
-			else 
+			else
 			{
 				$display .= "<li " . $class . "><a href=\"" . $url . "&pagenr=" . $page . "\">" . $page . "</a></li> ";
 			}
@@ -203,14 +203,14 @@ function displayPagenumbers($chosenLetter, $totalEntries, $entriesPerPage, $lang
 			{
 				$display .= "<li><a href=\"#\" onclick=\"displayEntry('-', '" . $chosenLetter . "', " . ($currentPage + 1) . ");\">" . $nextpage . "</a></li> ";
 			}
-			else 
+			else
 			{
 				$display .= "<li><a href=\"" . $url . "&pagenr=" . ($currentPage + 1) . "\">" .$nextpage . "</a></li>";
 			}
 		}
 		$display .= "</ul></div>";
 		$display .= "</div></div>";
-	}		
+	}
 	return $display;
 }
 
@@ -222,10 +222,10 @@ function englishalphabet_func( $atts, $content, $tag ) {
 		
 		if(isset($_GET['letter']))
 		{
-			$chosenLetter = $_GET['letter']; 
+			$chosenLetter = $_GET['letter'];
 		}
 		else {
-			$chosenLetter = "a"; 
+			$chosenLetter = "a";
 		}
 		
 		$alphas = range('a', 'z');
@@ -236,7 +236,7 @@ function englishalphabet_func( $atts, $content, $tag ) {
 	else
 	{
 		$display = reversalalphabet_func(null, "", "reversalindex1");
-	} 
+	}
 		
  return $display;
 }
@@ -251,7 +251,7 @@ function getReversalEntries($letter, $page, $reversalLangcode)
 	" FROM " . SEARCHTABLE . " a " .
 	" INNER JOIN " . SEARCHTABLE. " b ON a.post_id = b.post_id AND a.subid = b.subid " .
 	" AND a.language_code =  '" . $reversalLangcode . "' " .
-	" AND b.language_code = '" . get_option('languagecode') . "' " . 
+	" AND b.language_code = '" . get_option('languagecode') . "' " .
 	" AND a.relevance >=95 " .
 	" AND a.search_strings LIKE  '" . $letter . "%' " .
 	" GROUP BY a.post_id, a.search_strings " .
@@ -282,10 +282,10 @@ function reversalalphabet_func($atts, $content, $tag)
 	
 	if(isset($_GET['letter']))
 	{
-		$chosenLetter = stripslashes($_GET['letter']); 
+		$chosenLetter = stripslashes($_GET['letter']);
 	}
 	else {
-		$chosenLetter = stripslashes($alphas[0]); 
+		$chosenLetter = stripslashes($alphas[0]);
 	}
 		
 	$alphas = explode(",",  get_option('reversal' . $reversalnr . '_alphabet'));
@@ -294,7 +294,7 @@ function reversalalphabet_func($atts, $content, $tag)
 	$display = reversalindex($display, $chosenLetter, get_option('reversal' . $reversalnr . '_langcode'));
 		
 	return $display;
-} 
+}
 
 add_shortcode( 'reversalindex2', 'reversalalphabet_func' );
 
@@ -302,24 +302,24 @@ function reversalindex($display, $chosenLetter, $langcode)
 {
 ?>
 	<style type="text/css">
-	#searchresult { 
-		width:70%; 
+	#searchresult {
+		width:70%;
 		min-width: 270px;
-		text-align:left; 
+		text-align:left;
 	}
-	#englishcol { 
-		float:left; 
-		margin: 1px; 
+	#englishcol {
+		float:left;
+		margin: 1px;
 		padding-left: 2px;
-		width:50%; 
-		text-align:left; 
+		width:50%;
+		text-align:left;
 	}
 	#vernacularcol {
 		text-align:left;
 	}
-	.odd { background: #CCCCCC; }; 
-	.even { background: #FFF; }; 		
-	</style>		
+	.odd { background: #CCCCCC; };
+	.even { background: #FFF; };
+	</style>
 <?php
 	$page = $_GET['pagenr'];
 	if(!isset($_GET['pagenr']))
@@ -335,12 +335,12 @@ function reversalindex($display, $chosenLetter, $langcode)
 	$count = 0;
 	foreach($arrAlphabet as $alphabet)
 	{
-		$display .=  "<div id=searchresult class=" . $background . " style=\"clear:both;\">";	
+		$display .=  "<div id=searchresult class=" . $background . " style=\"clear:both;\">";
 			$display .=  "<div id=englishcol>";
 
-			if($alphabet->English != $englishWord) 
+			if($alphabet->English != $englishWord)
 			{
-				$display .=  $alphabet->English; 
+				$display .=  $alphabet->English;
 			}
 			$englishWord = $alphabet->English;
 			 $display .=  "</div>";
@@ -352,7 +352,7 @@ function reversalindex($display, $chosenLetter, $langcode)
 		{
 			$background = "odd";
 		}
-		else 
+		else
 		{
 			$background = "even";
 		}
@@ -386,14 +386,14 @@ function getVernacularHeadword($postid, $languagecode)
 	global $wpdb;
 	
 	$sql = "SELECT search_strings " .
-	" FROM " . SEARCHTABLE . 
+	" FROM " . SEARCHTABLE .
 	" WHERE post_id = " . $postid . " AND relevance = 100 AND language_code = '" . $languagecode . "'";
 
 	return $wpdb->get_var($sql);
 	
 }
 
-function vernacularalphabet_func( $atts ) 
+function vernacularalphabet_func( $atts )
 {
 	$languagecode = get_option('languagecode');
 	
@@ -401,10 +401,10 @@ function vernacularalphabet_func( $atts )
 	
 	if(isset($_GET['letter']))
 	{
-		$chosenLetter = stripslashes($_GET['letter']); 
+		$chosenLetter = stripslashes($_GET['letter']);
 	}
 	else {
-		$chosenLetter = stripslashes($alphas[0]); 
+		$chosenLetter = stripslashes($alphas[0]);
 	}
 		
 	
@@ -418,7 +418,7 @@ function vernacularalphabet_func( $atts )
 	}
 	
 	//if for example somebody searches for "k", but there is also a letter 'kp' in the alphabet then
-	//words starting with kp should not appear 
+	//words starting with kp should not appear
 	$noLetters = "";
 	foreach($alphas as $alpha)
 	{
@@ -440,7 +440,7 @@ function vernacularalphabet_func( $atts )
 	
 	if(count($arrPosts) == 0)
 	{
-		$display .= __('No entries exist starting with this letter.', 'sil_dictionary'); 
+		$display .= __('No entries exist starting with this letter.', 'sil_dictionary');
 	}
 	foreach($arrPosts as $mypost)
 	{
@@ -450,13 +450,13 @@ function vernacularalphabet_func( $atts )
 			$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
 			$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\"/?s=" . $headword . "&partialsearch=1\">" . $headword . "</a></div>";
 		}
-		else 
+		else
 		{
 			$display .= "<div class=post>" . $mypost->post_content . "</div>";
 			/*
 			if( comments_open($mypost->ID) ) {
-				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>"; 
-			}			
+				$display .= "<a href=\"/" . $mypost->post_name. "\" rel=bookmark><u>Comments (" . get_comments_number($mypost->ID) . ")</u></a>";
+			}
 			*/
 		}
 	}
@@ -465,7 +465,7 @@ function vernacularalphabet_func( $atts )
 
 	if(!isset($_GET['totalEntries']))
 	{
-		global $wp_query;		
+		global $wp_query;
 		$totalEntries = $wp_query->found_posts;
 	}
 	else

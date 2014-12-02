@@ -23,13 +23,6 @@ if ( ! defined('ABSPATH') )
  */
 function add_admin_menu() {
 	add_menu_page( "Webonary", "Webonary", true, "webonary", "sil_dictionary_main",  get_bloginfo('wpurl') . "/wp-content/plugins/sil-dictionary-webonary/images/webonary-icon.png", 76 );
-	
-    add_management_page(
-		__( 'SIL Dictionary', 'sil_old_menu' ), // page title
-        __( 'SIL Dictionary', 'sil_old_menu' ), // menu title
-		SIL_DICTIONARY_USER_CAPABILITY, // user capability needed to run the menu
-        __FILE__, // slug name
-		'sil_old_menu' ); // callback function
 }
 
 function ajaxlanguage()
@@ -86,9 +79,6 @@ function sil_dictionary_main() {
 	user_input();
 }
 
-function sil_old_menu() {
-	echo "<p>The menu name has been renamed to 'Webonary' and can now be found between Tools and Settings.<br><a href=\"admin.php?page=webonary\">Click here</a> to access the Webonary settings.</p>";
-}
 //---------------------------------------------------------------------------//
 
 /**
