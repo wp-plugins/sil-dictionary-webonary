@@ -1697,6 +1697,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//$parent_term_id = 0;
 		foreach ( $pos_terms as $pos_term ){
 			$pos_name = (strlen($pos_term->textContent) > 30) ? substr($pos_term->textContent, 0, 30) . '...' : $pos_term->textContent;
+			$pos_name = trim(str_replace(".", "", $pos_name));
 
 			wp_insert_term(
 				$pos_name,
