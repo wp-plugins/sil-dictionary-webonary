@@ -318,12 +318,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$arrFieldQueries[1] = $querystart . '[@class = "headword-sub"]';
 		$arrFieldQueries[2] = $querystart . '[contains(@class, "LexemeForm")]';
 		//$arrFieldQueries[3] = $querystart . '[@class = "definition"]|//*[@class = "definition_L2"]|//*[@class = "definition-minor"]';
-		$arrFieldQueries[3] = $querystart . '[starts-with(@class,"definition")]|' . $querystart . '[starts-with(@class,"LexSense")]';
+		$arrFieldQueries[3] = $querystart . '[starts-with(@class,"definition")]/span|' . $querystart . '[starts-with(@class,"LexSense")]';
 		//$arrFieldQueries[4] = $querystart . '[@class = "definition-sub"]';
 		$arrFieldQueries[4] = $querystart . '[starts-with(@class,"definition-sub")]';
 		$arrFieldQueries[5] = $querystart . '[@class = "example"]';
 		$arrFieldQueries[6] = $querystart . '[starts-with(@class,"translation")]';
-		$arrFieldQueries[7] = $querystart . '[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]';
+		$arrFieldQueries[7] = $querystart . '[starts-with(@class,"LexEntry-") and not(contains(@class, "LexEntry-publishRoot-DefinitionPub_L2"))]/span';
 		$arrFieldQueries[8] = $querystart . '[@class = "variantref-form"]';
 		$arrFieldQueries[9] = $querystart . '[@class = "variantref-form-sub"]';
 		$arrFieldQueries[10] = $querystart . '[@class = "sense-crossref"]';
@@ -1344,7 +1344,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 
 		$fields = $xpath->query($query);
-
+		
 		foreach ( $fields as $field ) {
 
 			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
@@ -1380,19 +1380,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$search_string = $field->textContent;
 		}
 
-		// We're using a generic $wpdb->query instead of a $wpdb->insert
-		// to make use of the ON DUPLICATE KEY feature of MySQL.
-
 		// $wdbt->prepare likes to add single quotes around string replacements,
 		// and that's why I concatenated the table name.
-		$sql = $wpdb->prepare(
-			"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
-			VALUES (%d, '%s', '%s', %d, %d)",
-			$post_id, $language_code, trim($search_string), $relevance, $subid );
-
-			//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",
-
-			$wpdb->query( $sql );
+		if(strlen(trim($search_string)) > 0)
+		{
+			$sql = $wpdb->prepare(
+				"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
+				VALUES (%d, '%s', '%s', %d, %d)",
+				$post_id, $language_code, trim($search_string), $relevance, $subid );
+	
+				//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",
+	
+				$wpdb->query( $sql );
+		}
 
 		//this replaces the special apostroph with the standard apostroph
 		//the first time round the special apostroph is inserted, so that both searches are valid
