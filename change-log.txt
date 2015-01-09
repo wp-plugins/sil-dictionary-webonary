@@ -1,3 +1,4 @@
+v. 4.4.0 09 January 2015 fixed import problem. Now separates definitions if has several span-tags inside
 v. 4.2.9 08 January 2015 before inserting "parts of speech" terms, dots get removed. Eg. "n." gets replaced with "n"
 v. 4.2.8 02 December 2014 semantic domain class name has changed in latest FLEx version
 v. 4.2.7 26 November 2014 now checks if FLEx link has already been converted, so that we don't accidentally convert it to a search link
