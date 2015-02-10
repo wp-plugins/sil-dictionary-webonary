@@ -1,4 +1,4 @@
-<?
+<?php
 function categories_func( $atts )
 {
 	$display = "";

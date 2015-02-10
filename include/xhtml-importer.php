@@ -126,7 +126,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$this->verbose = true;
 			$this->convert_fieldworks_links_to_wordpress($_POST['pinged']);
 		}
-		
+
 		if(isset($_POST['btnMakeLinks']))
 		{
 		?>
@@ -192,18 +192,18 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$xhtml_file = $result['file'];
 
 				$this->goodbye($xhtml_file, $css_file);
-				
+
 				$message = "The import of the vernacular (configured) xhtml export is completed.\n";
 				$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
 				wp_mail( $current_user->user_email, 'Import complete', $message);
-				
+
 				break;
 			case 3 :
 				?>
 				<DIV ID="flushme">converting links...</DIV>
 				<?php
 				$this->convert_fields_to_links();
-				
+
 				echo '<p>' . __( 'Finished!', 'sil_dictionary' ) . '</p>';
 				echo '<p>&nbsp;</p>';
 				echo '<p>After importing, go to <strong><a href="../wp-admin/admin.php?page=webonary">Webonary</a></strong> to configure more settings.</p>';
@@ -289,7 +289,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			global $current_user;
 			get_currentuserinfo();
-			
+
 		}
 		flush();
 		echo __( 'Finished!', 'sil_dictionary' );
@@ -341,7 +341,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 		else
 		{
-			$size = wp_convert_bytes_to_hr( $bytes );
+			$size = size_format( $bytes );
 		}
 
 		$upload_dir = wp_upload_dir();
@@ -565,7 +565,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					*/
 
 					$sql = $wpdb->prepare("DELETE FROM `". $this->search_table_name . "` WHERE post_id = %d", $post->ID);
-					
+
 					$wpdb->query( $sql );
 					//set as indexed
 					$sql = "UPDATE $wpdb->posts SET pinged = 'indexed' WHERE ID = " . $post->ID;
@@ -619,7 +619,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//this is used for the browse view sort order
 				$sql = "UPDATE " . $this->search_table_name . " SET sortorder = " . $post->menu_order . " WHERE search_strings = '" . addslashes($headword_text) . "' COLLATE 'UTF8_BIN' AND relevance >= 95 AND sortorder = 0" ;
 				$wpdb->query( $sql );
-				
+
 				//this is used for the search sort order
 				/*
 				$sql = "UPDATE " . $wpdb->posts . " SET menu_order = " . $sortorder . " WHERE post_title = '" . addslashes($headword_text) . "' collate utf8_bin AND menu_order = 0";
@@ -799,15 +799,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
-		
+
 		$sql = "SELECT menu_order
 			FROM $wpdb->posts
 			INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
 			ORDER BY menu_order DESC
 			LIMIT 0,1";
-		
+
 		$menu_order = $wpdb->get_var($sql);
-		
+
 		if($menu_order == NULL)
 		{
 			$menu_order = 0;
@@ -890,7 +890,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 					$wpdb->query( $sql );
 
-					$post_id = mysql_insert_id();
+					$post_id = $wpdb->insert_id;
 					if($post_id == 0)
 					{
 						$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "'");
@@ -1050,7 +1050,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 						//$cross_refs = $xpath->query( '//span[contains(@class,"crossref")]|.//*[contains(@class,"HeadWordRef")]', $link );
 
-						$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $cross_ref);
+						$sensenumbers = $xpath->query('//span[@class="xsensenumber"]', $link);
 						//$sensenumbers = $this->dom_xpath->query('//xhtml:span[@class="xsensenumber"]', $cross_ref);
 						foreach($sensenumbers as $sensenumber)
 						{
@@ -1094,7 +1094,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 							$sql = $sql . '"';
 							$sql = $sql . "') " .
 							" WHERE ID = " . $post->ID;
-							
+
 							$wpdb->query( $sql );
 						}
 					}
@@ -1104,16 +1104,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$this->import_xhtml_show_progress($entrycount, count($arrPosts), "", "Step 1 of 2: Please wait... converting FLEx links for Wordpress.");
 
 		} //foreach $arrPosts as $post
-		
+
 		//set pinged = flexlinks for all posts
 		$sql = "UPDATE $wpdb->posts
 			   INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
 			   SET pinged = 'flexlinks'
 			   WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id() . "
 			   AND post_status = 'publish' AND pinged = ''";
-		
+
 		$wpdb->query( $sql );
-		
+
 	} // function convert_fieldworks_links_to_wordpress()
 
 	function convert_fields_to_links() {
@@ -1344,7 +1344,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 
 		$fields = $xpath->query($query);
-		
+
 		foreach ( $fields as $field ) {
 
 			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
@@ -1388,9 +1388,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 				VALUES (%d, '%s', '%s', %d, %d)",
 				$post_id, $language_code, trim($search_string), $relevance, $subid );
-	
+
 				//ON DUPLICATE KEY UPDATE search_strings = CONCAT(search_strings, ' ',  '%s');",
-	
+
 				$wpdb->query( $sql );
 		}
 
@@ -1439,14 +1439,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function get_import_status() {
 		global $wpdb;
 
+		$countLinksConverted = 0;
+
 		$catid = get_category_id();
+
+		if($catid == NULL)
+		{
+			$catid = 0;
+		}
 
 		$sql = "SELECT COUNT(pinged) AS entryCount, post_date, pinged FROM " . $wpdb->prefix . "posts " .
 		" WHERE post_type IN ('post', 'revision') AND " .
 		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .") " .
 		" GROUP BY pinged " .
 		" ORDER BY post_date DESC";
-		
+
 		$arrPosts = $wpdb->get_results($sql);
 
 		if(count($arrPosts) > 0)
@@ -1484,12 +1491,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if($posts->post_date != NULL)
 				{
 					$status .= "Last import of configured xhtml was at " . $posts->post_date . " (server time)";
-					
+
 					$status .= "<input type=hidden name=chkConvertFLExLinks value=1>";
 					$status .= "<input type=hidden name=pinged value=\"" . $posts->pinged . "\">";
 					$status .= "<br>";
 					$status .= "<br><input type=\"submit\" name=\"btnConvertFLExLinks\" value=\"Retry converting FLEx links\">&nbsp;&nbsp;&nbsp;";
-					
+
 					if($countLinksConverted < $totalImportedPosts)
 					{
 						$status .= "<input type=hidden name=chkConvertToLinks value=1>";
@@ -1626,7 +1633,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		 $sql .= " AND pinged = ''";
 		}
 		$sql .= " ORDER BY menu_order ASC";
-				
+
 		return $wpdb->get_results($sql);
 	}
 
@@ -1880,12 +1887,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
-		
+
 		if($this->verbose == false && $this->api == false)
 		{
 			global $current_user;
 			get_currentuserinfo();
-			
+
 			$message = "The reversal import is completed.\n";
 			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
 			wp_mail( $current_user->user_email, 'Reversal Import complete', $message);

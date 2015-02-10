@@ -24,7 +24,7 @@ if ( ! defined('ABSPATH') )
 function sil_dictionary_select_fields() {
 	global $wp_query, $wpdb;
 	$search_table_name = SEARCHTABLE;
-	
+
 	if(  !empty($wp_query->query_vars['s']) && isset($wp_query->query_vars['letter']))
 	{
 		return $wpdb->posts.".*, " . $search_table_name . ".search_strings";
@@ -43,7 +43,7 @@ function sil_dictionary_select_distinct() {
 function sil_dictionary_custom_join($join) {
 	global $wp_query, $wpdb;
 	$search_table_name = SEARCHTABLE;
-	
+
 	/*
 	 * The query I'm going for will hopefully end up looking something like this
 	 * example:
@@ -60,12 +60,12 @@ function sil_dictionary_custom_join($join) {
 	 */
 	mb_internal_encoding("UTF-8");
 	if( !empty($wp_query->query_vars['s'])) {
-		//search string gets trimmed and normalized to NFC 
+		//search string gets trimmed and normalized to NFC
 		if (class_exists("Normalizer", $autoload = false))
 		{
 			$search = normalizer_normalize(trim($wp_query->query_vars['s']), Normalizer::FORM_C);
 		}
-		else 
+		else
 		{
 			$search = trim($wp_query->query_vars['s']);
 		}
@@ -73,33 +73,33 @@ function sil_dictionary_custom_join($join) {
 		if(!isset($key))
 		{
 			$key = $wp_query->query_vars['langcode'];
-		}		
+		}
 		$partialsearch = $_GET['partialsearch'];
 		if(!isset($_GET['partialsearch']))
 		{
 			$partialsearch = get_option("include_partial_words");
-		}		  
-		
+		}
+
 		if(strlen($search) == 0 && $_GET['tax'] > 1)
 		{
 			$partialsearch = 1;
-		} 
-								
+		}
+
 		$subquery_where = "";
 		if( strlen( trim( $key ) ) > 0)
 			$subquery_where .= " WHERE " . $search_table_name . ".language_code = '$key' ";
 		$subquery_where .= empty( $subquery_where ) ? " WHERE " : " AND ";
-		
+
 		if(isset($wp_query->query_vars['letter']))
 		{
 			$letter = trim($wp_query->query_vars['letter']);
 			$noletters = trim($wp_query->query_vars['noletters']);
-			
-			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" . addslashes($letter) . "%' COLLATE 'UTF8_BIN'" . 
+
+			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" . addslashes($letter) . "%' COLLATE 'UTF8_BIN'" .
 			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes(strtoupper($letter)) . "%' COLLATE 'UTF8_BIN' " .
-			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes("-" . $letter) . "%' COLLATE 'UTF8_BIN') " . 
+			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes("-" . $letter) . "%' COLLATE 'UTF8_BIN') " .
 			" AND relevance >= 95 AND language_code = '$key' ";
-			
+
 			$arrNoLetters = explode(",",  $noletters);
 			foreach($arrNoLetters as $noLetter)
 			{
@@ -109,7 +109,7 @@ function sil_dictionary_custom_join($join) {
 					" AND " . $search_table_name . ".search_strings NOT LIKE '" . strtoupper($noLetter) ."%' COLLATE 'UTF8_BIN'";
 				}
 			}
-		}		
+		}
 		else if ( is_CJK( $search ) || mb_strlen($search) > 3 || $partialsearch == 1)
 		{
 			$subquery_where .= $search_table_name . ".search_strings LIKE '%" .
@@ -131,11 +131,16 @@ function sil_dictionary_custom_join($join) {
 				$subquery_where .
 				" GROUP BY post_id, language_code, search_strings " .
 				" ORDER BY relevance DESC) ";
-		
+
 			$join = " JOIN " . $subquery . $search_table_name . " ON $wpdb->posts.ID = " . $search_table_name . ".post_id ";
 		//}
 	}
-	if( $_GET['tax'] > 1 || strlen($wp_query->query_vars['semdomain']) > 0) {
+	$tax = 0;
+	if(isset($_GET['tax']))
+	{
+		$tax = $_GET['tax'];
+	}
+	if( $tax > 1 || strlen($wp_query->query_vars['semdomain']) > 0) {
 		$join .= " LEFT JOIN $wpdb->term_relationships ON $wpdb->posts.ID = $wpdb->term_relationships.object_id ";
 		$join .= " INNER JOIN $wpdb->term_taxonomy ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_id ";
 		if(get_option("hasSemDomainNumbers") == 1) {
@@ -146,20 +151,20 @@ function sil_dictionary_custom_join($join) {
 }
 
 function sil_dictionary_custom_message()
-{		
+{
 	$partialsearch = $_GET['partialsearch'];
 	if(!isset($_GET['partialsearch']))
 	{
 		$partialsearch = get_option("include_partial_words");
 	}
-	
+
 	mb_internal_encoding("UTF-8");
 	if(!is_CJK($_GET['s']) && mb_strlen($_GET['s']) > 0 && mb_strlen($_GET['s']) <= 3 && $partialsearch != 1)
 	{
 		//echo getstring("partial-search-omitted");
 		_e('Because of the brevity of your search term, partial search was omitted.', 'sil_dictionary');
 		echo "<br>";
-		echo '<a href="?' . $_SERVER["QUERY_STRING"] . '&partialsearch=1">'; _e('Click here to include searching through partial words.', 'sil_dictionary'); echo '</a>';		 
+		echo '<a href="?' . $_SERVER["QUERY_STRING"] . '&partialsearch=1">'; _e('Click here to include searching through partial words.', 'sil_dictionary'); echo '</a>';
 	}
 }
 
@@ -177,12 +182,15 @@ function sil_dictionary_custom_where($where) {
 		$where = ($wp_version >= 2.1) ? ' AND post_type = \'post\' AND post_status = \'publish\'' : ' AND post_status = \'publish\'';
 	}
 
-	if($_GET['tax'] > 1)
+	if(isset($_GET['tax']))
 	{
-	$wp_query->is_search = true;
-	$where .= " AND $wpdb->term_taxonomy.term_id = " . $_GET['tax'];
+		if($_GET['tax'] > 1)
+		{
+			$wp_query->is_search = true;
+			$where .= " AND $wpdb->term_taxonomy.term_id = " . $_GET['tax'];
+		}
 	}
-	
+
 	if(strlen($wp_query->query_vars['semdomain']) > 0)
 	{
 	$wp_query->is_search = true;
@@ -193,9 +201,9 @@ function sil_dictionary_custom_where($where) {
 		else
 		{
 			$where .= " AND $wpdb->term_taxonomy.description = '" . $wp_query->query_vars['semdomain'] ."'";
-		}	
-	}	
-	
+		}
+	}
+
 	return $where;
 }
 
@@ -204,30 +212,30 @@ function sil_dictionary_custom_where($where) {
 function sil_dictionary_custom_order_by($orderby) {
 	global $wp_query, $wp_version, $wpdb;
 	$search_table_name = SEARCHTABLE;
-	
+
 	$orderby = "";
 	if(  !empty($wp_query->query_vars['s']) && !isset($wp_query->query_vars['letter']) && $_GET['tax'] < 1) {
 		$orderby = $search_table_name . ".relevance DESC, CHAR_LENGTH(" . $search_table_name . ".search_strings) ASC, ";
 	}
-	
+
 	if( !empty($wp_query->query_vars['s']) && $_GET['tax'] < 1)
 	{
 		if(isset($wp_query->query_vars['letter']))
 		{
-			$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".search_strings ASC";	
+			$orderby .= $search_table_name . ".sortorder ASC, " . $search_table_name . ".search_strings ASC";
 		}
-		else 
+		else
 		{
 			$orderby .= "menu_order ASC, " . $search_table_name . ".search_strings ASC";
 		}
 		//$orderby .= " $wpdb->posts.post_title ASC";
 	}
-	
+
 	if(strlen($wp_query->query_vars['semdomain']) > 0 || $_GET['tax'] > 1)
 	{
 		$orderby .= "menu_order ASC, post_title ASC";
 	}
-	
+
 	return $orderby;
 }
 
