@@ -164,8 +164,15 @@ function user_input() {
 				<p>
 				<h3>Browse Views</h3>
 				<p>
+				<?php
+				$DisplaySubentriesAsMainEntries = get_option('DisplaySubentriesAsMainEntries');
+				if($DisplaySubentriesAsMainEntries != "no")
+				{
+					$DisplaySubentriesAsMainEntries = 1;
+				}
+				?>
 				<input name="DisplaySubentriesAsMainEntries" type="checkbox" value="1"
-							<?php checked('1', get_option('DisplaySubentriesAsMainEntries')); ?> />
+							<?php checked('1', $DisplaySubentriesAsMainEntries); ?> />
 							<?php _e('Display subentries as main entries'); ?>
 				<p>
 				<?php
