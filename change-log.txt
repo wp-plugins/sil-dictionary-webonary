@@ -1,3 +1,4 @@
+v. 4.3.2 11 February 2015 displaying subentries as main entries is now unchecked by default (added setting under "Browse View")
 v. 4.3.1 09 February 2015 fixed some issues people had when self-hosting the plugin
 v. 4.3.0 09 January 2015 fixed import problem. Now separates definitions if has several span-tags inside
 v. 4.2.9 08 January 2015 before inserting "parts of speech" terms, dots get removed. Eg. "n." gets replaced with "n"
