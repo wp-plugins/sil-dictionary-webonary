@@ -446,12 +446,10 @@ function vernacularalphabet_func( $atts )
 	if(get_option('DisplaySubentriesAsMainEntries') == 'no')
 	{
 		$displaySubentriesAsMinorEntries = false;
-		echo "false";
 	}
 	if(get_option('DisplaySubentriesAsMainEntries') == 1)
 	{
 		$displaySubentriesAsMinorEntries = true;
-		echo "true";
 	}
 	
 	
