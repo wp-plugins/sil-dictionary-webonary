@@ -442,15 +442,28 @@ function vernacularalphabet_func( $atts )
 	{
 		$display .= __('No entries exist starting with this letter.', 'sil_dictionary');
 	}
+	$displaySubentriesAsMinorEntries = true;
+	if(get_option('DisplaySubentriesAsMainEntries') == 'no')
+	{
+		$displaySubentriesAsMinorEntries = false;
+		echo "false";
+	}
+	if(get_option('DisplaySubentriesAsMainEntries') == 1)
+	{
+		$displaySubentriesAsMinorEntries = true;
+		echo "true";
+	}
+	
+	
 	foreach($arrPosts as $mypost)
 	{
-		if(trim($mypost->post_title) != trim($mypost->search_strings))
+		if(trim($mypost->post_title) != trim($mypost->search_strings) && $displaySubentriesAsMinorEntries == true)
 		{
 			$headword = getVernacularHeadword($mypost->ID, $languagecode);
 			$display .= "<div class=entry><span class=headword>" . $mypost->search_strings . "</span> ";
 			$display .= "<span class=lpMiniHeading>See main entry:</span> <a href=\"/?s=" . $headword . "&partialsearch=1\">" . $headword . "</a></div>";
 		}
-		else
+		else if(trim($mypost->post_title) == trim($mypost->search_strings) )
 		{
 			$display .= "<div class=post>" . $mypost->post_content . "</div>";
 			/*

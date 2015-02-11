@@ -163,6 +163,11 @@ function user_input() {
 							<?php _e('Always include searching through partial words.'); ?>
 				<p>
 				<h3>Browse Views</h3>
+				<p>
+				<input name="DisplaySubentriesAsMainEntries" type="checkbox" value="1"
+							<?php checked('1', get_option('DisplaySubentriesAsMainEntries')); ?> />
+							<?php _e('Display subentries as main entries'); ?>
+				<p>
 				<?php
 				if(count($arrLanguageCodes) == 0)
 				{
@@ -292,6 +297,12 @@ function run_user_action() {
     if ( ! empty( $_POST['save_settings'])) {
     	update_option("publicationStatus", $_POST['publicationStatus']);
     	update_option("include_partial_words", $_POST['include_partial_words']);
+    	$displaySubentriesAsMainEntries = 'no';
+    	if(isset($_POST['DisplaySubentriesAsMainEntries']))
+    	{
+    		$displaySubentriesAsMainEntries = 1;
+    	}
+    	update_option("DisplaySubentriesAsMainEntries", $displaySubentriesAsMainEntries);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
     	update_option("reversal1_langcode", $_POST['reversal1_langcode']);
