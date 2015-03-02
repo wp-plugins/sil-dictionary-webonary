@@ -385,18 +385,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				<input type="radio" name="filetype" value="reversal" onChange="toggleReversal();" /> <?php esc_attr_e('Reversal Index'); ?><BR>
 				<input type="radio" name="filetype" value="stem" onChange="toggleReversal();" /> *<?php esc_attr_e('Sort Order'); ?> <a href="http://webonary.org/data-transfer/#sortorder" target="_blank">only if sort order is different than configured view</a><BR>
 			</p>
-			<div id="convertToLinks">
-				<select name="chkConvertToLinks">
-					<option value="0"><?php echo esc_attr_e('Don\'t convert items into search links.'); ?></option>
-					<option value="1"><?php echo esc_attr_e('Only convert headwords into search links.'); ?></option>
-					<option value="2"><?php echo esc_attr_e('Convert all items into search links.'); ?></option>
-				</select>
-				<?php esc_attr_e('(semantic domains always convert to links).'); ?>
-				<?php /*
-				<input type="checkbox" name="chkShowDebug"> <?php esc_attr_e('Display debug messages'); ?></input>
-				*/ ?>
-			</div>
 			<p>
+			<input type="hidden" name="chkConvertToLinks" value="1">
 			<input type="checkbox" name="chkShowProgress"> <?php echo esc_attr_e('Check to show import progress in browser (slower). Keep unchecked to run import in the background.'); ?>
 			<p>
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
