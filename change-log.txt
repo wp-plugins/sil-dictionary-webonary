@@ -1,3 +1,4 @@
+v. 4.3.6 6 March 2015 $countIndexed = $countIndexed + $countLinksConverted;
 v. 4.3.5 2 March 2015 removed options for converting entries to links. Headwords now always convert to links.
 v. 4.3.4 11 February 2015 removed debug output from browse view
 v. 4.3.3 11 February 2015 if nothing was set for option "Display Subentries as main entries", it now is checked (backwards-compatible)
