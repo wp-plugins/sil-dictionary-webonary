@@ -1469,6 +1469,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 			}
 
+			$countIndexed = $countIndexed + $countLinksConverted;
+			
 			$importFinished = false;
 			if($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts)
 			{
