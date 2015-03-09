@@ -1375,7 +1375,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if(strlen(trim($search_string)) > 0)
 		{
 			$sql = $wpdb->prepare(
-				"INSERT INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
+				"INSERT IGNORE INTO `". $this->search_table_name . "` (post_id, language_code, search_strings, relevance, subid)
 				VALUES (%d, '%s', '%s', %d, %d)",
 				$post_id, $language_code, trim($search_string), $relevance, $subid );
 
@@ -1814,6 +1814,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function import_xhtml_reversal_indexes(){
 
 		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
+		
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
@@ -1855,7 +1856,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$headwords = $this->dom_xpath->query('.//xhtml:span[@class = "headword"]|.//xhtml:span[starts-with(@class, "headref")]', $entry );
 
 			foreach ( $headwords as $headword ){
-
+				
 				$entry = $this->convert_homographs($entry, "Homograph-Number");
 
 				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
@@ -1867,15 +1868,17 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$headword_text = trim($headword->textContent);
 
-				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
+				//$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
+				$post_id = 0;
 
-				if ( $post_id != NULL ){
+				//if ( $post_id != NULL ){
 					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance, null, $subid);
-				}
+				/*}
 				else
 				{
 					echo "PostId for '" . $headword_text . "' not found.<br>";
 				}
+				*/
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
