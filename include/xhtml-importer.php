@@ -50,6 +50,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 
 	public $search_table_name = SEARCHTABLE;
+	public $reversal_table_name = REVERSALTABLE;
 	public $pos_taxonomy = 'sil_parts_of_speech';
 	public $semantic_domains_taxonomy = 'sil_semantic_domains';
 	public $writing_system_taxonomy = "sil_writing_systems";
@@ -116,6 +117,28 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$file = $this->get_latest_xhtmlfile();
 			wp_delete_attachment( $file->ID );
+		}
+		
+		if(isset($_POST['btnRestartReversalImport']))
+		{
+			echo "Restarting Import of Reversal Entries...<br>";
+
+			$file = $this->get_latest_xhtmlfile();
+			$xhtml_file = file_get_contents($file->url);
+
+			$this->import_xhtml($xhtml_file, false, false, "reversal");
+
+			$this->index_reversals();
+		}
+		
+		
+		if(isset($_POST['btnIndexReversals']))
+		{
+		?>
+		<DIV ID="flushme">Indexing Reversal Entries... </DIV>
+		<?php
+			$this->verbose = true;
+			$this->index_reversals();
 		}
 
 		if(isset($_POST['btnConvertFLExLinks']))
@@ -291,6 +314,32 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			get_currentuserinfo();
 
 		}
+		
+		if ( $_POST['filetype'] == 'reversal')
+		{
+			if($this->verbose)
+			{
+				if($_GET['step'] == 1)
+				{
+					echo '<strong>Next step: </strong>';
+					echo '<p>';
+						echo '<form enctype="multipart/form-data" id="import-upload-form" method="post" action="' . esc_attr(wp_nonce_url("admin.php?import=pathway-xhtml&amp;step=2", 'import-upload')) . '">';
+							echo '<input type="submit" class="button" name="btnIndexReversals" value="Index reversal entries"/>';
+							if(isset($_POST['chkConvertToLinks']))
+							{
+								echo '<input type="hidden" name="chkShowProgress" value=' . $_POST['chkShowProgress'] . '></input>';
+								echo '<input type="hidden" name="filetype" value="reversal"></input>';
+							}
+						echo '</form>';
+					echo '</p>';
+				}
+			}
+			else
+			{
+				$this->index_reversals();
+			}
+		}
+					
 		flush();
 		echo __( 'Finished!', 'sil_dictionary' );
 	}
@@ -578,7 +627,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if(isset($headword) && $post->post_parent == 0)
 				{
 					//import headword
-					$this->import_xhtml_search_string($post->ID, $headword, $this->headword_relevance, null, $subid);
+					$this->import_xhtml_search_string($post->ID, $headword->textContent, $this->headword_relevance, $headword->getAttribute("lang"), $subid);
 					//sub headwords
 					$this->import_xhtml_search($doc, $post->ID, $arrFieldQueries[1], ($this->headword_relevance - 5), $subid);
 					//lexeme forms
@@ -1220,6 +1269,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$entry_counter++;
 		}
+		update_option("importStatus", "importFinished");
 	}
 
 	function convert_homographs($entry, $classname)
@@ -1337,7 +1387,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		foreach ( $fields as $field ) {
 
-			$this->import_xhtml_search_string($post_id, $field, $relevance, null, $subid);
+			$this->import_xhtml_search_string($post_id, $field->textContent, $relevance, $field->getAttribute("lang"), $subid);
 			if($subid > 0)
 			{
 				$subid++;
@@ -1356,19 +1406,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * @param <type> $search_string = string we want to search for in the post
 	 * @param <int> $relevance = weighted importance of this particular string for search results
 	 */
-	function import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string = null, $subid = 0) {
+	function import_xhtml_search_string( $post_id, $search_string, $relevance, $language_code, $subid = 0) {
 		global $wpdb;
 
-		$language_code = $field->getAttribute("lang");
-
-		if(isset($mySearch_string))
-		{
-			$search_string = $mySearch_string;
-		}
-		else
-		{
-			$search_string = $field->textContent;
-		}
+		//$language_code = $field->getAttribute("lang");
 
 		// $wdbt->prepare likes to add single quotes around string replacements,
 		// and that's why I concatenated the table name.
@@ -1389,7 +1430,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if(strstr($search_string,"’"))
 		{
 			$mySearch_string = str_replace("’", "'", $search_string);
-			$this->import_xhtml_search_string( $post_id, $field, $relevance, $mySearch_string, $subid);
+			$this->import_xhtml_search_string( $post_id, $mySearch_string, $relevance, $language_code, $subid);
 		}
 	}
 
@@ -1397,14 +1438,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	//-----------------------------------------------------------------------------//
 
 	function get_category_id() {
-	global $wpdb;
-
-	$catid = $wpdb->get_var( "
-		SELECT term_id
-		FROM $wpdb->terms
-		WHERE name LIKE 'webonary'");
-
-	return $catid;
+		global $wpdb;
+	
+		$catid = $wpdb->get_var( "
+			SELECT term_id
+			FROM $wpdb->terms
+			WHERE name LIKE 'webonary'");
+	
+		return $catid;
 	}
 
 	function get_duplicate($postid, $searchstring, $relevance, $lang) {
@@ -1445,6 +1486,19 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" ORDER BY post_date DESC";
 
 		$arrPosts = $wpdb->get_results($sql);
+		
+		$sql = " SELECT * " .
+				" FROM " . $this->reversal_table_name;
+
+		$arrReversalsImported = $wpdb->get_results($sql);
+					
+		$sql = " SELECT language_code, COUNT(post_id) AS totalIndexed " .
+				" FROM " . $this->search_table_name .
+				" WHERE relevance >= 95 " .
+				" GROUP BY language_code ";
+		
+		$arrIndexed = $wpdb->get_results($sql);
+		
 
 		if(count($arrPosts) > 0)
 		{
@@ -1471,14 +1525,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$countIndexed = $countIndexed + $countLinksConverted;
 			
+			/*
 			$importFinished = false;
 			if($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts)
 			{
 				$importFinished = true;
 			}
-
+			*/
 			$status = "<form method=\"post\" action=\"" . $_SERVER['REQUEST_URI'] . "\">";
-			if($importFinished)
+			if(get_option("importStatus") == "importFinished")
 			{
 				if($posts->post_date != NULL)
 				{
@@ -1518,17 +1573,21 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 					$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
 				}
+				elseif(get_option("importStatus") == "importingReversals")
+				{
+					$status .= "<strong>Importing reversals. So far imported: " . count($arrReversalsImported) . " entries.</strong>";
+					
+					$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartReversalImport\" value=\"Restart Reversal Import\">";
+				}
+				elseif(get_option("importStatus") == "indexingReversals" && count($arrReversalsImported) > 0)
+				{
+					$status .= "<strong>Indexing reversal entries.</strong>";
+	
+					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnIndexReversals\" value=\"Index reversal entries (" . count($arrReversalsImported)  . " left)\"/>";
+				}
+				
 			}
-
-			$status .= "</form>";
-
-			$sql = " SELECT language_code, COUNT(language_code) AS totalIndexed " .
-					" FROM " . $this->search_table_name .
-					" WHERE relevance >= 95 " .
-					" GROUP BY language_code";
-
-			$arrIndexed = $wpdb->get_results($sql);
-
+			
 			if(count($arrIndexed) > 0 && ($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts))
 			{
 				$status .= "<br>";
@@ -1536,20 +1595,24 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$status .= "<strong>Number of indexed entries (by language code):</strong><br>";
 				$status .= "</div>";
 				$status .= "<div style=\"min-width:50px; float: left; margin-left: 5px;\">";
+				$x = 0;
 				foreach($arrIndexed as $indexed)
 				{
-					$status .= "<div style=\"clear:both;\"><div style=\"text-align:right; float:left; width:70%;\"><nobr>" . $indexed->language_code . ":</nobr></div><div style=\"text-align:right; float:left; width:30%;\">&nbsp;". $indexed->totalIndexed . "</div></div>";
+					$status .= "<div style=\"clear:both;\"><div style=\"text-align:right; float:left;\"><nobr>" . $indexed->language_code . ":</nobr></div><div style=\"float:left;\">&nbsp;". $indexed->totalIndexed;
+					$status .= "</div></div>";
 				}
 				$status .= "</div>";
 				$status .= "<br style=\"clear:both;\">";
 				$status .= "After importing, go to <strong><a href=\"../wp-admin/admin.php?page=webonary\">Webonary</a></strong> to configure more settings.";
+				
+				$status .= "</form>";
 			}
 
 			return $status;
 		}
 		else
 		{
-			return "No entries have been imported yet.";
+			return "No entries have been imported yet. <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a>";
 		}
 
 		$sql = "SELECT post_date, pinged FROM " . $wpdb->prefix . "posts ".
@@ -1812,8 +1875,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 */
 
 	function import_xhtml_reversal_indexes(){
-
+		global $wpdb;
+		
+		update_option("importStatus", "importingReversals");
 		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
+		
 		$entries_count = $entries->length;
 		$entry_counter = 1;
 		foreach ( $entries as $entry ){
@@ -1826,7 +1892,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			/*
 			 * Show progresss to the user.
 			 */
-			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
+			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing reversal entries" );
 
 			/*
 			 * Reversals
@@ -1835,7 +1901,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			// Should be only 1 reversal at most per entry.
 			$reversals = $this->dom_xpath->query( './xhtml:span[contains(@class, "reversal-form")]', $entry );
 			$reversal_language = $reversals->item(0)->getAttribute( "lang" );
-			$reversal_text = $reversals->item(0)->textContent;
+			$reversal_text = trim($reversals->item(0)->textContent);
 
 			if($entry_counter == 1)
 			{
@@ -1855,7 +1921,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$headwords = $this->dom_xpath->query('.//xhtml:span[@class = "headword"]|.//xhtml:span[starts-with(@class, "headref")]', $entry );
 
 			foreach ( $headwords as $headword ){
-
+				
 				$entry = $this->convert_homographs($entry, "Homograph-Number");
 
 				//the Sense-Reference-Number doesn't exist in search_strings field, so in order for it not to be searched, it has to be removed
@@ -1867,19 +1933,18 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$headword_text = trim($headword->textContent);
 
-				$post_id = $this->get_post_id_bytitle( $headword_text, $reversal_language, $subid);
 
-				if ( $post_id != NULL ){
-					$this->import_xhtml_search_string( $post_id, $reversals->item(0), $this->headword_relevance, null, $subid);
-				}
-				else
-				{
-					echo "PostId for '" . $headword_text . "' not found.<br>";
-				}
+				$sql = $wpdb->prepare(
+				"INSERT IGNORE INTO `". $this->reversal_table_name . "` (language_code, reversal_string, vernacular_string)
+				VALUES ('%s', '%s', '%s')",
+				$reversal_language, $reversal_text, $headword_text);
+
+				$wpdb->query( $sql );
+								
 			}
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
-
+		
 		if($this->verbose == false && $this->api == false)
 		{
 			global $current_user;
@@ -1889,6 +1954,50 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
 			wp_mail( $current_user->user_email, 'Reversal Import complete', $message);
 		}
+	}
+	
+	function index_reversals(){
+		global $wpdb;
+		
+		$file = $this->get_latest_xhtmlfile();
+		wp_delete_attachment( $file->ID );
+		
+		update_option("importStatus", "indexingReversals");
+		
+		$sql = " SELECT language_code, reversal_string, vernacular_string " .
+					" FROM " . $this->reversal_table_name .
+					" ORDER BY reversal_string ASC, vernacular_string ASC";
+
+		$arrImported = $wpdb->get_results($sql);
+		
+		$entries_count = count($arrImported);
+		
+		$entry_counter = 1;
+		foreach($arrImported as $imported)
+		{
+			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $imported->search_strings,  "Step 2 of 2: Indexing reversal entries"  );
+			
+			$post_id = $this->get_post_id_bytitle( $imported->vernacular_string, $imported->language_code, $subid);
+						
+			if($post_id > 0)
+			{
+				$this->import_xhtml_search_string( $post_id, $imported->reversal_string, $this->headword_relevance, $imported->language_code, $subid);
+			}
+			else
+			{
+				echo "PostId for '" . $imported->vernacular_string . "' not found.<br>";
+			}
+			
+			$sql = "DELETE FROM " . $this->reversal_table_name .
+			" WHERE language_code = '". $imported->language_code . "' " .
+			" AND reversal_string = '" . $imported->reversal_string . "' " .
+			" AND vernacular_string = '" . $imported->vernacular_string . "' ";
+			
+			$wpdb->query( $sql );
+			
+			$entry_counter++;
+		}
+		update_option("importStatus", "importFinished");
 	}
 
 /**

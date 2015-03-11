@@ -361,6 +361,7 @@ function run_user_action() {
  */
 function install_sil_dictionary_infrastructure() {
 	create_search_tables();
+	create_reversal_tables();
 	set_options();
 	set_field_sortorder();
 	//upload_stylesheet();
@@ -371,6 +372,20 @@ function install_sil_dictionary_infrastructure() {
 }
 
 //---------------------------------------------------------------------------//
+function create_reversal_tables () {
+	global $wpdb;
+
+	$table = REVERSALTABLE;
+	$sql = "CREATE TABLE IF NOT EXISTS " . $table . " (
+		`language_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci,
+		`reversal_string` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
+		`vernacular_string` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, ";
+		$sql .= " PRIMARY KEY (`language_code`, `reversal_string` ( 200 ), `vernacular_string` ( 200 ))
+		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
+		
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
 
 function create_search_tables () {
 	global $wpdb;
