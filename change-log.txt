@@ -1,3 +1,4 @@
+v. 4.3.9 11 March 2015 reversal entries now first get imported (into new table wp_x_sil_reversal) before they get indexed and moved into wp_x_sil_search
 v. 4.3.8 9 March 2015 added IGNORE to INSERT so that duplicates don't anymore get logged as an error.
 v. 4.3.6 6 March 2015 $countIndexed = $countIndexed + $countLinksConverted;
 v. 4.3.5 2 March 2015 removed options for converting entries to links. Headwords now always convert to links.
