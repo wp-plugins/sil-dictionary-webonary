@@ -380,7 +380,7 @@ function create_reversal_tables () {
 		`language_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci,
 		`reversal_string` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
 		`vernacular_string` longtext CHARACTER SET utf8 COLLATE utf8_general_ci, ";
-		$sql .= " PRIMARY KEY (`language_code`, `reversal_string` ( 200 ), `vernacular_string` ( 200 ))
+		$sql .= " PRIMARY KEY (`language_code`, `reversal_string` ( 150 ), `vernacular_string` ( 150 ))
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
