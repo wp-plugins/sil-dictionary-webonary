@@ -678,6 +678,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if ( $pos_taxonomy_exists )
 					$this->import_xhtml_part_of_speech($doc, $post->ID);
 
+				if($entry_counter % 50 == 0)
+				{
+					sleep(1);
+				}
+					
 				$subid++;
 				$entry_counter++;
 				$sortorder++;
@@ -956,6 +961,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing Post Entries" );
 			} // foreach ( $headwords as $headword )
 
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+						
 			$entry_counter++;
 			$menu_order++;
 		} // foreach ($entries as $entry){
@@ -1267,6 +1277,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$wpdb->query( $sql );
 
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+			
 			$entry_counter++;
 		}
 		update_option("importStatus", "importFinished");
@@ -1942,6 +1957,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$wpdb->query( $sql );
 								
 			}
+			
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+			
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
 		
@@ -1995,6 +2016,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$wpdb->query( $sql );
 			
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+			
 			$entry_counter++;
 		}
 		update_option("importStatus", "importFinished");
@@ -2033,6 +2059,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			 */
 			$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text );
 
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+			
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
 
