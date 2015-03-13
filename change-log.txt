@@ -1,3 +1,4 @@
+v. 4.4.2 13 March 2015 added slashes for deleting entries from reversal table
 v. 4.4.1 12 March 2015 testing if adding a sleep after importing 50 entries helps with excessive CPU usage
 v. 4.4.0 11 March 2015 primary keys too long for wp_x_sil_reversal table, so shortened
 v. 4.3.9 11 March 2015 reversal entries now first get imported (into new table wp_x_sil_reversal) before they get indexed and moved into wp_x_sil_search
