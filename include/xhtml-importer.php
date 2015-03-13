@@ -1958,7 +1958,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 								
 			}
 			
-			if($entry_counter % 50 == 0)
+			if($entry_counter % 25 == 0)
 			{
 				sleep(1);
 			}
@@ -2011,9 +2011,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			
 			$sql = "DELETE FROM " . $this->reversal_table_name .
 			" WHERE language_code = '". $imported->language_code . "' " .
-			" AND reversal_string = '" . $imported->reversal_string . "' " .
-			" AND vernacular_string = '" . $imported->vernacular_string . "' ";
-			
+			" AND reversal_string = '" . addslashes($imported->reversal_string) . "' " .
+			" AND vernacular_string = '" . addslashes($imported->vernacular_string) . "' ";
+						
 			$wpdb->query( $sql );
 			
 			if($entry_counter % 50 == 0)
