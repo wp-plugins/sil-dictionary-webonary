@@ -14,6 +14,8 @@
  * @since 3.1
  */
 
+set_time_limit(0);
+
 // don't load directly
 if ( ! defined('ABSPATH') )
 	die( '-1' );
