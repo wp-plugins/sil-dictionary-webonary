@@ -1,3 +1,4 @@
+v. 4.4.4 24 March 2015 added support for third reversal index (currently needs to be set in DB, table wp-options)
 v. 4.4.3 16 March 2015 using set_time_limit to set time timit to unlimited
 v. 4.4.2 13 March 2015 added slashes for deleting entries from reversal table
 v. 4.4.1 12 March 2015 testing if adding a sleep after importing 50 entries helps with excessive CPU usage
