@@ -97,7 +97,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		if(isset($_POST['btnRestartImport']))
 		{
-			remove_entries();
+			remove_entries('flexlinks');
 			echo "Restarting Import...<br>";
 
 			$file = $this->get_latest_xhtmlfile();
@@ -563,8 +563,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	{
 		global $wpdb;
 
-		update_option("importStatus", "indexing");
-
 		$search_table_exists = $wpdb->get_var( "show tables like '$this->search_table_name'" ) == $this->search_table_name;
 		$pos_taxonomy_exists = taxonomy_exists( $this->pos_taxonomy );
 		$semantic_domains_taxonomy_exists = taxonomy_exists( $this->semantic_domains_taxonomy );
@@ -689,6 +687,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$entry_counter++;
 				$sortorder++;
 			}
+			update_option("importStatus", "convertlinks");
 		}
 	}
 
@@ -975,6 +974,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if($entries->length > 0)
 		{
 			$this->convert_fieldworks_links_to_wordpress();
+			update_option("importStatus", "indexing");
 		}
 	}
 
@@ -1170,8 +1170,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function convert_fields_to_links() {
 
 		global $wpdb;
-
-		update_option("importStatus", "convertlinks");
 
 		$arrPosts = $this->get_posts("indexed");
 
@@ -1560,12 +1558,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					$status .= "<input type=hidden name=pinged value=\"" . $posts->pinged . "\">";
 					$status .= "<br>";
 					$status .= "<br><input type=\"submit\" name=\"btnConvertFLExLinks\" value=\"Retry converting FLEx links\">&nbsp;&nbsp;&nbsp;";
-
-					if($countLinksConverted < $totalImportedPosts)
-					{
-						$status .= "<input type=hidden name=chkConvertToLinks value=1>";
-						$status .= "<input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\">";
-					}
 				}
 			}
 			else
@@ -1583,6 +1575,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				elseif(get_option("importStatus") == "convertlinks")
 				{
 					$status .= "Converting Links " . $countLinksConverted . " of " . get_option("totalConfiguredEntries") . " entries";
+
+					$status .= "<input type=hidden name=chkConvertToLinks value=1>";
+					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\"/>";
 				}
 				elseif(get_option("importStatus") == "configured")
 				{

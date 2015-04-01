@@ -597,7 +597,7 @@ function clean_out_dictionary_data () {
  * @return <type>
  */
 
-function remove_entries () {
+function remove_entries ($pinged = null) {
 	global $wpdb;
 
 	$catid = get_category_id();
@@ -606,11 +606,19 @@ function remove_entries () {
 	$sql = "DELETE FROM " . $wpdb->prefix . "posts " .
 	" WHERE post_type IN ('post', 'revision') AND " .
 	" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .")";
+	if(isset($pinged))
+	{
+		$sql .= " AND pinged = '" . $pinged . "'";
+	}
 
 	$wpdb->query( $sql );
 
 	$sql = "DELETE FROM " . $wpdb->prefix . "term_relationships WHERE term_taxonomy_id = " . $catid;
-
+	if(isset($pinged))
+	{
+		$sql .= " AND object_id NOT IN (SELECT ID FROM $wpdb->posts WHERE post_type = 'post')";
+	}
+	
 	$return_value = $wpdb->get_var( $sql );
 }
 
