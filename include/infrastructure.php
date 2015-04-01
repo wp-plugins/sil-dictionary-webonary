@@ -118,7 +118,7 @@ function user_input() {
 			 */
 			if ( empty( $_POST['delete_data'] ) ) {
 				?>
-				<?php _e('Webonary provides the admininstration tools and framework for using WordPress for dictionaries.<br>See <a href="http://www.webonary.org/support" target="_blank">Webonary Support</a> for help.', 'sil_dictionary'); ?>
+				<?php _e('Webonary provides the admininstration tools and framework for using WordPress for dictionaries.<br>See <a href="http://www.webonary.org/help" target="_blank">Webonary Support</a> for help.', 'sil_dictionary'); ?>
 				<h3><?php _e( 'Import Data', 'sil_dictionary' ); ?></h3>
 				<p><?php _e('You can find the <a href="admin.php?import=pathway-xhtml">SIL FLEX XHTML importer</a> by clicking on Import under the Tools menu.', 'sil_dictionary'); ?></p>
 				<p><?php _e('Each dictionary entry is stored in a "post." You will find the entries in the Posts menu.', 'sil_dictionary'); ?></p>
