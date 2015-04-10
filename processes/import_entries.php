@@ -1,8 +1,16 @@
 <?php
 if(file_exists($argv[1] . "db-config.php"))
 {
-	require($argv[1] . "db-config.php");
-	define('WPPREFIX', $argv[2]);
+	define('WP_INSTALLING', true);
+	//define('ABSPATH', $argv[1]);
+	//define( 'WPINC', 'wp-includes');
+	//require($argv[1] . "db-config.php");
+	require($argv[1] . "wp-load.php");
+	switch_to_blog(7);
+	require($argv[1] . "wp-content/plugins/sil-dictionary-webonary/include/xhtml-importer.php");
+	//require($argv[1] . "wp-includes/plugin.php");
+	//require($argv[1] . "wp-includes/functions.php");
+	//define('WPPREFIX', $argv[2]);
 }
 else
 {
@@ -36,9 +44,13 @@ function set_WP_option($optionname, $value)
 			
 	return;
 }
-
+/*
 class ImportEntries
 {
+	public $dbConnection;
+	public $dom;
+	public $dom_xpath;
+	
 	function convert_fieldworks_links_to_wordpress ($pinged = "-")
 	{
 		// link example:
@@ -82,8 +94,6 @@ class ImportEntries
 						// Get the WordPress post ID for the link.
 						$flexid = str_replace("#", "", $href);
 						$post_id = (string) $this->get_post_id( $flexid );
-						
-						echo "postid: " .  $post_id . "\n";
 
 						if ( empty( $post_id ) && $pinged == "-")
 						{
@@ -97,14 +107,13 @@ class ImportEntries
 						}
 						else
 						{
-							/*
 							// Now replace the link to hvo wherever it appears with a link to
 							// WordPress ID The update command should look like this:
 							// UPDATE `nuosu`.`wp_posts` SET post_content =
 							//	REPLACE(post_content, 'href="#hvo14216"', 'href="index.php?p=61151"');
 							//if ( empty( $post_id ) )
 								//$post_id = 'id-not-found';
-							$sql = "UPDATE $wpdb->posts SET post_content = ";
+							$sql = "UPDATE " . WPPREFIX . "posts SET post_content = ";
 							$sql = $sql . "REPLACE(post_content, 'href=";
 							$sql = $sql . '"' . $href . '"';
 							$sql = $sql . "', 'href=";
@@ -119,10 +128,14 @@ class ImportEntries
 							}
 							$sql = $sql . '"';
 							$sql = $sql . "') " .
-							" WHERE ID = " . $post['ID'];
-
-							$wpdb->query( $sql );
-							*/
+							" WHERE ID = :postid";
+							
+							$stmt = $this->dbConnection->prepare($sql);
+			
+							$stmt->bindParam(':postid', $post['ID'], PDO::PARAM_INT);
+							
+							$stmt->execute();
+							
 						}
 					}
 				} // foreach ( $links as $link )
@@ -133,17 +146,75 @@ class ImportEntries
 		} //foreach $arrPosts as $post
 
 		//set pinged = flexlinks for all posts
-		/*
-		$sql = "UPDATE $wpdb->posts
-			   INNER JOIN " . $wpdb->prefix . "term_relationships ON object_id = ID
+		
+		$sql = "UPDATE " .  WPPREFIX . "posts
+			   INNER JOIN " . WPPREFIX. "term_relationships ON object_id = ID
 			   SET pinged = 'flexlinks'
-			   WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $this->get_category_id() . "
+			   WHERE " . WPPREFIX . "term_relationships.term_taxonomy_id = :categoryid
 			   AND post_status = 'publish' AND pinged = ''";
 
-		$wpdb->query( $sql );
-		*/
+		$stmt = $this->dbConnection->prepare($sql);
+		
+		$categoryid = $this->get_category_id();
+		$stmt->bindParam(':categoryid', $categoryid, PDO::PARAM_INT);
+		
+		$stmt->execute();
+		
 	} // function convert_fieldworks_links_to_wordpress()
 	
+	function convert_homographs($entry, $classname)
+	{
+		$arrHomographs = $this->dom_xpath->query( './/xhtml:span[@class="' . $classname . '"]', $entry );
+		foreach($arrHomographs as $homograph)
+		{
+			$numbers = array("1", "2", "3", "4", "5");
+			$homographs = array("₁", "₂", "₃", "₄", "₅");
+
+			$newHomograph = str_replace($numbers, $homographs, $homograph->textContent);
+
+			$newNode = $this->dom->createElement('span', $newHomograph);
+			$newNode->setAttribute('class', 'xhomographnumber');
+
+			// fetch and replace the old element
+			//$oldNode = $dom->getElementById('old_div');
+			$parent = $homograph->parentNode;
+			$parent->replaceChild($newNode, $homograph);
+		}
+
+		return $entry;
+	}
+	
+	function convert_fieldworks_images_to_wordpress ($entry)
+	{
+		// image example (with link):
+		//<a href="javascript:openImage('mouse.png')"><img src="wp-content/uploads/images/thumbnail/mouse.png" /></a>
+	
+		$images = $this->dom_xpath->query('//xhtml:img', $entry);
+	
+		foreach ( $images as $image ) {
+	
+			$src = $image->getAttribute( "src" );
+			$upload_dir = wp_upload_dir();
+			$replaced_src = str_ireplace("pictures/", $upload_dir['baseurl'] . "/images/thumbnail/", $src);
+			$pic = str_ireplace("pictures/", "", $src);
+	
+			$newimage = $this->dom->createElement('img');
+			$newimage->setAttribute("src", $replaced_src);
+	
+			$newelement = $this->dom->createElement('a');
+			$newelement->appendChild($newimage);
+			$newelement->setAttribute("class", "image");
+			$newelement->setAttribute("href",  $upload_dir['baseurl'] . "/images/original/" . $pic);
+			$parent = $image->parentNode;
+			$parent->replaceChild($newelement, $image);
+	
+			//error_log("IMAGE: " . $replaced_src);
+	
+		} // foreach ( $images as $image )
+
+		return $entry;
+	} // function convert_fieldworks_images_to_wordpress()
+		
 	function getArrFieldQueries($step = 0)
 	{
 		//##if($_GET['step'] >= 2 || $step >= 2)
@@ -184,6 +255,30 @@ class ImportEntries
 		return $stmt->fetchColumn();
 	}
 	
+	function get_latest_xhtmlfile(){
+
+		$sql = "SELECT ID, post_content AS url
+			FROM " . WPPREFIX . "posts
+			WHERE post_content LIKE '%.xhtml' AND post_type LIKE 'attachment'
+			ORDER BY post_date DESC
+			LIMIT 0,1";
+
+		$stmt = $this->dbConnection->prepare($sql);
+		
+		$stmt->execute();
+								
+		$arrLastFile = $stmt->fetchAll();
+		
+		if(count($arrLastFile) > 0)
+		{
+			return $arrLastFile[0];
+		}
+		else
+		{
+			return null;
+		}
+	}
+		
 	function get_post_id( $flexid ){
 		
 		$postname = trim($flexid);
@@ -192,7 +287,7 @@ class ImportEntries
 			FROM " . WPPREFIX . "posts
 			WHERE post_name = :postname	collate utf8_bin AND post_status = 'publish'";
 
-		$stmt = dbConnection()->prepare($sql);
+		$stmt = $this->dbConnection->prepare($sql);
 				
 		$stmt->bindParam(':postname', $postname, PDO::PARAM_STR);
 		
@@ -221,7 +316,7 @@ class ImportEntries
 		}
 		$sql .= " ORDER BY menu_order ASC";
 
-		$stmt = dbConnection()->prepare($sql);
+		$stmt = $this->dbConnection->prepare($sql);
 
 		$stmt->bindParam(':categoryid', $categoryid, PDO::PARAM_INT);
 		if(strlen($index) > 0 && $index != "-")
@@ -236,14 +331,13 @@ class ImportEntries
 	
 	function import_xhtml_entries ($dom, $dom_xpath) {
 		
-		$dbConnection = dbConnection();
+		$this->dom = $dom;
+		$this->dom_xpath = $dom_xpath;
 	
-		/*
-		 * Loop through the entries so we can post them to WordPress.
-		 */
+		//Loop through the entries so we can post them to WordPress.
 	
 		//the query looks for the spans with the headword and returns their parent <div class="entry">
-		$entries = $dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
+		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]/..|//xhtml:span[@class="headword_L2"]/..|//xhtml:span[@class="headword-minor"]/..|//xhtml:span[@class="headword-sub"]/..');
 		$entries_count = $entries->length;
 			
 		$sql = "SELECT menu_order
@@ -252,7 +346,7 @@ class ImportEntries
 			ORDER BY menu_order DESC
 			LIMIT 0,1";
 	
-		$stmt = $dbConnection->prepare($sql);
+		$stmt = $this->dbConnection->prepare($sql);
 
 		$stmt->execute();
 						
@@ -279,12 +373,12 @@ class ImportEntries
 			// within the element node." The XHTML for an entry with homograph
 			// number looks like this:
 			// <span class="headword" lang="ii">my headword<span class="xhomographnumber">1</span></span>
-			//## $entry = $this->convert_fieldworks_images_to_wordpress($entry);
+			$entry = $this->convert_fieldworks_images_to_wordpress($entry);
 			//## $entry = $this->convert_fieldworks_audio_to_wordpress($entry);
 	
-			$entry_xml = $dom->saveXML( $entry );
+			$entry_xml = $this->dom->saveXML( $entry );
 	
-			$headwords = $dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]|./*[@class="headword-sub"]', $entry );
+			$headwords = $this->dom_xpath->query( './xhtml:span[@class="headword"]|./xhtml:span[@class="headword_L2"]|./xhtml:span[@class="headword-minor"]|./*[@class="headword-sub"]', $entry );
 	
 			//$headword = $headwords->item( 0 )->nodeValue;
 			foreach ( $headwords as $headword ) {
@@ -296,7 +390,7 @@ class ImportEntries
 					
 				}
 	
-				//## $entry = $this->convert_homographs($entry, "xhomographnumber");
+				$entry = $this->convert_homographs($entry, "xhomographnumber");
 	
 				$headword_text = trim($headword->textContent);
 					
@@ -307,7 +401,7 @@ class ImportEntries
 					$flexid = $headword_text;
 				}
 	
-				$entry_xml = $dom->saveXML($entry, LIBXML_NOEMPTYTAG);
+				$entry_xml = $this->dom->saveXML($entry, LIBXML_NOEMPTYTAG);
 	
 				$entry_xml = addslashes($entry_xml);
 				$entry_xml = stripslashes($entry_xml);
@@ -320,11 +414,10 @@ class ImportEntries
 					$entry_xml = str_replace("class=\"subentry\"","class=\"entry\"",$entry_xml);
 					$entry_xml = str_replace("class=\"headword-sub\"","class=\"headword\"",$entry_xml);
 				}
-				/*
-				 * Insert the new entry into wp_posts
-				 */
-				$stmt = $dbConnection->prepare("SELECT ID FROM " . WPPREFIX . "posts WHERE post_title = :posttitle collate utf8_bin");
-				//$stmt = $dbConnection->prepare("SELECT ID FROM " . WPPREFIX . "posts WHERE post_title = :posttitle");
+				
+				//Insert the new entry into wp_posts
+				
+				$stmt = $this->dbConnection->prepare("SELECT ID FROM " . WPPREFIX . "posts WHERE post_title = :posttitle collate utf8_bin");
 
 				$stmt->bindParam(':posttitle', $headword_text, PDO::PARAM_STR);
 				
@@ -332,13 +425,11 @@ class ImportEntries
 						
 				$post_id = $stmt->fetchColumn();
 				
-				echo "my postid: " . $post_id . "\n";
-				
 				$post_id_exists = $post_id != NULL;
 				
 				if($post_id == NULL)
 				{
-					$stmt = $dbConnection->prepare("INSERT INTO ". WPPREFIX . "posts (post_date, post_title, post_content, post_status, post_parent, post_name, comment_status, menu_order)
+					$stmt = $this->dbConnection->prepare("INSERT INTO ". WPPREFIX . "posts (post_date, post_title, post_content, post_status, post_parent, post_name, comment_status, menu_order)
 					VALUES (NOW(), :headwordtext, :entryxml, 'publish', :postparent, :flexid, :commentstatus, :menuorder)");
 	
 					$stmt->bindParam(':headwordtext', $headword_text, PDO::PARAM_STR);
@@ -351,7 +442,7 @@ class ImportEntries
 					
 					$stmt->execute();
 	
-					$post_id = $dbConnection->lastInsertId();
+					$post_id = $this->dbConnection->lastInsertId();
 					
 					if($post_id == 0)
 					{
@@ -363,7 +454,7 @@ class ImportEntries
 				}
 				else
 				{
-					$stmt = $dbConnection->prepare("UPDATE " . WPPREFIX . "posts SET post_date = NOW(), post_title = :headwordtext, post_content = :entryxml, post_status = 'publish', pinged='', post_parent=:postparent, post_name=:flexid, comment_status=:commentstatus WHERE ID = :postid");
+					$stmt = $this->dbConnection->prepare("UPDATE " . WPPREFIX . "posts SET post_date = NOW(), post_title = :headwordtext, post_content = :entryxml, post_status = 'publish', pinged='', post_parent=:postparent, post_name=:flexid, comment_status=:commentstatus WHERE ID = :postid");
 	
 					$stmt->bindParam(':headwordtext', $headword_text, PDO::PARAM_STR);
 					$stmt->bindParam(':entryxml', $entry_xml, PDO::PARAM_STR);
@@ -376,9 +467,7 @@ class ImportEntries
 					$stmt->execute();
 				}
 				
-				/*
-				 * Show progresss to the user.
-				 */
+				 // Show progresss to the user.
 				//## $this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing Post Entries" );
 			} // foreach ( $headwords as $headword )
 						
@@ -395,7 +484,7 @@ class ImportEntries
 	
 	function setObjectTerms($post_id, $term, $taxonomy)
 	{
-		$stmt = dbConnection()->prepare("SELECT tt.term_id, tt.term_taxonomy_id FROM " . WPPREFIX . "terms AS t INNER JOIN " . WPPREFIX . "term_taxonomy as tt ON tt.term_id = t.term_id WHERE t.slug = :term AND tt.taxonomy = :taxonomy ORDER BY t.term_id ASC LIMIT 1");
+		$stmt = $this->dbConnection->prepare("SELECT tt.term_id, tt.term_taxonomy_id FROM " . WPPREFIX . "terms AS t INNER JOIN " . WPPREFIX . "term_taxonomy as tt ON tt.term_id = t.term_id WHERE t.slug = :term AND tt.taxonomy = :taxonomy ORDER BY t.term_id ASC LIMIT 1");
 	
 		$stmt->bindParam(':taxonomy', $taxonomy, PDO::PARAM_STR);
 		$stmt->bindParam(':term', $term, PDO::PARAM_STR);
@@ -404,14 +493,14 @@ class ImportEntries
 				
 		$termid = $stmt->fetchColumn();
 		
-		$stmt = dbConnection()->prepare("INSERT INTO " . WPPREFIX . "term_relationships (object_id,term_taxonomy_id) VALUES (:object_id,:termid)");
+		$stmt = $this->dbConnection->prepare("INSERT INTO " . WPPREFIX . "term_relationships (object_id,term_taxonomy_id) VALUES (:object_id,:termid)");
 		
 		$stmt->bindParam(':object_id', $post_id, PDO::PARAM_INT);
 		$stmt->bindParam(':termid', $termid, PDO::PARAM_INT);
 		
 		$stmt->execute();
 		
-		$stmt = dbConnection()->prepare("SELECT COUNT(*) AS termCount FROM " . WPPREFIX . "term_relationships, " . WPPREFIX . "posts WHERE " . WPPREFIX . "posts.ID = " . WPPREFIX . "term_relationships.object_id AND post_status = 'publish' AND post_type IN ('post') AND term_taxonomy_id = :termid");
+		$stmt = $this->dbConnection->prepare("SELECT COUNT(*) AS termCount FROM " . WPPREFIX . "term_relationships, " . WPPREFIX . "posts WHERE " . WPPREFIX . "posts.ID = " . WPPREFIX . "term_relationships.object_id AND post_status = 'publish' AND post_type IN ('post') AND term_taxonomy_id = :termid");
 	
 		$stmt->bindParam(':termid', $termid, PDO::PARAM_INT);
 				
@@ -419,7 +508,7 @@ class ImportEntries
 				
 		$termCount = $stmt->fetchColumn();
 			
-		$stmt = dbConnection()->prepare("UPDATE " . WPPREFIX . "term_taxonomy SET count = :termCount WHERE term_taxonomy_id = :termid");
+		$stmt = $this->dbConnection->prepare("UPDATE " . WPPREFIX . "term_taxonomy SET count = :termCount WHERE term_taxonomy_id = :termid");
 		
 		$stmt->bindParam(':termCount', $termCount, PDO::PARAM_INT);
 		$stmt->bindParam(':termid', $termid, PDO::PARAM_INT);
@@ -427,15 +516,19 @@ class ImportEntries
 		$stmt->execute();
 	}
 }
+*/
+//$import = new ImportEntries();
+$import = new sil_pathway_xhtml_Import();
 
-$xhtml_file = file_get_contents("http://webonary.localhost/lubwisi/files/a.xhtml");
+//$import->dbConnection = dbConnection();
+
+$file = $import->get_latest_xhtmlfile();
+$xhtml_file = file_get_contents($file->url);
 
 $filetype = "configured";
 
 $api = false;
 $verbose = false;
-
-$import = new ImportEntries();
 
 if($xhtml_file == null)
 {
@@ -462,11 +555,6 @@ $dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 /*
  * Import
  */
-if($api == false && $verbose == false)
-{
-	echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
-	flush();
-}
 
 if ( $filetype== 'configured') {
 	//  Make sure we're not working on a reversal file.
