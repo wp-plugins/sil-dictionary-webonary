@@ -81,6 +81,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function start()
 	{
+		global $wpdb;
+		
 		/* @todo See if there is a better way to do this than these steps */
 		if ( empty ( $_GET['step'] ) )
 			$step = 0;
@@ -100,13 +102,24 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			remove_entries('flexlinks');
 			echo "Restarting Import...<br>";
 
-			$file = $this->get_latest_xhtmlfile();
-			$xhtml_file = file_get_contents($file->url);
-
-			$this->import_xhtml($xhtml_file, false, false, "configured");
-			wp_delete_attachment( $file->ID );
-
-			$this->index_searchstrings();
+			if($this->api == false && $this->verbose == false)
+			{
+				echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
+			}
+			flush();
+			
+			if(exec('echo EXEC') == 'EXEC')
+			{
+				$blogid = get_current_blog_id();
+				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid;
+			
+				exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
+			}
+			else
+			{
+				require(ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php");
+			}
+			return;
 		}
 
 		if(isset($_POST['btnReindex']))
@@ -202,7 +215,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				if(isset($file))
 				{
-					wp_delete_attachment( $file->ID );
+					//##wp_delete_attachment( $file->ID );
 				}
 				break;
 			/*
@@ -438,7 +451,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			</p>
 			<p>
 			<input type="hidden" name="chkConvertToLinks" value="1">
+			<?php /*?>
 			<input type="checkbox" name="chkShowProgress"> <?php echo esc_attr_e('Check to show import progress in browser (slower). Keep unchecked to run import in the background.'); ?>
+			*/
+			?>
 			<p>
 				<input type="submit" class="button" value="<?php esc_attr_e( 'Upload files and import' ); ?>" />
 			</p>
@@ -677,11 +693,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				if ( $pos_taxonomy_exists )
 					$this->import_xhtml_part_of_speech($doc, $post->ID);
-
-				if($entry_counter % 50 == 0)
-				{
-					sleep(1);
-				}
 					
 				$subid++;
 				$entry_counter++;
@@ -834,8 +845,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * Import entries for the Configured Dictionary.
 	 * @global <type> $wpdb
 	 */
-	function import_xhtml_entries () {
+	function import_xhtml_entries ($dom = null, $dom_xpath = null) {
 		global $wpdb;
+		
+		if(isset($dom))
+		{
+			$this->dom = $dom;
+			$this->dom_xpath = $dom_xpath;
+		}
 
 		/*
 		 * Loop through the entries so we can post them to WordPress.
@@ -894,7 +911,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$entry = $this->convert_homographs($entry, "xhomographnumber");
 
 				$headword_text = $headword->textContent;
-
+				
 				$flexid = $entry->getAttribute("id");
 
 				if(strlen(trim($flexid)) == 0)
@@ -923,7 +940,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				//$post_id = $this->get_post_id_bytitle( $headword_text, $headword_language, $subid, true);
 				$post_id = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_title = '" . addslashes(trim($headword_text)) . "' collate utf8_bin");
 				$post_id_exists = $post_id != NULL;
-
+				
 				//$post_id = wp_insert_post( $post );
 
 				if($post_id == NULL)
@@ -961,11 +978,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing Post Entries" );
 			} // foreach ( $headwords as $headword )
-
-			if($entry_counter % 50 == 0)
-			{
-				sleep(1);
-			}
 						
 			$entry_counter++;
 			$menu_order++;
@@ -1192,17 +1204,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 			$arrAllQueries = $this->getArrFieldQueries(true);
 
-			//we convert the headwords to links by default if coming from API as there isn't a setting for this in the FLEx export
+			//we convert the headwords to links by default
 			//clicking on a headword will lead to a page with a comment form (if comments are activated)
-			if($_POST['chkConvertToLinks'] == 1 || $this->api == true)
-			{
-				$arrFieldQueries[0] = $arrAllQueries[0];
-				$arrFieldQueries[1] = $arrAllQueries[1];
-			}
-			else
-			{
-				$arrFieldQueries = $arrAllQueries;
-			}
+			$arrFieldQueries[0] = $arrAllQueries[0];
+			$arrFieldQueries[1] = $arrAllQueries[1];
 
 			foreach($arrFieldQueries as $fieldQuery)
 			{
@@ -1276,11 +1281,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			" WHERE ID = " . $post_id;
 
 			$wpdb->query( $sql );
-
-			if($entry_counter % 50 == 0)
-			{
-				sleep(1);
-			}
 			
 			$entry_counter++;
 		}
@@ -1342,15 +1342,16 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if($this->verbose)
 		{
 			flush();
+			if($entry_counter == 1 && $this->api == true)
+			{
+				echo $msg . "\n";
+			}
+			
 			//only display every 25 entries or if last entry
 			if($entry_counter % 25 == 0 || $entry_counter == $entries_count)
 			{
 				if($this->api)
 				{
-					if($entry_counter == 1)
-					{
-						echo $msg . "\n";
-					}
 					echo $entry_counter . " of " . $entries_count . " entries: " . $headword_text . "\n";
 				}
 				else
@@ -1499,7 +1500,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .") " .
 		" GROUP BY pinged " .
 		" ORDER BY post_date DESC";
-
+		
 		$arrPosts = $wpdb->get_results($sql);
 		
 		$sql = " SELECT * " .
@@ -1514,7 +1515,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		$arrIndexed = $wpdb->get_results($sql);
 		
-
 		if(count($arrPosts) > 0)
 		{
 			$countIndexed = 0;
@@ -1667,7 +1667,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			WHERE post_content LIKE '%.xhtml' AND post_type LIKE 'attachment'
 			ORDER BY post_date DESC
 			LIMIT 0,1";
-
+		
 		$arrLastFile = $wpdb->get_results($sql);
 
 		if(count($arrLastFile) > 0)
@@ -1956,11 +1956,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$wpdb->query( $sql );
 								
-			}
-			
-			if($entry_counter % 25 == 0)
-			{
-				sleep(1);
 			}
 			
 			$entry_counter++;
