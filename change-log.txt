@@ -1,3 +1,4 @@
+v. 4.4.8 13 April 2015 now always imports as an external process for the configured xhtml export
 v. 4.4.7 13 April 2015 when clicking on "Restart Import" it will now start the importer as an external process
 v. 4.4.6 01 April 2015 fixed various issues concerning the reimporting of entries
 v. 4.4.5 01 April 2015 fixed link to support website
