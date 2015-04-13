@@ -5,17 +5,27 @@ if(exec('echo EXEC') == 'EXEC')
 	require($argv[1] . "wp-load.php");
 	switch_to_blog($argv[2]);
 	require($argv[1] . "wp-content/plugins/sil-dictionary-webonary/include/xhtml-importer.php");
+	
+	//it isn't actually from the api, but saves us renaming the variable to "background" or something like that...
+	$api = true;
+	$verbose = true;
+}
+else
+{
+	$api = false;
+	$verbose = false;
 }
 
 $import = new sil_pathway_xhtml_Import();
+
+$import->api = $api;
+$import->verbose = $verbose;
 
 $file = $import->get_latest_xhtmlfile();
 $xhtml_file = file_get_contents($file->url);
 
 $filetype = "configured";
 
-$api = false;
-$verbose = false;
 
 if($xhtml_file == null)
 {
@@ -37,8 +47,8 @@ $dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
  *
  * Load the Writing Systems (Languages)
  */
-//## if ( taxonomy_exists( $this->writing_system_taxonomy ) )
-	//## $this->import_xhtml_writing_systems();
+if ( taxonomy_exists( $import->writing_system_taxonomy ) )
+	$import->import_xhtml_writing_systems();
 /*
  * Import
  */
@@ -58,8 +68,19 @@ if ( $filetype== 'configured') {
 			echo "No entries found for the query " . $fieldQuery . "<br>";
 		}
 	}
+	echo "Starting Import\n";
+	
 	$import->import_xhtml_entries($dom, $dom_xpath);
 	
+	wp_delete_attachment( $file->ID );
+	
+	$import->search_table_name = $wpdb->prefix . 'sil_search';
+	
+	$import->index_searchstrings();
+	
+	$import->convert_fields_to_links();
+	
+	echo "Import finished\n";
 }
 elseif ( $filetype == 'reversal')
 	$this->import_xhtml_reversal_indexes();
