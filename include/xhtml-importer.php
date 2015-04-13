@@ -188,8 +188,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			 */
 			case 1 :
 				check_admin_referer('import-upload');
-
-				// Get the XMTL file
+				
+				echo "uploading file...<br>";
+				flush();
+				
+				// Get the XHMTL file
 				$result = $this->upload_files('xhtml');
 				if (is_wp_error( $result ))
 					echo $result->get_error_message();
@@ -200,6 +203,28 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if (is_wp_error( $result ))
 					echo $result->get_error_message();
 				$css_file = $result['file'];
+				
+				
+				if($this->api == false && $this->verbose == false)
+				{
+					echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
+				}
+				flush();
+				
+				if(exec('echo EXEC') == 'EXEC')
+				{
+					$blogid = get_current_blog_id();
+					$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid;
+				
+					exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
+				}
+				else
+				{
+					require(ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php");
+				}
+				return;
+				
+				/*
 				?>
 				<DIV ID="flushme">importing...</DIV>
 				<?php
@@ -217,6 +242,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					//##wp_delete_attachment( $file->ID );
 				}
+				*/
 				break;
 			/*
 			 * for indexing the search strings (configured dictionary)
@@ -542,7 +568,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			*/
 			error_reporting(E_ALL);
 			if(copy($from_path, $target_path)) {
-			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css');
+			    _e('The css file has been uploaded into your upload folder and renamed to imported-with-xhtml.css<br>');
 			} else{
 			    _e('There was an error uploading the file, please try again!');
 			    echo "<br>";
@@ -693,7 +719,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				if ( $pos_taxonomy_exists )
 					$this->import_xhtml_part_of_speech($doc, $post->ID);
-					
+
+				if($entry_counter % 50 == 0)
+				{
+					sleep(1);
+				}
+									
 				$subid++;
 				$entry_counter++;
 				$sortorder++;
@@ -978,6 +1009,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				 */
 				$this->import_xhtml_show_progress( $entry_counter, $entries_count, $headword_text, "Step 1 of 2: Importing Post Entries" );
 			} // foreach ( $headwords as $headword )
+						
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
 						
 			$entry_counter++;
 			$menu_order++;
@@ -1281,7 +1317,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			" WHERE ID = " . $post_id;
 
 			$wpdb->query( $sql );
-			
+
+			if($entry_counter % 50 == 0)
+			{
+				sleep(1);
+			}
+						
 			$entry_counter++;
 		}
 		update_option("importStatus", "importFinished");
@@ -1948,7 +1989,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$headword_text = trim($headword->textContent);
 
-
 				$sql = $wpdb->prepare(
 				"INSERT IGNORE INTO `". $this->reversal_table_name . "` (language_code, reversal_string, vernacular_string)
 				VALUES ('%s', '%s', '%s')",
@@ -1958,6 +1998,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 								
 			}
 			
+			if($entry_counter % 25 == 0)
+			{
+				sleep(1);
+			}
+						
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
 		
