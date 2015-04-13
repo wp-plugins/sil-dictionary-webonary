@@ -1,3 +1,4 @@
+v. 4.4.7 13 April 2015 when clicking on "Restart Import" it will now start the importer as an external process
 v. 4.4.6 01 April 2015 fixed various issues concerning the reimporting of entries
 v. 4.4.5 01 April 2015 fixed link to support website
 v. 4.4.4 24 March 2015 added support for third reversal index (currently needs to be set in DB, table wp-options)
