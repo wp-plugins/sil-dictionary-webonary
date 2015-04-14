@@ -189,7 +189,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			case 1 :
 				check_admin_referer('import-upload');
 				
-				echo "uploading file...<br>";
 				flush();
 				
 				// Get the XHMTL file
@@ -204,6 +203,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					echo $result->get_error_message();
 				$css_file = $result['file'];
 				
+				if(isset($_POST['filetype']))
+				{
+					$filetype = $_POST['filetype'];
+				}
 				
 				if($this->api == false && $this->verbose == false)
 				{
@@ -214,7 +217,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if(exec('echo EXEC') == 'EXEC')
 				{
 					$blogid = get_current_blog_id();
-					$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid;
+					$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
 				
 					exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
 				}
@@ -222,7 +225,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				{
 					require(ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php");
 				}
-				return;
 				
 				/*
 				?>
@@ -259,7 +261,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 				$message = "The import of the vernacular (configured) xhtml export is completed.\n";
 				$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
-				wp_mail( $current_user->user_email, 'Import complete', $message);
 
 				break;
 			case 3 :
@@ -738,6 +739,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 *
 	 * @return <type>
 	 */
+	/*
 	function import_xhtml( $xhtml_file, $api = false, $verbose = false, $filetype = "" ) {
 		global $wpdb;
 
@@ -766,15 +768,13 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		$this->dom_xpath = new DOMXPath($this->dom);
 		$this->dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
 
-		/*
-		 *
-		 * Load the Writing Systems (Languages)
-		 */
+		 //Load the Writing Systems (Languages)
+		 
 		if ( taxonomy_exists( $this->writing_system_taxonomy ) )
 			$this->import_xhtml_writing_systems();
-		/*
-		 * Import
-		 */
+		
+		 //Import
+		 
 		if($this->api == false && $this->verbose == false)
 		{
 			echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
@@ -805,6 +805,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		return;
 	} // function import_xhtml($xhtml_file)
+	*/
 
 	//-----------------------------------------------------------------------------//
 
@@ -1927,8 +1928,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * table.
 	 */
 
-	function import_xhtml_reversal_indexes(){
+	function import_xhtml_reversal_indexes ($dom = null, $dom_xpath = null) {
 		global $wpdb;
+		
+		if(isset($dom))
+		{
+			$this->dom = $dom;
+			$this->dom_xpath = $dom_xpath;
+		}
 		
 		update_option("importStatus", "importingReversals");
 		$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
@@ -2006,15 +2013,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry_counter++;
 		} // foreach ( $entries as $entry)
 		
-		if($this->verbose == false && $this->api == false)
-		{
-			global $current_user;
-			get_currentuserinfo();
-
-			$message = "The reversal import is completed.\n";
-			$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
-			wp_mail( $current_user->user_email, 'Reversal Import complete', $message);
-		}
 	}
 	
 	function index_reversals(){
@@ -2072,10 +2070,15 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	 * table.
 	 */
 
-	function import_xhtml_stem_indexes(){
-
+	function import_xhtml_stem_indexes ($dom = null, $dom_xpath = null) {
 		global $wpdb;
-
+		
+		if(isset($dom))
+		{
+			$this->dom = $dom;
+			$this->dom_xpath = $dom_xpath;
+		}
+		
 		//$entries = $this->dom_xpath->query('//xhtml:div[@class="entry"]');
 		$entries = $this->dom_xpath->query('//xhtml:span[@class="headword"]|//xhtml:span[@class="headword-minor"]|//xhtml:span[@class="headword-sub"]');
 		$entries_count = $entries->length;
