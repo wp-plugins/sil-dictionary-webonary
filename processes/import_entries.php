@@ -9,6 +9,7 @@ if(exec('echo EXEC') == 'EXEC')
 	//it isn't actually from the api, but saves us renaming the variable to "background" or something like that...
 	$api = true;
 	$verbose = true;
+	$filetype = $argv[3];
 }
 else
 {
@@ -23,9 +24,6 @@ $import->verbose = $verbose;
 
 $file = $import->get_latest_xhtmlfile();
 $xhtml_file = file_get_contents($file->url);
-
-$filetype = "configured";
-
 
 if($xhtml_file == null)
 {
@@ -53,6 +51,11 @@ if ( taxonomy_exists( $import->writing_system_taxonomy ) )
  * Import
  */
 
+$import->search_table_name = $wpdb->prefix . 'sil_search';
+	
+global $current_user;
+get_currentuserinfo();
+
 if ( $filetype== 'configured') {
 	//  Make sure we're not working on a reversal file.
 	$reversals = $dom_xpath->query( '(//xhtml:span[contains(@class, "reversal-form")])[1]' );
@@ -72,19 +75,32 @@ if ( $filetype== 'configured') {
 	
 	$import->import_xhtml_entries($dom, $dom_xpath);
 	
-	wp_delete_attachment( $file->ID );
-	
-	$import->search_table_name = $wpdb->prefix . 'sil_search';
-	
 	$import->index_searchstrings();
 	
 	$import->convert_fields_to_links();
+
+	$message = "The import of the vernacular (configured) xhtml export is completed.\n";
+	$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+
+	wp_mail( $current_user->user_email, 'Import complete', $message);
 	
 	echo "Import finished\n";
 }
 elseif ( $filetype == 'reversal')
-	$this->import_xhtml_reversal_indexes();
-elseif ( $filetype == 'stem')
-	$this->import_xhtml_stem_indexes();
+{
+	$import->reversal_table_name = $wpdb->prefix . 'sil_reversal';
+	$import->import_xhtml_reversal_indexes($dom, $dom_xpath);
 	
+	$import->index_reversals();
+	
+	$message = "The reversal import is completed.\n";
+	$message .= "Go here to configure more settings: " . get_site_url() . "/wp-admin/admin.php?page=webonary";
+	wp_mail( $current_user->user_email, 'Reversal Import complete', $message);
+}
+elseif ( $filetype == 'stem')
+{
+	$import->import_xhtml_stem_indexes($dom, $dom_xpath);
+}
+wp_delete_attachment( $file->ID );
+
 ?>
