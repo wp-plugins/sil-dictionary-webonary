@@ -1,3 +1,4 @@
+v. 4.5.1 15 April 2015 fixed typo
 v. 4.5.0 15 April 2015 restarting the reversal import will now also run as an external process
 v. 4.4.9 14 April 2015 now the reversal import also runs as an external process
 v. 4.4.8 13 April 2015 now always imports as an external process for the configured xhtml export
