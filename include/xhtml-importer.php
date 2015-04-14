@@ -99,6 +99,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 		if(isset($_POST['btnRestartImport']))
 		{
+			$filetype = "configured";
 			remove_entries('flexlinks');
 			echo "Restarting Import...<br>";
 
@@ -111,7 +112,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			if(exec('echo EXEC') == 'EXEC')
 			{
 				$blogid = get_current_blog_id();
-				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid;
+				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
 			
 				exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
 			}
@@ -136,14 +137,28 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		
 		if(isset($_POST['btnRestartReversalImport']))
 		{
+			$filetype = "reversal";
 			echo "Restarting Import of Reversal Entries...<br>";
 
-			$file = $this->get_latest_xhtmlfile();
-			$xhtml_file = file_get_contents($file->url);
-
-			$this->import_xhtml($xhtml_file, false, false, "reversal");
-
-			$this->index_reversals();
+			if($this->api == false && $this->verbose == false)
+			{
+				echo "You can now close the browser window. <a href=\"../wp-admin/admin.php?import=pathway-xhtml\">Click here to view the import status</a><br>";
+			}
+			flush();
+			
+			if(exec('echo EXEC') == 'EXEC')
+			{
+				$blogid = get_current_blog_id();
+				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $reversal;
+			
+				exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
+			}
+			else
+			{
+				require(ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php");
+			}
+			return;
+			
 		}
 		
 		
