@@ -149,7 +149,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			if(exec('echo EXEC') == 'EXEC')
 			{
 				$blogid = get_current_blog_id();
-				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $reversal;
+				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
 			
 				exec($command . ' > /tmp/webonaryimport_' . $blogid . '.txt 2>&1 &');
 			}
