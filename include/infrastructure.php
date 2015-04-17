@@ -501,7 +501,7 @@ function register_language_taxonomy () {
         'new_item_name' => __( 'New Language Name' ),
         'menu_name' => __( 'Language' ),
     );
-
+    
     register_taxonomy(
         'sil_writing_systems',
         'post',

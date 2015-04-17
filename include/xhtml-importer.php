@@ -55,7 +55,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	public $reversal_table_name = REVERSALTABLE;
 	public $pos_taxonomy = 'sil_parts_of_speech';
 	public $semantic_domains_taxonomy = 'sil_semantic_domains';
-	public $writing_system_taxonomy = "sil_writing_systems";
 
 	/*
 	 * Relevance level attributes
@@ -831,59 +830,71 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	// Currently we aren't deleting any existing writing systems.
 	// For the moment, any bad writing systems must be removed by hand.
-	function import_xhtml_writing_systems () {
+	function import_xhtml_writing_systems ($dom = null, $dom_xpath = null) {
 		global $wpdb;
-
-		// An example of writing system and font in meta of the XHTML file header:
-		// <meta name="en" content="English" scheme="Language Name" />
-		// <meta name="en" content="Times New Roman" scheme="Default Font" />
-		$writing_systems = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Language Name"]|//xhtml:meta[@name = "DC.language"]' );
-		// Currently we aren't using font info.
-		// $writing_system_fonts = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Default Font"]' );
-		if($writing_systems->length == 0 && isset($_POST['chkShowDebug']))
+		
+		$this->writing_system_taxonomy = "sil_writing_systems";
+		
+		if(isset($dom))
 		{
-			echo "The language names were not found. Please add the language name meta tag in your xhtml file.<br>";
+			$this->dom = $dom;
+			$this->dom_xpath = $dom_xpath;
 		}
-		foreach ( $writing_systems as $writing_system ) {
-			$writing_system_abbreviation = $writing_system->getAttribute( "name");
-			$writing_system_name = $writing_system->getAttribute( "content");
-
-			if($writing_system->getAttribute( "name") == "DC.language")
-			{
-				$content = explode(":", $writing_system->getAttribute( "content"));
-				$writing_system_abbreviation = $content[0];
-				$writing_system_name = $content[1];
-			}
-
+		
+		if ( taxonomy_exists( $this->writing_system_taxonomy ) )
+		{
+			// An example of writing system and font in meta of the XHTML file header:
+			// <meta name="en" content="English" scheme="Language Name" />
+			// <meta name="en" content="Times New Roman" scheme="Default Font" />
+			$writing_systems = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Language Name"]|//xhtml:meta[@name = "DC.language"]' );
+			
 			// Currently we aren't using font info.
-			//$writing_system_font = $this->dom_xpath->query(
-			//  '../xhtml:meta[@name = "' . $writing_system_abbreviation . '" and @scheme = "Default Font"]',
-			//  $writing_system );
-			//$font = $writing_system_font->item( 0 )->getAttribute( "content" );
-
-			wp_insert_term(
-				$writing_system_name,
-				$this->writing_system_taxonomy,
-				array(
-					'description' => $writing_system_name,
-					'slug' => $writing_system_abbreviation
-				));
-
-			// We are not using this taxonomy to group posts, but rather to search for strings
-			// with a given writing system. If we ever change that, we'll want to load this on
-			// a post by post basis.
-			//
-			//wp_set_object_terms( $post_id, $writing_system_name, $writing_systems_taxonomy );
-
-		} // foreach ( $writing_systems as $writing_system ) {
-
-		// Since we're not associating this taxonomy with any posts, wp_term_taxonomy.count = 0.
-		// When that's true, the taxonomy doesn't work correctly in the drop down list. The
-		// field needs a count of at least 1. I'm filling the number with something bigger
-		// so that it looks more obviously like a dummy number.
-
-		$sql = $wpdb->prepare("UPDATE $wpdb->term_taxonomy SET COUNT = 999999 WHERE taxonomy = '%s'", $this->writing_system_taxonomy );
-		$wpdb->query( $sql );
+			// $writing_system_fonts = $this->dom_xpath->query( '//xhtml:meta[@scheme = "Default Font"]' );
+			if($writing_systems->length == 0 && isset($_POST['chkShowDebug']))
+			{
+				echo "The language names were not found. Please add the language name meta tag in your xhtml file.<br>";
+			}
+			foreach ( $writing_systems as $writing_system ) {
+				$writing_system_abbreviation = $writing_system->getAttribute( "name");
+				$writing_system_name = $writing_system->getAttribute( "content");
+	
+				if($writing_system->getAttribute( "name") == "DC.language")
+				{
+					$content = explode(":", $writing_system->getAttribute( "content"));
+					$writing_system_abbreviation = $content[0];
+					$writing_system_name = $content[1];
+				}
+	
+				// Currently we aren't using font info.
+				//$writing_system_font = $this->dom_xpath->query(
+				//  '../xhtml:meta[@name = "' . $writing_system_abbreviation . '" and @scheme = "Default Font"]',
+				//  $writing_system );
+				//$font = $writing_system_font->item( 0 )->getAttribute( "content" );
+	
+				wp_insert_term(
+					$writing_system_name,
+					$this->writing_system_taxonomy,
+					array(
+						'description' => $writing_system_name,
+						'slug' => $writing_system_abbreviation
+					));
+	
+				// We are not using this taxonomy to group posts, but rather to search for strings
+				// with a given writing system. If we ever change that, we'll want to load this on
+				// a post by post basis.
+				//
+				//wp_set_object_terms( $post_id, $writing_system_name, $writing_systems_taxonomy );
+	
+			} // foreach ( $writing_systems as $writing_system ) {
+	
+			// Since we're not associating this taxonomy with any posts, wp_term_taxonomy.count = 0.
+			// When that's true, the taxonomy doesn't work correctly in the drop down list. The
+			// field needs a count of at least 1. I'm filling the number with something bigger
+			// so that it looks more obviously like a dummy number.
+	
+			$sql = $wpdb->prepare("UPDATE $wpdb->term_taxonomy SET COUNT = 999999 WHERE taxonomy = '%s'", $this->writing_system_taxonomy );
+			$wpdb->query( $sql );
+		}
 	}
 
 	//-----------------------------------------------------------------------------//
