@@ -109,7 +109,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			flush();
 			
-			if(exec('echo EXEC') == 'EXEC')
+			if(exec('echo EXEC') == 'EXEC' && file_exists(ABSPATH . "exec-configured.txt"))
 			{
 				$blogid = get_current_blog_id();
 				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
@@ -146,7 +146,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			flush();
 			
-			if(exec('echo EXEC') == 'EXEC')
+			if(exec('echo EXEC') == 'EXEC' && file_exists(ABSPATH . "exec-configured.txt"))
 			{
 				$blogid = get_current_blog_id();
 				$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
@@ -229,7 +229,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				}
 				flush();
 				
-				if(exec('echo EXEC') == 'EXEC')
+				if(exec('echo EXEC') == 'EXEC' && file_exists(ABSPATH . "exec-configured.txt"))
 				{
 					$blogid = get_current_blog_id();
 					$command = "php -f " . ABSPATH . "wp-content/plugins/sil-dictionary-webonary/processes/import_entries.php " . ABSPATH . " " . $blogid . " " . $filetype;
