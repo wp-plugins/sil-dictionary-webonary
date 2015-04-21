@@ -1,3 +1,4 @@
+v. 4.5.5 21 April 2015 running external process works now also for the API
 v. 4.5.4 20 April 2015 added Chinese translations
 v. 4.5.3 18 April 2015 registering custom taxomonies now works again (when using exec)
 v. 4.5.2 17 April 2015 only do exec if file exec-configured.txt exists
