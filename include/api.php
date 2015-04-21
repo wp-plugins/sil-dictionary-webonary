@@ -48,6 +48,7 @@ class Webonary_API_MyType {
 				{
 					copy($destinationPath . "/configured.css", $uploadPath . "/imported-with-xhtml.css");
 					error_log("Renamed configured.css to " . $uploadPath . "/imported-with-xhtml.css");
+					unlink($destinationPath . "/configured.css");
 				}
 				//copy folder files (which includes audio and image folders and files)
 				if(file_exists($destinationPath . "/files"))
@@ -58,44 +59,43 @@ class Webonary_API_MyType {
 					$this->recursiveRemoveDir($uploadPath . "/audio");
 					//then copy everything under files
 					$this->recursiveCopy($destinationPath . "/files", $uploadPath);
+					$this->recursiveRemoveDir($destinationPath . "/files");
 				}
 			}
 
 			if(isset($xhtmlConfigured))
 			{
 				//we first delete all existing posts (in category Webonary)
-				remove_entries();
+				remove_entries('flexlinks');
+				
 				//deletes data that comes with the posts, but gets stored separately (e.g. "parts of speech")
 				clean_out_dictionary_data();
 
-				$import = new sil_pathway_xhtml_Import();
-
-				//If $verbose is true, it will display progress, but can't run import in the background
-				$verbose = false;
-				$import->import_xhtml($xhtmlConfigured, true, $verbose, "configured");
-
-				if($verbose)
-				{
-					echo "Indexing search strings\n";
-				}
-				$import->index_searchstrings($verbose);
-				$import->convert_fields_to_links();
+				$filetype = "configured";
+				$xhtmlFileURL = $fileConfigured;
+				require("run_import.php");
 			}
 
 			if(isset($xhtmlReversal1))
 			{
-				$import->import_xhtml($xhtmlReversal1, true, $verbose, "reversal");
+				$filetype = "reversal";
+				$xhtmlFileURL = $fileReversal1;
+				require("run_import.php");
 			}
 
 			if(isset($xhtmlReversal2))
 			{
-				$import->import_xhtml($xhtmlReversal2, true, $verbose, "reversal");
+				$filetype = "reversal";
+				$xhtmlFileURL = $fileReversal2;
+				require("run_import.php");
 			}
 
 			if(file_exists($destinationPath))
 			{
 				//deletes the extracted zip folder
-				$this->recursiveRemoveDir($destinationPath);
+				//update 21 April 2015: We no longer remove the directory, instead just the individual files
+				//get deleted as we are now running the import in an external process and the files would otherwise be missing
+				//$this->recursiveRemoveDir($destinationPath);
 			}
 						
 			$message = "The export to Webonary is completed.\n";
