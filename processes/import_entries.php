@@ -4,26 +4,31 @@ if(exec('echo EXEC') == 'EXEC' && file_exists($argv[1] . "exec-configured.txt"))
 	define('WP_INSTALLING', true);
 	require($argv[1] . "wp-load.php");
 	switch_to_blog($argv[2]);
+	
+	require($argv[1] . "wp-content/plugins/sil-dictionary-webonary/include/infrastructure.php");
+	install_sil_dictionary_infrastructure();
+	
 	require($argv[1] . "wp-content/plugins/sil-dictionary-webonary/include/xhtml-importer.php");
 	
 	//it isn't actually from the api, but saves us renaming the variable to "background" or something like that...
 	$api = true;
 	$verbose = true;
 	$filetype = $argv[3];
+	$xhtmlFileURL = $argv[4];
 }
 else
 {
 	$api = false;
 	$verbose = false;
 }
+global $wpdb;
 
 $import = new sil_pathway_xhtml_Import();
 
 $import->api = $api;
 $import->verbose = $verbose;
 
-$file = $import->get_latest_xhtmlfile();
-$xhtml_file = file_get_contents($file->url);
+$xhtml_file = file_get_contents($xhtmlFileURL);
 
 if($xhtml_file == null)
 {
@@ -45,8 +50,10 @@ $dom_xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
  *
  * Load the Writing Systems (Languages)
  */
-if ( taxonomy_exists( $import->writing_system_taxonomy ) )
-	$import->import_xhtml_writing_systems();
+//if ( taxonomy_exists( $import->writing_system_taxonomy ) )
+//{
+	$import->import_xhtml_writing_systems($dom, $dom_xpath);
+//}
 /*
  * Import
  */
@@ -101,6 +108,17 @@ elseif ( $filetype == 'stem')
 {
 	$import->import_xhtml_stem_indexes($dom, $dom_xpath);
 }
-wp_delete_attachment( $file->ID );
+
+$file = $import->get_latest_xhtmlfile();
+
+if(substr($file->url, strlen($file->url) - 5, 5) == "xhtml")
+{
+	wp_delete_attachment( $file->ID );
+}
+else
+{
+	//file is inside extracted zip directory
+	unlink($xhtmlFileURL);
+}
 
 ?>
