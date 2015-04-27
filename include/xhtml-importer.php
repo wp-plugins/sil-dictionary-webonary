@@ -99,6 +99,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		if(isset($_POST['btnRestartImport']))
 		{
 			$filetype = "configured";
+			remove_entries('');
 			remove_entries('flexlinks');
 			echo "Restarting Import...<br>";
 
@@ -1542,12 +1543,12 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$catid = 0;
 		}
 
-		$sql = "SELECT COUNT(pinged) AS entryCount, post_date, pinged FROM " . $wpdb->prefix . "posts " .
+		$sql = "SELECT COUNT(pinged) AS entryCount, post_date, TIMESTAMPDIFF(SECOND, MAX(post_date),NOW()) AS timediff, pinged FROM " . $wpdb->prefix . "posts " .
 		" WHERE post_type IN ('post', 'revision') AND " .
 		" ID IN (SELECT object_id FROM " . $wpdb->prefix . "term_relationships WHERE " . $wpdb->prefix . "term_relationships.term_taxonomy_id = " . $catid .") " .
 		" GROUP BY pinged " .
 		" ORDER BY post_date DESC";
-		
+				
 		$arrPosts = $wpdb->get_results($sql);
 		
 		$sql = " SELECT * " .
@@ -1600,11 +1601,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				if($posts->post_date != NULL)
 				{
 					$status .= "Last import of configured xhtml was at " . $posts->post_date . " (server time)";
-
-					$status .= "<input type=hidden name=chkConvertFLExLinks value=1>";
-					$status .= "<input type=hidden name=pinged value=\"" . $posts->pinged . "\">";
 					$status .= "<br>";
-					$status .= "<br><input type=\"submit\" name=\"btnConvertFLExLinks\" value=\"Retry converting FLEx links\">&nbsp;&nbsp;&nbsp;";
+					
+					if($_GET['convertlinks'] == 1)
+					{
+						$status .= "<input type=hidden name=chkConvertFLExLinks value=1>";
+						$status .= "<input type=hidden name=pinged value=linksconverted>";
+						$status .= "<br><input type=\"submit\" name=\"btnConvertFLExLinks\" value=\"Retry converting FLEx links\">&nbsp;&nbsp;&nbsp;";
+					}
 				}
 			}
 			else
@@ -1635,8 +1639,11 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					elseif(get_option("importStatus") == "configured")
 					{
 						$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported";
-	
-						$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
+						
+						if($posts->timediff > 5)
+						{
+							$status .= "<br>It appears the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
+						}
 					}
 					elseif(get_option("importStatus") == "importingReversals")
 					{
