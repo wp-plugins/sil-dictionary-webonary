@@ -1609,42 +1609,48 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 			else
 			{
-				$status .= "Importing... <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a><br>";
-				$status .= " You will receive an email when the import has completed.";
-				$status .= "<br>";
-
-				if(get_option("importStatus") == "indexing")
+				if(!get_option("importStatus"))
 				{
-					$status .= "Indexing " . $countIndexed . " of " . $totalImportedPosts . " entries";
-
-					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnReindex\" value=\"Index Search Strings\"/>";
+					echo "The import status will display here.<br>";
 				}
-				elseif(get_option("importStatus") == "convertlinks")
+				else
 				{
-					$status .= "Converting Links " . $countLinksConverted . " of " . get_option("totalConfiguredEntries") . " entries";
-
-					$status .= "<input type=hidden name=chkConvertToLinks value=1>";
-					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\"/>";
-				}
-				elseif(get_option("importStatus") == "configured")
-				{
-					$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported";
-
-					$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
-				}
-				elseif(get_option("importStatus") == "importingReversals")
-				{
-					$status .= "<strong>Importing reversals. So far imported: " . count($arrReversalsImported) . " entries.</strong>";
-					
-					$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartReversalImport\" value=\"Restart Reversal Import\">";
-				}
-				elseif(get_option("importStatus") == "indexingReversals" && count($arrReversalsImported) > 0)
-				{
-					$status .= "<strong>Indexing reversal entries.</strong>";
+					$status .= "Importing... <a href=\"" . $_SERVER['REQUEST_URI']  . "\">refresh page</a><br>";
+					$status .= " You will receive an email when the import has completed.";
+					$status .= "<br>";
 	
-					$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnIndexReversals\" value=\"Index reversal entries (" . count($arrReversalsImported)  . " left)\"/>";
+					if(get_option("importStatus") == "indexing")
+					{
+						$status .= "Indexing " . $countIndexed . " of " . $totalImportedPosts . " entries";
+	
+						$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnReindex\" value=\"Index Search Strings\"/>";
+					}
+					elseif(get_option("importStatus") == "convertlinks")
+					{
+						$status .= "Converting Links " . $countLinksConverted . " of " . get_option("totalConfiguredEntries") . " entries";
+	
+						$status .= "<input type=hidden name=chkConvertToLinks value=1>";
+						$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnMakeLinks\" value=\"Turn headwords into links\"/>";
+					}
+					elseif(get_option("importStatus") == "configured")
+					{
+						$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported";
+	
+						$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
+					}
+					elseif(get_option("importStatus") == "importingReversals")
+					{
+						$status .= "<strong>Importing reversals. So far imported: " . count($arrReversalsImported) . " entries.</strong>";
+						
+						$status .= "<br>If you believe the import has timed out, click here: <input type=\"submit\" name=\"btnRestartReversalImport\" value=\"Restart Reversal Import\">";
+					}
+					elseif(get_option("importStatus") == "indexingReversals" && count($arrReversalsImported) > 0)
+					{
+						$status .= "<strong>Indexing reversal entries.</strong>";
+		
+						$status .= "<br>If you believe indexing has timed out, click here: <input type=\"submit\" name=\"btnIndexReversals\" value=\"Index reversal entries (" . count($arrReversalsImported)  . " left)\"/>";
+					}
 				}
-				
 			}
 			
 			if(count($arrIndexed) > 0 && ($countIndexed == $totalImportedPosts || $countLinksConverted == $totalImportedPosts))
