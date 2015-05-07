@@ -95,9 +95,16 @@ function sil_dictionary_custom_join($join) {
 			$letter = trim($wp_query->query_vars['letter']);
 			$noletters = trim($wp_query->query_vars['noletters']);
 
-			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" . addslashes($letter) . "%' COLLATE 'UTF8_BIN'" .
-			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes(strtoupper($letter)) . "%' COLLATE 'UTF8_BIN' " .
-			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes("-" . $letter) . "%' COLLATE 'UTF8_BIN') " .
+			//by default we use collate utf8_bin and à, ä, etc. are handled as different letters
+			$collate = "COLLATE 'UTF8_BIN'";
+			if(get_option('IncludeCharactersWithDiacritics') == 1)
+			{
+				$collate = "";
+			}
+			
+			$subquery_where .= "(" . $search_table_name . ".search_strings LIKE '" . addslashes($letter) . "%' " . $collate .
+			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes(strtoupper($letter)) . "%' " . $collate .
+			" OR " . $search_table_name . ".search_strings LIKE '" . addslashes("-" . $letter) . "%' " . $collate . ") " .
 			" AND relevance >= 95 AND language_code = '$key' ";
 
 			$arrNoLetters = explode(",",  $noletters);
@@ -105,8 +112,8 @@ function sil_dictionary_custom_join($join) {
 			{
 				if(strlen($noLetter) > 0)
 				{
-					$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' COLLATE 'UTF8_BIN'" .
-					" AND " . $search_table_name . ".search_strings NOT LIKE '" . strtoupper($noLetter) ."%' COLLATE 'UTF8_BIN'";
+					$subquery_where .= " AND " . $search_table_name . ".search_strings NOT LIKE '" . $noLetter ."%' " . $collate .
+					" AND " . $search_table_name . ".search_strings NOT LIKE '" . strtoupper($noLetter) ."%' " . $collate;
 				}
 			}
 		}
@@ -147,6 +154,7 @@ function sil_dictionary_custom_join($join) {
 			$join .= " INNER JOIN $wpdb->terms ON $wpdb->term_relationships.term_taxonomy_id = $wpdb->terms.term_id ";
 		}
 	}
+	
 	return $join;
 }
 

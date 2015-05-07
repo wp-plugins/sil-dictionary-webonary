@@ -200,6 +200,16 @@ function user_input() {
 				<input name="vernacular_alphabet" type="text" size=50 value="<?php echo stripslashes(get_option('vernacular_alphabet')); ?>" />
 				<?php _e('(Letters separated by comma)'); ?>
 				<p>
+				<?php
+				$IncludeCharactersWithDiacritics = get_option('IncludeCharactersWithDiacritics');
+				if($IncludeCharactersWithDiacritics != "no" && !isset($IncludeCharactersWithDiacritics))
+				{
+					$IncludeCharactersWithDiacritics = 1;
+				}
+				?>
+				<input name="IncludeCharactersWithDiacritics" type="checkbox" value="1" <?php checked('1', $IncludeCharactersWithDiacritics); ?> />
+				<?php _e('Include characters with diacritics (e.g. words starting with ä, à, etc. will all display under a)')?>
+				<p>
 				<b><?php _e('Reversal Indexes:'); ?></b>
 				<p>
 				<?php _e('Main reversal index code:'); ?>
@@ -312,6 +322,14 @@ function run_user_action() {
     	update_option("DisplaySubentriesAsMainEntries", $displaySubentriesAsMainEntries);
     	update_option("languagecode", $_POST['languagecode']);
     	update_option("vernacular_alphabet", $_POST['vernacular_alphabet']);
+    	
+    	$IncludeCharactersWithDiacritics = 'no';
+    	if(isset($_POST['IncludeCharactersWithDiacritics']))
+    	{
+    		$IncludeCharactersWithDiacritics = 1;
+    	}
+    	update_option("IncludeCharactersWithDiacritics", $IncludeCharactersWithDiacritics);
+    	
     	update_option("reversal1_langcode", $_POST['reversal1_langcode']);
     	update_option("reversal1_alphabet", $_POST['reversal1_alphabet']);
     	update_option("reversal2_alphabet", $_POST['reversal2_alphabet']);
