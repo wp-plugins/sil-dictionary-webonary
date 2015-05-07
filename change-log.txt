@@ -1,3 +1,4 @@
+v. 4.6.0 7 May 2015 added option "Include characters with diacritics (e.g. words starting with Š, ˆ, etc. will all display under a)"
 v. 4.5.9 27 April 2015 The "Retry converting FLEx links" button now only displays when you add &convertlinks=1 in the URL for the import page
 v. 4.5.8 27 April 2015 "Restart Import" button now only displays if last imported post is older than 5 seconds. 
 v. 4.5.7 27 April 2015 won't display the import status until set
