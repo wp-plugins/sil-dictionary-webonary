@@ -1,3 +1,5 @@
+v. 4.6.2 2 June 2015 fixed a problem with importing the semantic domain numbers (problem with several spans inside class)
+v. 4.6.1 2 June 2015 semantic domains weren't displaying anymore for French/Spanish since we changed to qTranslate X. Now using qTranslate X method to find language.
 v. 4.6.0 7 May 2015 added option "Include characters with diacritics (e.g. words starting with Š, ˆ, etc. will all display under a)"
 v. 4.5.9 27 April 2015 The "Retry converting FLEx links" button now only displays when you add &convertlinks=1 in the URL for the import page
 v. 4.5.8 27 April 2015 "Restart Import" button now only displays if last imported post is older than 5 seconds. 
