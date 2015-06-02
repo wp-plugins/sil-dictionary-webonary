@@ -1,3 +1,4 @@
+v. 4.6.3 2 June 2015 changed option hasSemDomainNumbers to useSemDomainNumbers, as using the semantic domain numbers won't always work accurately with older imports
 v. 4.6.2 2 June 2015 fixed a problem with importing the semantic domain numbers (problem with several spans inside class)
 v. 4.6.1 2 June 2015 semantic domains weren't displaying anymore for French/Spanish since we changed to qTranslate X. Now using qTranslate X method to find language.
 v. 4.6.0 7 May 2015 added option "Include characters with diacritics (e.g. words starting with Š, ˆ, etc. will all display under a)"
