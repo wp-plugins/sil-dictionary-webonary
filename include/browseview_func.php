@@ -7,11 +7,11 @@ function categories_func( $atts )
 	
 	$qTransLang = "en";
 	
-	if (function_exists('qtrans_init'))
+	if (function_exists('qtranxf_init_language'))
 	{
-		if(qtrans_getLanguage() != "en")
+		if(qtranxf_getLanguage() != "en")
 		{
-			$qTransLang = qtrans_getLanguage();
+			$qTransLang = qtranxf_getLanguage();
 			if(!file_exists($_SERVER['DOCUMENT_ROOT'] . "/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes_" . $qTransLang . ".js"))
 			{
 				$qTransLang = "en";

@@ -1873,14 +1873,14 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 
 		$i = 0;
+		
 		foreach ( $semantic_domains as $semantic_domain ){
 			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]|//span[@class = "semanticdomains"]//span[starts-with(@class, "name")]', $semantic_domain);
-			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]//span|//span[@class = "semanticdomains"]//span[starts-with(@class, "abbreviation")]', $semantic_domain);
+			$sd_numbers = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-abbr")]//span[2]|//span[@class = "semanticdomains"]//span[starts-with(@class, "abbreviation")][1]', $semantic_domain);
 
 			$sc = 0;
 			foreach($sd_names as $sd_name)
 			{
-				//echo $sd_numbers->item($sc)->textContent . " " . $sd_name->textContent . " " . $sd_name->getAttribute("lang") . "<br>";
 				$semantic_domain_language = $sd_name->getAttribute("lang");
 				$domain_name = str_replace("]", "", $sd_name->textContent);
 				$sd_number_text = str_replace("[", "", $sd_numbers->item($sc)->textContent);
