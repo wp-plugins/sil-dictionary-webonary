@@ -1541,9 +1541,9 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		{
 			$sql = "SELECT COUNT(taxonomy) AS sdCount FROM " . $wpdb->prefix  . "term_taxonomy WHERE taxonomy LIKE 'sil_semantic_domains'";
 			
-			$arrSDomains = $wpdb->get_results($sql);
+			$sdCount = $wpdb->get_var($sql);
 			
-			if(count($arrSDomains) > 0)
+			if($sdCount > 0)
 			{
 				$status .= "<br>";
 				$status .= "<span style=\"color:red;\">It appears you imported semantic domains without the domain numbers. Please go to Tools -> Configure -> Dictionary.. in FLEx and check \"Abbrevation\" under Senses/Semantic Domains.</span><br>";
