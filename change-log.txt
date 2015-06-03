@@ -1,3 +1,4 @@
+v. 4.6.5 3 June 2015 Fixed wrong count of semantic domain numbers (see previous change)
 v. 4.6.4 3 June 2015 A warning message will show on the import page if semantic domains were imported without including the sd numbers.
 v. 4.6.3 2 June 2015 changed option hasSemDomainNumbers to useSemDomainNumbers, as using the semantic domain numbers won't always work accurately with older imports
 v. 4.6.2 2 June 2015 fixed a problem with importing the semantic domain numbers (problem with several spans inside class)
