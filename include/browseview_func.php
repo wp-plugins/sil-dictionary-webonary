@@ -1,6 +1,8 @@
 <?php
 function categories_func( $atts )
 {
+	global $wpdb;
+	
 	$display = "";
 	
 	$postsperpage = 25;
@@ -40,8 +42,29 @@ function categories_func( $atts )
 
 	<!-- Execution of the code that actually builds the specific tree.
      The variable foldersTree creates its structure with calls to gFld, insFld, and insDoc -->
-	<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes_<?php echo $qTransLang; ?>.js" type="text/javascript"></script>
-
+    <?php
+    if(get_option("useSemDomainNumbers") == 0 || 1 == 1)
+    {
+    ?>
+		<script src="<?php echo get_bloginfo('wpurl'); ?>/wp-content/plugins/sil-dictionary-webonary/js/categoryNodes_<?php echo $qTransLang; ?>.js" type="text/javascript"></script>
+	<?php
+    }
+    else
+    {
+    	$sql = "SELECT " . $wpdb->prefix . "terms.name, slug " .
+		" FROM " . $wpdb->prefix . "terms " .
+		" INNER JOIN " . $wpdb->prefix . "term_taxonomy ON " . $wpdb->prefix . "term_taxonomy.term_id = " . $wpdb->prefix . "terms.term_id " .
+		" WHERE taxonomy = 'sil_semantic_domains'" .
+		" ORDER BY slug ASC";
+    	
+    	$arrDomains = $wpdb->get_results($sql);
+    	
+    	foreach($arrDomains as $domain)
+    	{
+    		echo $domain->name . " " . $domain->slug . "<br>";
+    	}
+    }
+	?>
 	<!-- Build the browser's objects and display default view of the tree. -->
 	<script language="JavaScript">
 		initializeDocument();
