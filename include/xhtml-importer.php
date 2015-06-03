@@ -627,6 +627,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			$entry_counter = 1;
 			$entries_count = count($arrPosts);
 
+			update_option("useSemDomainNumbers", 0);
+			
 			foreach($arrPosts as $post)
 			{
 				$subentry = false;
@@ -1533,6 +1535,22 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 
 	function get_import_status() {
 		global $wpdb;
+		$status = "";
+		
+		if(get_option("useSemDomainNumbers") == 0)
+		{
+			$sql = "SELECT COUNT(taxonomy) AS sdCount FROM " . $wpdb->prefix  . "term_taxonomy WHERE taxonomy LIKE 'sil_semantic_domains'";
+			
+			$arrSDomains = $wpdb->get_results($sql);
+			
+			if(count($arrSDomains) > 0)
+			{
+				$status .= "<br>";
+				$status .= "<span style=\"color:red;\">It appears you imported semantic domains without the domain numbers. Please go to Tools -> Configure -> Dictionary.. in FLEx and check \"Abbrevation\" under Senses/Semantic Domains.</span><br>";
+				$status .= "Tip: You can hide the domain numbers from displaying, <a href=\" http://www.webonary.org/help/tips-tricks/\" target=_\"blank\">see here</a>.";
+				$status .= "<hr>";
+			}
+		}
 
 		$countLinksConverted = 0;
 
@@ -1595,7 +1613,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 				$importFinished = true;
 			}
 			*/
-			$status = "<form method=\"post\" action=\"" . $_SERVER['REQUEST_URI'] . "\">";
+			$status .= "<form method=\"post\" action=\"" . $_SERVER['REQUEST_URI'] . "\">";
 			if(get_option("importStatus") == "importFinished")
 			{
 				if($posts->post_date != NULL)
@@ -1883,7 +1901,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			{
 				$semantic_domain_language = $sd_name->getAttribute("lang");
 				$domain_name = str_replace("]", "", $sd_name->textContent);
+				$domain_name = str_replace(")", "", $domain_name);
+				
 				$sd_number_text = str_replace("[", "", $sd_numbers->item($sc)->textContent);
+				$sd_number_text = str_replace("(", "", $sd_number_text);
 				$domain_class = $sd_name->getAttribute("class");
 
 				$arrTerm = wp_insert_term(
@@ -1932,7 +1953,10 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 			}
 		}
 
-		update_option("useSemDomainNumbers", 1);
+		if($sd_numbers->length > 0)
+		{
+			update_option("useSemDomainNumbers", 1);
+		}
 
 		$sql = $wpdb->query("UPDATE $wpdb->term_taxonomy SET COUNT = 1 WHERE taxonomy = 'sil_semantic_domains'");
 
