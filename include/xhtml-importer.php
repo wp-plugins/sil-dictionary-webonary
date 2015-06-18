@@ -1658,7 +1658,7 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 					{
 						$status .= $countImported . " of " . get_option("totalConfiguredEntries") . " entries imported";
 						
-						if($posts->timediff > 5)
+						if($arrPosts[0]->timediff > 5)
 						{
 							$status .= "<br>It appears the import has timed out, click here: <input type=\"submit\" name=\"btnRestartImport\" value=\"Restart Import\">";
 						}
