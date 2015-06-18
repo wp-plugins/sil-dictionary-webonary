@@ -1,3 +1,4 @@
+v. 4.6.7 18 June 2015 fixed false message "It appears the import has timed out"
 v. 4.6.7 15 June 2015 the semantic domain number should now always import no matter what position the span-tag is.
 v. 4.6.6 3 June 2015 added SQL statement and first output for generating semantic domain list 
 v. 4.6.5 3 June 2015 Fixed wrong count of semantic domain numbers (see previous change)
