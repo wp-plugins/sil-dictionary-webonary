@@ -1,3 +1,4 @@
+v. 4.7.1 19 June 2015 added Spanish translations
 v. 4.7.0 19 June 2015 displays warning message for super admins to not delete data by accident
 v. 4.6.9 19 June 2015 added message about deleting entries before re-importing
 v. 4.6.8 18 June 2015 fixed false message "It appears the import has timed out"
