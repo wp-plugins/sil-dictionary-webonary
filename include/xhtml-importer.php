@@ -281,7 +281,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 	function hello(){
 		echo '<div class="narrow">';
 		echo '<p>' . __( 'Howdy! This importer allows you to import SIL FLEX XHTML data into your WordPress site.',
-				'sil_dictionary' ) . '</p>';
+				'sil_dictionary' ) . '<br>';
+		echo  __('Before re-importing, it\'s best to delete your existing entries. Go to <a href="../wp-admin/admin.php?page=webonary">Webonary</a>... \'Delete Data\' to do this.') . '</p>';
 		?>
 		<div style="max-width: 600px; border-style:solid; border-width: 1px; border-color: red; padding: 5px;">
 		<strong>Import Status:</strong> <?php echo $this->get_import_status(); ?>

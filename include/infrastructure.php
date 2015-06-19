@@ -124,6 +124,10 @@ function user_input() {
 				<p><?php _e('Each dictionary entry is stored in a "post." You will find the entries in the Posts menu.', 'sil_dictionary'); ?></p>
 
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
+				<?php if(strpos($_SERVER['HTTP_HOST'], 'localhost') < 0 && is_super_admin()) { ?>
+					<strong style=color:red;>You are not in your testing environment!</strong>
+					<br>
+				<?php } ?>
 				<p><?php _e('Lists are kept unless you check the following:'); ?><br>
 					<label for="delete_taxonomies">
 						<input name="delete_taxonomies" type="checkbox" id="delete_taxonomies" value="1"
