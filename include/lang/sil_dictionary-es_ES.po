@@ -1,0 +1,509 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Webonary\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-18 19:58+0100\n"
+"PO-Revision-Date: 2015-06-19 13:43+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: include/browseview_func.php:19
+msgid "No entries exist for"
+msgstr "No hay entradas para"
+
+#: include/browseview_func.php:132
+msgid "Page"
+msgstr ""
+
+#: include/browseview_func.php:132
+msgid "of"
+msgstr ""
+
+#: include/browseview_func.php:389
+msgid "No entries exist starting with this letter."
+msgstr "No hay entradas que empiecen con esta letra."
+
+#: include/comments_func.php:25
+msgid "Re-syncing comments"
+msgstr ""
+
+#: include/comments_func.php:92
+msgid "Comments Re-Sync"
+msgstr ""
+
+#: include/comments_func.php:93
+msgid ""
+"If you have the comments turned on, you need to re-sync your comments after "
+"re-importing of your posts."
+msgstr ""
+
+# @ sil_dictionary
+#: include/CopyOfxhtml-importer.php:128 include/CopyOfxhtml-importer.php:187
+#: include/infrastructure.php:236 include/xhtml-importer.php:155
+#: include/xhtml-importer.php:229
+msgid "Finished!"
+msgstr ""
+
+# @ sil_dictionary
+#: include/CopyOfxhtml-importer.php:143 include/xhtml-importer.php:172
+msgid ""
+"Howdy! This importer allows you to import SIL FLEX XHTML data into your "
+"WordPress site."
+msgstr ""
+
+#: include/CopyOfxhtml-importer.php:145 include/xhtml-importer.php:174
+msgid ""
+"Please note that the entries will be imported into \"Posts\". Webonary does "
+"not play well together with existing blogs. Articles should be posted under "
+"\"Pages\"."
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:239 include/xhtml-importer.php:285
+msgid ""
+"Before you can upload your import file, you will need to fix the following "
+"error:"
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:256 include/xhtml-importer.php:302
+msgid "Choose an XHTML file from your computer:"
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:257 include/CopyOfxhtml-importer.php:265
+#: include/xhtml-importer.php:303 include/xhtml-importer.php:311
+#, php-format
+msgid "Maximum size: %s"
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:264 include/xhtml-importer.php:310
+msgid "Choose a CSS file from your computer (optional):"
+msgstr ""
+
+# @ sil_dictionary
+#: include/CopyOfxhtml-importer.php:295 include/xhtml-importer.php:350
+msgid "Import SIL FLEX XHTML"
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:324 include/xhtml-importer.php:381
+msgid ""
+"The file is either empty, or uploads are disabled in your php.ini, or "
+"post_max_size is defined as smaller than upload_max_filesize in php.ini."
+msgstr ""
+
+#: include/CopyOfxhtml-importer.php:364 include/xhtml-importer.php:421
+msgid ""
+"The css file has been uploaded into your upload folder and renamed to "
+"imported-with-xhtml.css"
+msgstr ""
+
+# @ default
+#: include/CopyOfxhtml-importer.php:366 include/xhtml-importer.php:423
+msgid "There was an error uploading the file, please try again!"
+msgstr ""
+
+# @ sil_dictionary
+#: include/CopyOfxhtml-importer.php:1209 include/xhtml-importer.php:1511
+msgid "SIL FLEX XHTML"
+msgstr ""
+
+# @ sil_dictionary
+#: include/CopyOfxhtml-importer.php:1210 include/xhtml-importer.php:1512
+msgid "Import posts from an SIL FLEX XHTML file."
+msgstr ""
+
+# @ sil_dictionary
+#: include/dictionary-search.php:157
+msgid "Because of the brevity of your search term, partial search was omitted."
+msgstr ""
+"Debido a la brevedad de su término de búsqueda, se omitió búsqueda parcial"
+
+# @ sil_dictionary
+#: include/dictionary-search.php:159
+msgid "Click here to include searching through partial words."
+msgstr "Haga clic aquí para incluir búsqueda de palabras parciales"
+
+# @ sil_dicitonary
+# @ sil_dictionary
+#: include/infrastructure.php:26 include/infrastructure.php:27
+#: include/infrastructure.php:115
+msgid "SIL Dictionary"
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:122
+msgid ""
+"SIL Dictionary provides the admininstration tools and framework for using "
+"WordPress for dictionaries."
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:123
+msgid "Import Data"
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:124
+msgid ""
+"You can find the <a href=\"admin.php?import=pathway-xhtml\">SIL FLEX XHTML "
+"importer</a> by clicking on Import under the Tools menu."
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:126
+msgid "Edit Data"
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:127
+msgid ""
+"Each dictionary entry is stored in a \"post.\" Individual entries can be "
+"added, edited, and deleted by going to the Posts menu and selecting the "
+"Posts menu item."
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:128
+msgid ""
+"You can edit also lists. For example, to edit your list of languages, go to "
+"Posts and select Language."
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:129
+msgid "Delete Data"
+msgstr ""
+
+#: include/infrastructure.php:130
+msgid "Lists are kept unless you check the following:"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:135
+msgid "Delete lists such as Part of Speech?"
+msgstr ""
+
+#: include/infrastructure.php:138
+msgid ""
+"Delete all posts, including the ones not in category \"webonary\" (legacy "
+"function)"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:143
+msgid "Go to \"Pages\" if you want to delete a page you created."
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:145
+msgid "Are you sure you want to delete the dictionary data?"
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:146
+msgid "Delete"
+msgstr ""
+
+#: include/infrastructure.php:148
+msgid "(deletes all posts in the category \"webonary\")"
+msgstr ""
+
+#: include/infrastructure.php:150
+msgid "Settings"
+msgstr ""
+
+#: include/infrastructure.php:160
+msgid "Vernacular Language Code:"
+msgstr ""
+
+#: include/infrastructure.php:171 include/infrastructure.php:190
+#: include/infrastructure.php:205
+msgid "Language Name:"
+msgstr ""
+
+#: include/infrastructure.php:173
+msgid "Vernacular Alphabet:"
+msgstr ""
+
+#: include/infrastructure.php:175 include/infrastructure.php:209
+msgid "(Letters seperated by comma)"
+msgstr ""
+
+#: include/infrastructure.php:177
+msgid "Reversal Indexes:"
+msgstr ""
+
+#: include/infrastructure.php:179
+msgid "Main reversal index code (usually English):"
+msgstr ""
+
+#: include/infrastructure.php:192
+msgid "If you have a second reversal index, enter the information here:"
+msgstr ""
+
+#: include/infrastructure.php:194
+msgid "Secondary reversal index code:"
+msgstr ""
+
+#: include/infrastructure.php:207
+msgid "Secondary Reversal Index Alphabet:"
+msgstr ""
+
+#: include/infrastructure.php:211
+msgid "Search Options:"
+msgstr ""
+
+#: include/infrastructure.php:215
+msgid "Always include searching through partial words."
+msgstr ""
+
+#: include/infrastructure.php:217
+msgid "Save"
+msgstr ""
+
+# @ sil_dictionary
+#: include/infrastructure.php:237
+msgid "OK"
+msgstr ""
+
+#: include/infrastructure.php:300
+msgid "Settings saved"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:349
+msgctxt "taxonomy general name"
+msgid "Semantic Domains"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:350
+msgctxt "taxonomy singular name"
+msgid "Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:351
+msgid "Search Domains"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:352
+msgid "All Semantic Domains"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:353
+msgid "Parent Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:354
+msgid "Parent Semantic Domain:"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:355
+msgid "Edit Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:356
+msgid "Update Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:357
+msgid "Add New Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:358
+msgid "New Semantic Domain Name"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:359
+msgid "Semantic Domain"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:387
+msgctxt "taxonomy general name"
+msgid "Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:388
+msgctxt "taxonomy singular name"
+msgid "Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:389 include/infrastructure.php:397
+msgid "Parts of Speech"
+msgstr ""
+
+# @ default
+# @ sil_dictionary
+#: include/infrastructure.php:390 include/searchform_func.php:72
+msgid "All Parts of Speech"
+msgstr "Toda parte del discurso"
+
+# @ default
+#: include/infrastructure.php:391
+msgid "Parent Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:392
+msgid "Parent Part of Speech:"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:393
+msgid "Edit Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:394
+msgid "Update Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:395
+msgid "Add New Part of Speech"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:396
+msgid "New Part of Speech Name"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:424
+msgctxt "taxonomy general name"
+msgid "Languages"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:425
+msgctxt "taxonomy singular name"
+msgid "Language"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:426 include/infrastructure.php:434
+msgid "Language"
+msgstr ""
+
+# @ default
+# @ sil_dictionary
+#: include/infrastructure.php:427 include/searchform_func.php:48
+msgid "All Languages"
+msgstr "Todo idioma"
+
+# @ default
+#: include/infrastructure.php:428
+msgid "Parent Language"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:429
+msgid "Parent Language:"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:430
+msgid "Edit Language"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:431
+msgid "Update Language"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:432
+msgid "Add New Language"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:433
+msgid "New Language Name"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:461
+msgctxt "taxonomy general name"
+msgid "Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:462
+msgctxt "taxonomy singular name"
+msgid "Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:463 include/infrastructure.php:471
+msgid "Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:464
+msgid "All Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:465
+msgid "Parent Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:466
+msgid "Parent Website strings:"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:467
+msgid "Edit Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:468
+msgid "Update Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:469
+msgid "Add New Website strings"
+msgstr ""
+
+# @ default
+#: include/infrastructure.php:470
+msgid "New Website strings Name"
+msgstr ""
+
+# @ sil_dictionary
+#: include/searchform_func.php:27
+msgid "Search"
+msgstr "Buscar"
+
+#: include/searchform_func.php:87
+msgid "Found in Semantic Domains:"
+msgstr ""
