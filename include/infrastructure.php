@@ -124,7 +124,7 @@ function user_input() {
 				<p><?php _e('Each dictionary entry is stored in a "post." You will find the entries in the Posts menu.', 'sil_dictionary'); ?></p>
 
 				<h3><?php _e( 'Delete Data', 'sil_dictionary' ); ?></h3>
-				<?php if(strpos($_SERVER['HTTP_HOST'], 'localhost') < 0 && is_super_admin()) { ?>
+				<?php if(strpos($_SERVER['HTTP_HOST'], 'localhost') === false && is_super_admin()) { ?>
 					<strong style=color:red;>You are not in your testing environment!</strong>
 					<br>
 				<?php } ?>
