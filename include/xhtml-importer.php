@@ -725,7 +725,6 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 									
 				$subid++;
 				$entry_counter++;
-				$sortorder++;
 			}
 			update_option("importStatus", "convertlinks");
 		}
@@ -1892,6 +1891,8 @@ class sil_pathway_xhtml_Import extends WP_Importer {
 		}
 
 		$i = 0;
+		
+		$sd_numbers = null;
 		
 		foreach ( $semantic_domains as $semantic_domain ){
 			$sd_names = $xpath->query('//span[@class = "semantic-domains"]//span[starts-with(@class, "semantic-domain-name")]|//span[@class = "semanticdomains"]//span[starts-with(@class, "name")]', $semantic_domain);

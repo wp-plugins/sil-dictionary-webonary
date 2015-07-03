@@ -151,8 +151,8 @@ function add_footer()
 		if(is_front_page() && $publicationStatus > 0) {
 
 			$language = "";
-			if (function_exists('qtrans_getLanguage')) {
-				$language = qtrans_getLanguage();
+			if (function_exists('qtranxf_getLanguage')) {
+				$language = qtranxf_getLanguage();
 			}
 		?>
 		
